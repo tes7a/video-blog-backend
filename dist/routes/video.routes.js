@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.videosRoute = void 0;
 const express_1 = require("express");
-const validator_1 = require("../utils/validator");
+const validators_1 = require("../utils/validators");
 exports.videosRoute = (0, express_1.Router)({});
 let videos = [
     {
@@ -21,8 +21,8 @@ let videos = [
         author: "Costas",
         canBeDownloaded: true,
         minAgeRestriction: 18,
-        createdAt: "2023-04-27T17:17:21.510Z",
-        publicationDate: "2023-04-27T17:17:21.510Z",
+        createdAt: "2023-05-27T17:17:21.510Z",
+        publicationDate: "2023-05-27T17:17:21.510Z",
         availableResolutions: ["P144"],
     },
     {
@@ -31,8 +31,8 @@ let videos = [
         author: "Costas",
         canBeDownloaded: true,
         minAgeRestriction: 18,
-        createdAt: "2023-04-27T17:17:21.510Z",
-        publicationDate: "2023-04-27T17:17:21.510Z",
+        createdAt: "2023-06-27T17:17:21.510Z",
+        publicationDate: "2023-06-27T17:17:21.510Z",
         availableResolutions: ["P144"],
     },
 ];
@@ -53,12 +53,16 @@ exports.videosRoute.get("/:id", (req, res) => {
 exports.videosRoute.put("/:id", (req, res) => {
     let video = videos.find((v) => v.id === +req.params.id);
     if (video) {
-        if ((0, validator_1.validator)(req.body.title, 40) && (0, validator_1.validator)(req.body.author, 20)) {
+        if ((0, validators_1.validateField)(req.body.title, 40) &&
+            (0, validators_1.validateField)(req.body.author, 20)) {
             (video.title = req.body.title),
                 (video.author = req.body.author),
                 res.status(201).send(video);
         }
     }
+    // if(validator(req.body.title, 40)) {
+    // } else if(validator(req.body.author, 20)) {
+    // }
     res.sendStatus(404);
 });
 exports.videosRoute.delete("/:id", (req, res) => {

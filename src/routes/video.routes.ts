@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
-import { validator } from "../utils/validator";
+import { validateField } from "../utils/validators";
 
 export const videosRoute = Router({});
 
-const videos = [
+let videos = [
   {
     id: 0,
     title: "About my Life",
@@ -20,8 +20,8 @@ const videos = [
     author: "Costas",
     canBeDownloaded: true,
     minAgeRestriction: 18,
-    createdAt: "2023-04-27T17:17:21.510Z",
-    publicationDate: "2023-04-27T17:17:21.510Z",
+    createdAt: "2023-05-27T17:17:21.510Z",
+    publicationDate: "2023-05-27T17:17:21.510Z",
     availableResolutions: ["P144"],
   },
   {
@@ -30,8 +30,8 @@ const videos = [
     author: "Costas",
     canBeDownloaded: true,
     minAgeRestriction: 18,
-    createdAt: "2023-04-27T17:17:21.510Z",
-    publicationDate: "2023-04-27T17:17:21.510Z",
+    createdAt: "2023-06-27T17:17:21.510Z",
+    publicationDate: "2023-06-27T17:17:21.510Z",
     availableResolutions: ["P144"],
   },
 ];
@@ -52,21 +52,23 @@ videosRoute.get("/:id", (req: Request, res: Response) => {
 });
 
 videosRoute.put("/:id", (req: Request, res: Response) => {
-  console.log();
-
-  let video = null;
-  for (let i = 0; i < videos.length; i++) {
-    if (videos[i].id === +req.params.id) video = videos[i];
+  let video = videos.find((v) => v.id === +req.params.id);
+  if (video) {
+    if (
+      validateField(req.body.title, 40) &&
+      validateField(req.body.author, 20)
+    ) {
+      (video.title = req.body.title),
+        (video.author = req.body.author),
+        res.status(201).send(video);
+    }
   }
-  if (validator(req.body.title, 40) && validator(req.body.author, 20)) {
-    video = {
-      title: req.body.title,
-      author: req.body.author,
-      //... any params
-    };
-    res.status(201).send(video);
-  }
+  // if(validator(req.body.title, 40)) {
 
+  // } else if(validator(req.body.author, 20)) {
+
+  // }
+  
   res.sendStatus(404);
 });
 
@@ -80,4 +82,3 @@ videosRoute.delete("/:id", (req: Request, res: Response) => {
 
   res.sendStatus(404);
 });
-//some comments for test commit

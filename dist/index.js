@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const body_parser_1 = __importDefault(require("body-parser"));
-const video_route_1 = require("./routes/video.route");
+const video_routes_1 = require("./routes/video.routes");
 const express = require("express");
 const app = express();
 app.use((0, body_parser_1.default)({}));
 const port = 3000;
-app.use("/videos", video_route_1.videosRoute);
+app.use("/videos", video_routes_1.videosRoute);
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });
