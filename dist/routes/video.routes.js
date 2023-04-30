@@ -37,40 +37,52 @@ let videos = [
     },
 ];
 exports.videosRoute.get("/", (req, res) => {
-    res.status(200).send(videos);
+    return res.status(200).send(videos);
 });
 exports.videosRoute.get("/:id", (req, res) => {
-    let video = null;
-    for (let i = 0; i < videos.length; i++) {
-        if (videos[i].id === +req.params.id) {
-            video = videos[i];
-        }
-    }
+    const video = videos.find((v) => v.id === +req.params.id);
     if (!video)
         return res.sendStatus(404);
-    res.status(200).send(video);
+    return res.status(200).send(video);
 });
 exports.videosRoute.put("/:id", (req, res) => {
     let video = videos.find((v) => v.id === +req.params.id);
+    const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate, } = req.body;
     if (video) {
-        if ((0, validators_1.validateField)(req.body.title, 40) &&
-            (0, validators_1.validateField)(req.body.author, 20)) {
-            (video.title = req.body.title),
-                (video.author = req.body.author),
-                res.status(201).send(video);
+        if ((0, validators_1.FieldValidate)(title, 40) && (0, validators_1.FieldValidate)(author, 20)) {
+            if (publicationDate && typeof publicationDate === "string") {
+                const date = new Date(publicationDate);
+                video.publicationDate = date.toISOString();
+            }
+            else if (availableResolutions &&
+                (0, validators_1.includeResolutionValidate)(availableResolutions)) {
+                video.availableResolutions = availableResolutions;
+            }
+            else if (typeof canBeDownloaded === "boolean") {
+                video.canBeDownloaded = canBeDownloaded;
+            }
+            else if (minAgeRestriction) {
+                if ((0, validators_1.AgeValidate)(minAgeRestriction))
+                    video.minAgeRestriction = minAgeRestriction;
+            }
+            video.title = title;
+            video.author = author;
+            res.status(201).send(video);
+            return;
         }
     }
-    // if(validator(req.body.title, 40)) {
-    // } else if(validator(req.body.author, 20)) {
-    // }
-    res.sendStatus(404);
+    const invalidTitle = (0, validators_1.errorMessageValidate)(title, 40, "Title");
+    const invalidAuthor = (0, validators_1.errorMessageValidate)(author, 20, "Author");
+    if (invalidTitle || invalidAuthor) {
+        res.status(400).send(invalidTitle || invalidAuthor);
+        return;
+    }
+    return res.sendStatus(404);
 });
 exports.videosRoute.delete("/:id", (req, res) => {
-    for (let i = 0; i < videos.length; i++) {
-        if (videos[i].id === +req.params.id) {
-            videos.splice(i, 1);
-            res.sendStatus(204);
-        }
+    if (videos.find((v) => v.id === +req.params.id)) {
+        videos.splice(videos.findIndex((v) => v.id === +req.params.id), 1);
+        return res.sendStatus(204);
     }
-    res.sendStatus(404);
+    return res.sendStatus(404);
 });

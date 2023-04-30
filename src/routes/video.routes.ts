@@ -1,9 +1,33 @@
 import { Request, Response, Router } from "express";
-import { validateField } from "../utils/validators";
+import {
+  AgeValidate,
+  errorMessageValidate,
+  FieldValidate,
+  includeResolutionValidate,
+} from "../utils/validators";
+import {
+  RequestWithParams,
+  RequestWithParamsAndBody,
+  RequestWithQuery,
+} from "../types";
+import { VideoURIParamsModel } from "../models/VideoURIParamsModel";
+import { VideoUpdateModel } from "../models/VideoUpdateModel";
+import { ErrorResponseModel } from "../models/ErrorResponseModel";
 
 export const videosRoute = Router({});
 
-let videos = [
+type VideosType = {
+  id: number;
+  title: string;
+  author: string;
+  canBeDownloaded: boolean;
+  minAgeRestriction: number;
+  createdAt: string;
+  publicationDate: string;
+  availableResolutions: string[];
+};
+
+let videos: VideosType[] = [
   {
     id: 0,
     title: "About my Life",
@@ -36,49 +60,87 @@ let videos = [
   },
 ];
 
-videosRoute.get("/", (req: Request, res: Response) => {
-  res.status(200).send(videos);
+videosRoute.get("/", (req: Request, res: Response<VideosType[]>) => {
+  return res.status(200).send(videos);
 });
 
-videosRoute.get("/:id", (req: Request, res: Response) => {
-  let video = null;
-  for (let i = 0; i < videos.length; i++) {
-    if (videos[i].id === +req.params.id) {
-      video = videos[i];
-    }
+videosRoute.get(
+  "/:id",
+  (req: RequestWithParams<VideoURIParamsModel>, res: Response) => {
+    const video = videos.find((v) => v.id === +req.params.id);
+    if (!video) return res.sendStatus(404);
+    return res.status(200).send(video);
   }
-  if (!video) return res.sendStatus(404);
-  res.status(200).send(video);
-});
+);
 
-videosRoute.put("/:id", (req: Request, res: Response) => {
-  let video = videos.find((v) => v.id === +req.params.id);
-  if (video) {
-    if (
-      validateField(req.body.title, 40) &&
-      validateField(req.body.author, 20)
-    ) {
-      (video.title = req.body.title),
-        (video.author = req.body.author),
+videosRoute.put(
+  "/:id",
+  (
+    req: RequestWithParamsAndBody<VideoURIParamsModel, VideoUpdateModel>,
+    res: Response<VideoUpdateModel | ErrorResponseModel>
+  ) => {
+    let video = videos.find((v) => v.id === +req.params.id);
+    const {
+      title,
+      author,
+      availableResolutions,
+      canBeDownloaded,
+      minAgeRestriction,
+      publicationDate,
+    } = req.body;
+    if (video) {
+      if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
+        if (publicationDate && typeof publicationDate === "string") {
+          const date = new Date(publicationDate);
+          video.publicationDate = date.toISOString();
+        } else if (
+          availableResolutions &&
+          includeResolutionValidate(availableResolutions)
+        ) {
+          video.availableResolutions = availableResolutions;
+        } else if (typeof canBeDownloaded === "boolean") {
+          video.canBeDownloaded = canBeDownloaded;
+        } else if (minAgeRestriction) {
+          if (AgeValidate(minAgeRestriction))
+            video.minAgeRestriction = minAgeRestriction;
+        }
+        video.title = title;
+        video.author = author;
         res.status(201).send(video);
+        return;
+      }
     }
-  }
-  // if(validator(req.body.title, 40)) {
 
-  // } else if(validator(req.body.author, 20)) {
-
-  // }
-  
-  res.sendStatus(404);
-});
-
-videosRoute.delete("/:id", (req: Request, res: Response) => {
-  for (let i = 0; i < videos.length; i++) {
-    if (videos[i].id === +req.params.id) {
-      videos.splice(i, 1);
-      res.sendStatus(204);
+    const invalidTitle = errorMessageValidate(
+      title,
+      40,
+      "Title"
+    ) as ErrorResponseModel;
+    const invalidAuthor = errorMessageValidate(
+      author,
+      20,
+      "Author"
+    ) as ErrorResponseModel;
+    if (invalidTitle || invalidAuthor) {
+      res.status(400).send(invalidTitle || invalidAuthor);
+      return;
     }
-  }
 
-  res.sendStatus(404);
-});
+    return res.sendStatus(404);
+  }
+);
+
+videosRoute.delete(
+  "/:id",
+  (req: RequestWithParams<VideoURIParamsModel>, res: Response) => {
+    if (videos.find((v) => v.id === +req.params.id)) {
+      videos.splice(
+        videos.findIndex((v) => v.id === +req.params.id),
+        1
+      );
+      return res.sendStatus(204);
+    }
+
+    return res.sendStatus(404);
+  }
+);
