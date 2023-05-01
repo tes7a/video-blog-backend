@@ -173,16 +173,15 @@ videosRoute.put(
           if (AgeValidate(minAgeRestriction))
             video.minAgeRestriction = minAgeRestriction;
         }
+        if (errorMessage) {
+          res.status(400).send(errorMessage);
+          return;
+        }
         video.title = title;
         video.author = author;
         res.status(204).send(video);
         return;
       }
-    }
-
-    if (errorMessage) {
-      res.status(400).send(errorMessage);
-      return;
     }
 
     return res.sendStatus(404);
