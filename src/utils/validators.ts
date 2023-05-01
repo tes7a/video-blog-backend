@@ -43,7 +43,7 @@ export const errorMessageValidate = (
   let errorMessages: any = {
     errorsMessages: [],
   };
-  if (typeof values.valueDate !== "string") {
+  if (values.valueDate && typeof values.valueDate !== "string") {
     errorMessages.errorsMessages.push(
       returnErrorMessage("Incorrect value", field.publicationDate!)
     );
