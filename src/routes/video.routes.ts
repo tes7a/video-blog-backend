@@ -84,6 +84,8 @@ videosRoute.post(
     const { title, author, availableResolutions } = req.body;
     let errorMessage;
     if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
+      const nextDay = new Date();
+      nextDay.setDate(new Date().getDate() + 1);
       const createdVideo = {
         id: +new Date(),
         author,
@@ -95,8 +97,8 @@ videosRoute.post(
             : null,
         canBeDownloaded: true,
         minAgeRestriction: null,
-        createdAt: new Date().toISOString(),
-        publicationDate: new Date().toISOString(),
+        createdAt: nextDay.toISOString(),
+        publicationDate: nextDay.toISOString(),
       };
       videos.push(createdVideo);
       return res.status(201).send(createdVideo);
