@@ -185,5 +185,5 @@ videosRoute.delete(
 // Reset the database for testing
 testingRoute.delete("/all-data", (req: Request, res: Response) => {
   videos = [];
-  return res.sendStatus(201);
+  return res.sendStatus(204);
 });
