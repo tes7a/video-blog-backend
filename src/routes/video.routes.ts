@@ -6,28 +6,27 @@ import {
   includeResolutionValidate,
 } from "../utils/validators";
 import {
+  RequestWithBody,
   RequestWithParams,
   RequestWithParamsAndBody,
-  RequestWithQuery,
 } from "../types";
 import { VideoURIParamsModel } from "../models/VideoURIParamsModel";
 import { VideoUpdateModel } from "../models/VideoUpdateModel";
 import { ErrorResponseModel } from "../models/ErrorResponseModel";
+import { VideoCreateModel } from "../models/VideoCreateModel";
 
-export const videosRoute = Router({});
-
-type VideosType = {
+export type VideosType = {
   id: number;
   title: string;
   author: string;
   canBeDownloaded: boolean;
-  minAgeRestriction: number;
+  minAgeRestriction: number | null;
   createdAt: string;
   publicationDate: string;
-  availableResolutions: string[];
+  availableResolutions: string[] | null;
 };
 
-let videos: VideosType[] = [
+export let videos: VideosType[] = [
   {
     id: 0,
     title: "About my Life",
@@ -60,6 +59,9 @@ let videos: VideosType[] = [
   },
 ];
 
+export const videosRoute = Router({});
+export const testingRoute = Router({});
+
 videosRoute.get("/", (req: Request, res: Response<VideosType[]>) => {
   return res.status(200).send(videos);
 });
@@ -70,6 +72,42 @@ videosRoute.get(
     const video = videos.find((v) => v.id === +req.params.id);
     if (!video) return res.sendStatus(404);
     return res.status(200).send(video);
+  }
+);
+
+videosRoute.post(
+  "/",
+  (
+    req: RequestWithBody<VideoCreateModel>,
+    res: Response<VideoUpdateModel | ErrorResponseModel>
+  ) => {
+    const { title, author, availableResolutions } = req.body;
+    let errorMessage;
+    if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
+      const createdVideo = {
+        id: +new Date(),
+        author,
+        title,
+        availableResolutions:
+          availableResolutions &&
+          includeResolutionValidate(availableResolutions)
+            ? availableResolutions
+            : null,
+        canBeDownloaded: true,
+        minAgeRestriction: null,
+        createdAt: new Date().toISOString(),
+        publicationDate: new Date().toISOString(),
+      };
+      videos.push(createdVideo);
+      return res.status(201).send(createdVideo);
+    }
+    errorMessage =
+      (errorMessageValidate(author, 20, "Author") as ErrorResponseModel) ||
+      (errorMessageValidate(title, 40, "Title") as ErrorResponseModel);
+
+    if (errorMessage) {
+      return res.status(400).send(errorMessage);
+    }
   }
 );
 
@@ -91,8 +129,7 @@ videosRoute.put(
     if (video) {
       if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
         if (publicationDate && typeof publicationDate === "string") {
-          const date = new Date(publicationDate);
-          video.publicationDate = date.toISOString();
+          video.publicationDate = new Date(publicationDate).toISOString();
         } else if (
           availableResolutions &&
           includeResolutionValidate(availableResolutions)
@@ -144,3 +181,12 @@ videosRoute.delete(
     return res.sendStatus(404);
   }
 );
+
+// Reset the database for testing
+testingRoute.delete("/all-date", (req: Request, res: Response) => {
+  if (videos) {
+    videos = [];
+    return res.sendStatus(201);
+  }
+  return res.sendStatus(404);
+});

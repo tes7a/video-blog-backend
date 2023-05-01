@@ -34,7 +34,7 @@ const errorMessageValidate = (value, length, field) => {
 };
 exports.errorMessageValidate = errorMessageValidate;
 const includeResolutionValidate = (value) => {
-    if (value.every((v) => resolution.includes(v))) {
+    if (Array.isArray(value) && value.every((v) => resolution.includes(v))) {
         return true;
     }
     return false;

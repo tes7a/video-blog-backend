@@ -10,6 +10,7 @@ const app = express();
 app.use((0, body_parser_1.default)({}));
 const port = 3000;
 app.use("/videos", video_routes_1.videosRoute);
+app.use("/testing", video_routes_1.testingRoute);
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });

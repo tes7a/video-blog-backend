@@ -1,8 +1,8 @@
-export type VideoUpdateModel = {
+export type VideoCreateModel = {
   /**
-   * Model update object video
+   * Video creation model
    */
-  id?: number;
+  id: number;
   title: string;
   author: string;
   canBeDownloaded?: boolean;

@@ -39,7 +39,7 @@ export const errorMessageValidate = (
 };
 
 export const includeResolutionValidate = (value: string[]) => {
-  if (value.every((v) => resolution.includes(v))) {
+  if (Array.isArray(value) && value.every((v) => resolution.includes(v))) {
     return true;
   }
   return false;

@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.videosRoute = void 0;
+exports.testingRoute = exports.videosRoute = exports.videos = void 0;
 const express_1 = require("express");
 const validators_1 = require("../utils/validators");
-exports.videosRoute = (0, express_1.Router)({});
-let videos = [
+exports.videos = [
     {
         id: 0,
         title: "About my Life",
@@ -36,23 +35,51 @@ let videos = [
         availableResolutions: ["P144"],
     },
 ];
+exports.videosRoute = (0, express_1.Router)({});
+exports.testingRoute = (0, express_1.Router)({});
 exports.videosRoute.get("/", (req, res) => {
-    return res.status(200).send(videos);
+    return res.status(200).send(exports.videos);
 });
 exports.videosRoute.get("/:id", (req, res) => {
-    const video = videos.find((v) => v.id === +req.params.id);
+    const video = exports.videos.find((v) => v.id === +req.params.id);
     if (!video)
         return res.sendStatus(404);
     return res.status(200).send(video);
 });
+exports.videosRoute.post("/", (req, res) => {
+    const { title, author, availableResolutions } = req.body;
+    let errorMessage;
+    if ((0, validators_1.FieldValidate)(title, 40) && (0, validators_1.FieldValidate)(author, 20)) {
+        const createdVideo = {
+            id: +new Date(),
+            author,
+            title,
+            availableResolutions: availableResolutions &&
+                (0, validators_1.includeResolutionValidate)(availableResolutions)
+                ? availableResolutions
+                : null,
+            canBeDownloaded: true,
+            minAgeRestriction: null,
+            createdAt: new Date().toISOString(),
+            publicationDate: new Date().toISOString(),
+        };
+        exports.videos.push(createdVideo);
+        return res.status(201).send(createdVideo);
+    }
+    errorMessage =
+        (0, validators_1.errorMessageValidate)(author, 20, "Author") ||
+            (0, validators_1.errorMessageValidate)(title, 40, "Title");
+    if (errorMessage) {
+        return res.status(400).send(errorMessage);
+    }
+});
 exports.videosRoute.put("/:id", (req, res) => {
-    let video = videos.find((v) => v.id === +req.params.id);
+    let video = exports.videos.find((v) => v.id === +req.params.id);
     const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate, } = req.body;
     if (video) {
         if ((0, validators_1.FieldValidate)(title, 40) && (0, validators_1.FieldValidate)(author, 20)) {
             if (publicationDate && typeof publicationDate === "string") {
-                const date = new Date(publicationDate);
-                video.publicationDate = date.toISOString();
+                video.publicationDate = new Date(publicationDate).toISOString();
             }
             else if (availableResolutions &&
                 (0, validators_1.includeResolutionValidate)(availableResolutions)) {
@@ -80,9 +107,17 @@ exports.videosRoute.put("/:id", (req, res) => {
     return res.sendStatus(404);
 });
 exports.videosRoute.delete("/:id", (req, res) => {
-    if (videos.find((v) => v.id === +req.params.id)) {
-        videos.splice(videos.findIndex((v) => v.id === +req.params.id), 1);
+    if (exports.videos.find((v) => v.id === +req.params.id)) {
+        exports.videos.splice(exports.videos.findIndex((v) => v.id === +req.params.id), 1);
         return res.sendStatus(204);
+    }
+    return res.sendStatus(404);
+});
+// Reset the database for testing
+exports.testingRoute.delete("/all-date", (req, res) => {
+    if (exports.videos) {
+        exports.videos = [];
+        return res.sendStatus(201);
     }
     return res.sendStatus(404);
 });
