@@ -99,7 +99,7 @@ videosRoute.post(
         availableResolutions: "availableResolutions",
       }
     );
-    if (errorMessage) {
+    if (errorMessage.errorsMessages.length > 0) {
       return res.status(400).send(errorMessage);
     }
     if (errorMessage.errorsMessages) {
