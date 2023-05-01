@@ -97,7 +97,7 @@ videosRoute.post(
             : null,
         canBeDownloaded: true,
         minAgeRestriction: null,
-        createdAt: nextDay.toISOString(),
+        createdAt: new Date().toISOString(),
         publicationDate: nextDay.toISOString(),
       };
       videos.push(createdVideo);
