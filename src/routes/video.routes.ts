@@ -111,7 +111,7 @@ videosRoute.post(
           includeResolutionValidate(availableResolutions)
             ? availableResolutions
             : null,
-        canBeDownloaded: true,
+        canBeDownloaded: false,
         minAgeRestriction: null,
         createdAt: new Date().toISOString(),
         publicationDate: nextDay.toISOString(),
