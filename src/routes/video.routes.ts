@@ -147,6 +147,8 @@ videosRoute.put(
         valueTitle: title,
         valueAuthor: author,
         valueResolution: availableResolutions,
+        valueAge: minAgeRestriction,
+        valueCanBeDownloaded: canBeDownloaded,
       },
       {
         lengthTitle: 40,
@@ -156,26 +158,28 @@ videosRoute.put(
         title: "title",
         author: "author",
         availableResolutions: "availableResolutions",
+        minAgeRestriction: "minAgeRestriction",
+        canBeDownloaded: "canBeDownloaded",
       }
     );
     if (video) {
-      if (errorMessage) {
+      if (errorMessage.errorsMessages.length > 0) {
         return res.status(400).send(errorMessage);
       }
-      if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
+      if (errorMessage.errorsMessages) {
         if (publicationDate && typeof publicationDate === "string") {
           video.publicationDate = new Date(publicationDate).toISOString();
-        } else if (
-          availableResolutions &&
-          includeResolutionValidate(availableResolutions)
-        ) {
-          video.availableResolutions = availableResolutions;
-        } else if (typeof canBeDownloaded === "boolean") {
-          video.canBeDownloaded = canBeDownloaded;
-        } else if (minAgeRestriction) {
-          if (AgeValidate(minAgeRestriction))
-            video.minAgeRestriction = minAgeRestriction;
         }
+        video.availableResolutions = availableResolutions
+          ? availableResolutions
+          : video.availableResolutions;
+        video.canBeDownloaded = canBeDownloaded
+          ? canBeDownloaded
+          : video.canBeDownloaded;
+        video.minAgeRestriction = minAgeRestriction
+          ? minAgeRestriction
+          : video.minAgeRestriction;
+
         video.title = title;
         video.author = author;
         res.status(204).send(video);

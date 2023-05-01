@@ -22,8 +22,9 @@ export const errorMessageValidate = (
   values: {
     valueTitle?: string;
     valueAuthor?: string;
-    valueAge?: string;
+    valueAge?: number | null;
     valueResolution?: string[] | null;
+    valueCanBeDownloaded?: boolean;
   },
   length: {
     lengthTitle?: number;
@@ -33,11 +34,26 @@ export const errorMessageValidate = (
     title?: string;
     author?: string;
     availableResolutions?: string;
+    minAgeRestriction?: string;
+    canBeDownloaded?: string;
   }
 ) => {
   let errorMessages: any = {
     errorsMessages: [],
   };
+  if (
+    values.valueCanBeDownloaded &&
+    typeof values.valueCanBeDownloaded !== "boolean"
+  ) {
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Incorrect value", field.canBeDownloaded!)
+    );
+  }
+  if (values.valueAge && !AgeValidate(values.valueAge)) {
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Incorrect value", field.minAgeRestriction!)
+    );
+  }
   if (field?.availableResolutions === "availableResolutions") {
     if (
       !Array.isArray(values.valueResolution) ||
@@ -48,10 +64,11 @@ export const errorMessageValidate = (
       );
     }
   }
-  if (
-    FieldValidate(values.valueAuthor!, length.lengthTitle!) ||
-    FieldValidate(values.valueTitle!, length.lengthTitle!)
-  )
+  if (!FieldValidate(values.valueTitle!, length.lengthTitle!))
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Incorrect value", field.title!)
+    );
+  if (!FieldValidate(values.valueAuthor!, length.lengthAuthor!))
     errorMessages.errorsMessages.push(
       returnErrorMessage("Incorrect value", field.author!)
     );
@@ -66,9 +83,7 @@ export const includeResolutionValidate = (value: string[]) => {
 };
 
 export const AgeValidate = (value: number) => {
-  if (value > 0 && typeof value === "number") {
-    if (value <= 18) return true;
-  }
+  if (value > 0 && value <= 18 && typeof value === "number") return true;
   return false;
 };
 
