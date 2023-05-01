@@ -61,15 +61,13 @@ export const errorMessageValidate = (
       returnErrorMessage("Incorrect value", field.minAgeRestriction!)
     );
   }
-  if (field?.availableResolutions === "availableResolutions") {
-    if (
-      !Array.isArray(values.valueResolution) ||
-      !values.valueResolution.every((v) => resolution.includes(v))
-    ) {
-      errorMessages.errorsMessages.push(
-        returnErrorMessage("Incorrect value", field.availableResolutions)
-      );
-    }
+  if (
+    !Array.isArray(values.valueResolution) ||
+    !values.valueResolution.every((v) => resolution.includes(v))
+  ) {
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Incorrect value", field.availableResolutions!)
+    );
   }
   if (!FieldValidate(values.valueTitle!, length.lengthTitle!))
     errorMessages.errorsMessages.push(

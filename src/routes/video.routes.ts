@@ -99,18 +99,19 @@ videosRoute.post(
         availableResolutions: "availableResolutions",
       }
     );
-    if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
+    if (errorMessage) {
+      return res.status(400).send(errorMessage);
+    }
+    if (errorMessage.errorsMessages) {
       const nextDay = new Date();
       nextDay.setDate(new Date().getDate() + 1);
       const createdVideo = {
         id: +new Date(),
         author,
         title,
-        availableResolutions:
-          availableResolutions &&
-          includeResolutionValidate(availableResolutions)
-            ? availableResolutions
-            : null,
+        availableResolutions: availableResolutions
+          ? availableResolutions
+          : null,
         canBeDownloaded: false,
         minAgeRestriction: null,
         createdAt: new Date().toISOString(),
@@ -118,10 +119,6 @@ videosRoute.post(
       };
       videos.push(createdVideo);
       return res.status(201).send(createdVideo);
-    }
-
-    if (errorMessage) {
-      return res.status(400).send(errorMessage);
     }
   }
 );
