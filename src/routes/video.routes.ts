@@ -149,6 +149,7 @@ videosRoute.put(
         valueResolution: availableResolutions,
         valueAge: minAgeRestriction,
         valueCanBeDownloaded: canBeDownloaded,
+        valueDate: publicationDate,
       },
       {
         lengthTitle: 40,
@@ -160,6 +161,7 @@ videosRoute.put(
         availableResolutions: "availableResolutions",
         minAgeRestriction: "minAgeRestriction",
         canBeDownloaded: "canBeDownloaded",
+        publicationDate: "publicationDate",
       }
     );
     if (video) {
@@ -167,9 +169,9 @@ videosRoute.put(
         return res.status(400).send(errorMessage);
       }
       if (errorMessage.errorsMessages) {
-        if (publicationDate && typeof publicationDate === "string") {
-          video.publicationDate = new Date(publicationDate).toISOString();
-        }
+        video.publicationDate = publicationDate
+          ? new Date(publicationDate).toISOString()
+          : video.publicationDate;
         video.availableResolutions = availableResolutions
           ? availableResolutions
           : video.availableResolutions;

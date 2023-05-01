@@ -25,6 +25,7 @@ export const errorMessageValidate = (
     valueAge?: number | null;
     valueResolution?: string[] | null;
     valueCanBeDownloaded?: boolean;
+    valueDate?: string;
   },
   length: {
     lengthTitle?: number;
@@ -36,11 +37,17 @@ export const errorMessageValidate = (
     availableResolutions?: string;
     minAgeRestriction?: string;
     canBeDownloaded?: string;
+    publicationDate?: string;
   }
 ) => {
   let errorMessages: any = {
     errorsMessages: [],
   };
+  if (typeof values.valueDate !== "string") {
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Incorrect value", field.publicationDate!)
+    );
+  }
   if (
     values.valueCanBeDownloaded &&
     typeof values.valueCanBeDownloaded !== "boolean"
