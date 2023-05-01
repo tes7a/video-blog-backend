@@ -7,7 +7,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const video_routes_1 = require("./routes/video.routes");
 const express = require("express");
 const app = express();
-app.use((0, body_parser_1.default)({}));
+app.use(body_parser_1.default.json());
 const port = 3000;
 app.use("/videos", video_routes_1.videosRoute);
 app.use("/testing", video_routes_1.testingRoute);

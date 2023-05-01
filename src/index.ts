@@ -4,7 +4,7 @@ import { testingRoute, videosRoute } from "./routes/video.routes";
 
 const express = require("express");
 const app = express();
-app.use(bodyParser({}));
+app.use(bodyParser.json());
 const port = 3000;
 
 app.use("/videos", videosRoute);
