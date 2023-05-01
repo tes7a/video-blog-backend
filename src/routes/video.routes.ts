@@ -1,10 +1,5 @@
 import { Request, Response, Router } from "express";
-import {
-  AgeValidate,
-  errorMessageValidate,
-  FieldValidate,
-  includeResolutionValidate,
-} from "../utils/validators";
+import { errorMessageValidate } from "../utils/validators";
 import {
   RequestWithBody,
   RequestWithParams,
@@ -102,24 +97,20 @@ videosRoute.post(
     if (errorMessage.errorsMessages.length > 0) {
       return res.status(400).send(errorMessage);
     }
-    if (errorMessage.errorsMessages) {
-      const nextDay = new Date();
-      nextDay.setDate(new Date().getDate() + 1);
-      const createdVideo = {
-        id: +new Date(),
-        author,
-        title,
-        availableResolutions: availableResolutions
-          ? availableResolutions
-          : null,
-        canBeDownloaded: false,
-        minAgeRestriction: null,
-        createdAt: new Date().toISOString(),
-        publicationDate: nextDay.toISOString(),
-      };
-      videos.push(createdVideo);
-      return res.status(201).send(createdVideo);
-    }
+    const nextDay = new Date();
+    nextDay.setDate(new Date().getDate() + 1);
+    const createdVideo = {
+      id: +new Date(),
+      author,
+      title,
+      availableResolutions: availableResolutions ? availableResolutions : null,
+      canBeDownloaded: false,
+      minAgeRestriction: null,
+      createdAt: new Date().toISOString(),
+      publicationDate: nextDay.toISOString(),
+    };
+    videos.push(createdVideo);
+    return res.status(201).send(createdVideo);
   }
 );
 
@@ -165,25 +156,23 @@ videosRoute.put(
       if (errorMessage.errorsMessages.length > 0) {
         return res.status(400).send(errorMessage);
       }
-      if (errorMessage.errorsMessages) {
-        video.publicationDate = publicationDate
-          ? new Date(publicationDate).toISOString()
-          : video.publicationDate;
-        video.availableResolutions = availableResolutions
-          ? availableResolutions
-          : video.availableResolutions;
-        video.canBeDownloaded = canBeDownloaded
-          ? canBeDownloaded
-          : video.canBeDownloaded;
-        video.minAgeRestriction = minAgeRestriction
-          ? minAgeRestriction
-          : video.minAgeRestriction;
+      video.publicationDate = publicationDate
+        ? new Date(publicationDate).toISOString()
+        : video.publicationDate;
+      video.availableResolutions = availableResolutions
+        ? availableResolutions
+        : video.availableResolutions;
+      video.canBeDownloaded = canBeDownloaded
+        ? canBeDownloaded
+        : video.canBeDownloaded;
+      video.minAgeRestriction = minAgeRestriction
+        ? minAgeRestriction
+        : video.minAgeRestriction;
 
-        video.title = title;
-        video.author = author;
-        res.status(204).send(video);
-        return;
-      }
+      video.title = title;
+      video.author = author;
+      res.status(204).send(video);
+      return;
     }
 
     return res.sendStatus(404);

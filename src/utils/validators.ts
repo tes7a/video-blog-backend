@@ -49,7 +49,7 @@ export const errorMessageValidate = (
     );
   }
   if (
-    values.valueCanBeDownloaded &&
+    values.valueCanBeDownloaded !== undefined &&
     typeof values.valueCanBeDownloaded !== "boolean"
   ) {
     errorMessages.errorsMessages.push(
