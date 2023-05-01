@@ -48,36 +48,22 @@ export const errorMessageValidate = (
       );
     }
   }
-  if (typeof values.valueAuthor !== "string")
+  if (
+    typeof values.valueAuthor !== "string" ||
+    !values.valueTitle ||
+    values.valueTitle.length > length.lengthTitle!
+  )
     errorMessages.errorsMessages.push(
       returnErrorMessage("Incorrect value", field.author!)
     );
-  if (typeof values.valueTitle !== "string") {
+  if (
+    typeof values.valueTitle !== "string" ||
+    !values.valueAuthor ||
+    values.valueAuthor.length > length.lengthAuthor!
+  ) {
     errorMessages.errorsMessages.push(
       returnErrorMessage("Incorrect value", field.title!)
     );
-  }
-  if (!values.valueTitle)
-    errorMessages.errorsMessages.push(
-      returnErrorMessage("Field should not be empty", field.title!)
-    );
-  if (!values.valueAuthor)
-    errorMessages.errorsMessages.push(
-      returnErrorMessage("Field should not be empty", field.author!)
-    );
-  if (values.valueAuthor) {
-    if (values.valueAuthor.length > length.lengthAuthor!) {
-      errorMessages.errorsMessages.push(
-        returnErrorMessage("Too many characters", field.author!)
-      );
-    }
-  }
-  if (values.valueTitle) {
-    if (values.valueTitle.length > length.lengthTitle!) {
-      errorMessages.errorsMessages.push(
-        returnErrorMessage("Too many characters", field.title!)
-      );
-    }
   }
   return errorMessages;
 };
