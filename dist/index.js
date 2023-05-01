@@ -10,7 +10,11 @@ const app = express();
 app.use(body_parser_1.default.json());
 const port = 3000;
 app.use("/videos", video_routes_1.videosRoute);
-app.use("/testing", video_routes_1.testingRoute);
+app.delete("testing/all-data", (req, res) => {
+    //@ts-ignore
+    video_routes_1.videos = [];
+    return res.sendStatus(201);
+});
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });

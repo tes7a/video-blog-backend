@@ -114,7 +114,7 @@ exports.videosRoute.delete("/:id", (req, res) => {
     return res.sendStatus(404);
 });
 // Reset the database for testing
-exports.testingRoute.delete("/all-date", (req, res) => {
+exports.testingRoute.delete("/all-data", (req, res) => {
     exports.videos = [];
     return res.sendStatus(201);
 });

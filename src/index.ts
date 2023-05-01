@@ -1,5 +1,4 @@
 import bodyParser from "body-parser";
-import { Request, Response } from "express";
 import { testingRoute, videosRoute } from "./routes/video.routes";
 
 const express = require("express");
