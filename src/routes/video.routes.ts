@@ -153,12 +153,12 @@ videosRoute.put(
     const invalidTitle = errorMessageValidate(
       title,
       40,
-      "Title"
+      "title"
     ) as ErrorResponseModel;
     const invalidAuthor = errorMessageValidate(
       author,
       20,
-      "Author"
+      "author"
     ) as ErrorResponseModel;
     if (invalidTitle || invalidAuthor) {
       res.status(400).send(invalidTitle || invalidAuthor);
