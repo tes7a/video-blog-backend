@@ -143,7 +143,7 @@ videosRoute.put(
         }
         video.title = title;
         video.author = author;
-        res.status(201).send(video);
+        res.status(204).send(video);
         return;
       }
     }
