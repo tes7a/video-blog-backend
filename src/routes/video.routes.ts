@@ -104,8 +104,8 @@ videosRoute.post(
       return res.status(201).send(createdVideo);
     }
     errorMessage =
-      (errorMessageValidate(author, 20, "Author") as ErrorResponseModel) ||
-      (errorMessageValidate(title, 40, "Title") as ErrorResponseModel);
+      (errorMessageValidate(author, 20, "author") as ErrorResponseModel) ||
+      (errorMessageValidate(title, 40, "title") as ErrorResponseModel);
 
     if (errorMessage) {
       return res.status(400).send(errorMessage);
