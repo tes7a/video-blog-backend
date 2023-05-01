@@ -159,6 +159,10 @@ videosRoute.put(
       }
     );
     if (video) {
+      if (errorMessage) {
+        res.status(400).send(errorMessage);
+        return;
+      }
       if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
         if (publicationDate && typeof publicationDate === "string") {
           video.publicationDate = new Date(publicationDate).toISOString();
@@ -172,10 +176,6 @@ videosRoute.put(
         } else if (minAgeRestriction) {
           if (AgeValidate(minAgeRestriction))
             video.minAgeRestriction = minAgeRestriction;
-        }
-        if (errorMessage) {
-          res.status(400).send(errorMessage);
-          return;
         }
         video.title = title;
         video.author = author;
