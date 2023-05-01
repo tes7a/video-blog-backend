@@ -160,8 +160,7 @@ videosRoute.put(
     );
     if (video) {
       if (errorMessage) {
-        res.status(400).send(errorMessage);
-        return;
+        return res.status(400).send(errorMessage);
       }
       if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
         if (publicationDate && typeof publicationDate === "string") {
