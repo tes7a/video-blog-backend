@@ -184,9 +184,6 @@ videosRoute.delete(
 
 // Reset the database for testing
 testingRoute.delete("/all-date", (req: Request, res: Response) => {
-  if (videos) {
-    videos = [];
-    return res.sendStatus(201);
-  }
-  return res.sendStatus(404);
+  videos = [];
+  return res.sendStatus(201);
 });
