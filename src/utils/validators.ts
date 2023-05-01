@@ -49,22 +49,12 @@ export const errorMessageValidate = (
     }
   }
   if (
-    typeof values.valueAuthor !== "string" ||
-    !values.valueTitle ||
-    values.valueTitle.length > length.lengthTitle!
+    FieldValidate(values.valueAuthor!, length.lengthTitle!) ||
+    FieldValidate(values.valueTitle!, length.lengthTitle!)
   )
     errorMessages.errorsMessages.push(
       returnErrorMessage("Incorrect value", field.author!)
     );
-  if (
-    typeof values.valueTitle !== "string" ||
-    !values.valueAuthor ||
-    values.valueAuthor.length > length.lengthAuthor!
-  ) {
-    errorMessages.errorsMessages.push(
-      returnErrorMessage("Incorrect value", field.title!)
-    );
-  }
   return errorMessages;
 };
 
