@@ -83,6 +83,22 @@ videosRoute.post(
   ) => {
     const { title, author, availableResolutions } = req.body;
     let errorMessage;
+    errorMessage = errorMessageValidate(
+      {
+        valueTitle: title,
+        valueAuthor: author,
+        valueResolution: availableResolutions,
+      },
+      {
+        lengthTitle: 40,
+        lengthAuthor: 20,
+      },
+      {
+        title: "title",
+        author: "author",
+        availableResolutions: "availableResolutions",
+      }
+    );
     if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
       const nextDay = new Date();
       nextDay.setDate(new Date().getDate() + 1);
@@ -103,9 +119,6 @@ videosRoute.post(
       videos.push(createdVideo);
       return res.status(201).send(createdVideo);
     }
-    errorMessage =
-      (errorMessageValidate(author, 20, "author") as ErrorResponseModel) ||
-      (errorMessageValidate(title, 40, "title") as ErrorResponseModel);
 
     if (errorMessage) {
       return res.status(400).send(errorMessage);
@@ -119,7 +132,6 @@ videosRoute.put(
     req: RequestWithParamsAndBody<VideoURIParamsModel, VideoUpdateModel>,
     res: Response<VideoUpdateModel | ErrorResponseModel>
   ) => {
-    let video = videos.find((v) => v.id === +req.params.id);
     const {
       title,
       author,
@@ -128,6 +140,24 @@ videosRoute.put(
       minAgeRestriction,
       publicationDate,
     } = req.body;
+    let video = videos.find((v) => v.id === +req.params.id);
+    let errorMessage;
+    errorMessage = errorMessageValidate(
+      {
+        valueTitle: title,
+        valueAuthor: author,
+        valueResolution: availableResolutions,
+      },
+      {
+        lengthTitle: 40,
+        lengthAuthor: 20,
+      },
+      {
+        title: "title",
+        author: "author",
+        availableResolutions: "availableResolutions",
+      }
+    );
     if (video) {
       if (FieldValidate(title, 40) && FieldValidate(author, 20)) {
         if (publicationDate && typeof publicationDate === "string") {
@@ -150,18 +180,8 @@ videosRoute.put(
       }
     }
 
-    const invalidTitle = errorMessageValidate(
-      title,
-      40,
-      "title"
-    ) as ErrorResponseModel;
-    const invalidAuthor = errorMessageValidate(
-      author,
-      20,
-      "author"
-    ) as ErrorResponseModel;
-    if (invalidTitle || invalidAuthor) {
-      res.status(400).send(invalidTitle || invalidAuthor);
+    if (errorMessage) {
+      res.status(400).send(errorMessage);
       return;
     }
 

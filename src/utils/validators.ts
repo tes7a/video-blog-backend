@@ -1,14 +1,9 @@
-import { log } from "console";
 import { ErrorResponseModel } from "../models/ErrorResponseModel";
 
 const returnErrorMessage = (message: string, field: string) => {
   return {
-    errorsMessages: [
-      {
-        message,
-        field,
-      },
-    ],
+    message,
+    field,
   };
 };
 
@@ -24,18 +19,67 @@ const resolution = [
 ];
 
 export const errorMessageValidate = (
-  value: string,
-  length: number,
-  field: string
+  values: {
+    valueTitle?: string;
+    valueAuthor?: string;
+    valueAge?: string;
+    valueResolution?: string[] | null;
+  },
+  length: {
+    lengthTitle?: number;
+    lengthAuthor?: number;
+  },
+  field: {
+    title?: string;
+    author?: string;
+    availableResolutions?: string;
+  }
 ) => {
-  if (typeof value !== "string")
-    return returnErrorMessage("Incorrect value", field);
-  if (!value) return returnErrorMessage("Field should not be empty", field);
-  if (value) {
-    if (value.length > length) {
-      return returnErrorMessage("Too many characters", field);
+  let errorMessages: any = {
+    errorsMessages: [],
+  };
+  if (field?.availableResolutions === "availableResolutions") {
+    if (
+      !Array.isArray(values.valueResolution) ||
+      !values.valueResolution.every((v) => resolution.includes(v))
+    ) {
+      errorMessages.errorsMessages.push(
+        returnErrorMessage("Incorrect value", field.availableResolutions)
+      );
     }
   }
+  if (typeof values.valueAuthor !== "string")
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Incorrect value", field.author!)
+    );
+  if (typeof values.valueTitle !== "string") {
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Incorrect value", field.title!)
+    );
+  }
+  if (!values.valueTitle)
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Field should not be empty", field.title!)
+    );
+  if (!values.valueAuthor)
+    errorMessages.errorsMessages.push(
+      returnErrorMessage("Field should not be empty", field.author!)
+    );
+  if (values.valueAuthor) {
+    if (values.valueAuthor.length > length.lengthAuthor!) {
+      errorMessages.errorsMessages.push(
+        returnErrorMessage("Too many characters", field.author!)
+      );
+    }
+  }
+  if (values.valueTitle) {
+    if (values.valueTitle.length > length.lengthTitle!) {
+      errorMessages.errorsMessages.push(
+        returnErrorMessage("Too many characters", field.title!)
+      );
+    }
+  }
+  return errorMessages;
 };
 
 export const includeResolutionValidate = (value: string[]) => {
