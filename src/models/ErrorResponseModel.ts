@@ -1,8 +1,10 @@
 export type ErrorResponseModel = {
-  errorsMessages: [
-    {
-      message?: string;
-      field?: string;
-    }
-  ];
+  errorsMessages:
+    | [
+        {
+          message?: string | undefined;
+          field?: string | undefined;
+        }
+      ]
+    | [];
 };

@@ -2,13 +2,15 @@ import bodyParser from "body-parser";
 import { testingRoute, videosRoute } from "./routes/video.routes";
 
 const express = require("express");
-const app = express();
+export const app = express();
 app.use(bodyParser.json());
-const port = 3000;
+const port = process.env.port || 3000;
 
 app.use("/videos", videosRoute);
 app.use("/testing", testingRoute);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
+  });
+}

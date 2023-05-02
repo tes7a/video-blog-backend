@@ -7,7 +7,6 @@ import {
 } from "../types";
 import { VideoURIParamsModel } from "../models/VideoURIParamsModel";
 import { VideoUpdateModel } from "../models/VideoUpdateModel";
-import { ErrorResponseModel } from "../models/ErrorResponseModel";
 import { VideoCreateModel } from "../models/VideoCreateModel";
 
 export type VideosType = {
@@ -74,7 +73,7 @@ videosRoute.post(
   "/",
   (
     req: RequestWithBody<VideoCreateModel>,
-    res: Response<VideoUpdateModel | ErrorResponseModel>
+    res: Response<VideoUpdateModel | any>
   ) => {
     const { title, author, availableResolutions } = req.body;
     let errorMessage;
@@ -94,7 +93,7 @@ videosRoute.post(
         availableResolutions: "availableResolutions",
       }
     );
-    if (errorMessage.errorsMessages.length > 0) {
+    if (errorMessage.errorsMessages!.length > 0) {
       return res.status(400).send(errorMessage);
     }
     const nextDay = new Date();
@@ -118,7 +117,7 @@ videosRoute.put(
   "/:id",
   (
     req: RequestWithParamsAndBody<VideoURIParamsModel, VideoUpdateModel>,
-    res: Response<VideoUpdateModel | ErrorResponseModel>
+    res: Response<VideoUpdateModel | any>
   ) => {
     const {
       title,
@@ -152,10 +151,10 @@ videosRoute.put(
         publicationDate: "publicationDate",
       }
     );
+    if (errorMessage.errorsMessages.length > 0) {
+      return res.status(400).send(errorMessage);
+    }
     if (video) {
-      if (errorMessage.errorsMessages.length > 0) {
-        return res.status(400).send(errorMessage);
-      }
       video.publicationDate = publicationDate
         ? new Date(publicationDate).toISOString()
         : video.publicationDate;

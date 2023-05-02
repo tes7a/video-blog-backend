@@ -40,11 +40,9 @@ export const errorMessageValidate = (
     publicationDate?: string;
   }
 ) => {
-  let errorMessages: any = {
-    errorsMessages: [],
-  };
+  let errorsMessages: any = [];
   if (values.valueDate && typeof values.valueDate !== "string") {
-    errorMessages.errorsMessages.push(
+    errorsMessages.push(
       returnErrorMessage("Incorrect value", field.publicationDate!)
     );
   }
@@ -52,32 +50,35 @@ export const errorMessageValidate = (
     values.valueCanBeDownloaded !== undefined &&
     typeof values.valueCanBeDownloaded !== "boolean"
   ) {
-    errorMessages.errorsMessages.push(
+    errorsMessages?.push(
       returnErrorMessage("Incorrect value", field.canBeDownloaded!)
     );
   }
   if (values.valueAge && !AgeValidate(values.valueAge)) {
-    errorMessages.errorsMessages.push(
+    errorsMessages?.push(
       returnErrorMessage("Incorrect value", field.minAgeRestriction!)
     );
   }
   if (
-    !Array.isArray(values.valueResolution) ||
+    values.valueResolution &&
     !values.valueResolution.every((v) => resolution.includes(v))
   ) {
-    errorMessages.errorsMessages.push(
+    errorsMessages?.push(
+      returnErrorMessage("Incorrect value", field.availableResolutions!)
+    );
+  }
+  if (values.valueResolution && !Array.isArray(values.valueResolution)) {
+    errorsMessages?.push(
       returnErrorMessage("Incorrect value", field.availableResolutions!)
     );
   }
   if (!FieldValidate(values.valueTitle!, length.lengthTitle!))
-    errorMessages.errorsMessages.push(
-      returnErrorMessage("Incorrect value", field.title!)
-    );
+    errorsMessages?.push(returnErrorMessage("Incorrect value", field.title!));
   if (!FieldValidate(values.valueAuthor!, length.lengthAuthor!))
-    errorMessages.errorsMessages.push(
-      returnErrorMessage("Incorrect value", field.author!)
-    );
-  return errorMessages;
+    errorsMessages?.push(returnErrorMessage("Incorrect value", field.author!));
+  return {
+    errorsMessages,
+  };
 };
 
 export const includeResolutionValidate = (value: string[]) => {
