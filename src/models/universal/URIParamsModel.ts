@@ -1,4 +1,4 @@
-export type VideoURIParamsModel = {
+export type URIParamsModel = {
   /**
    * id for existing videos
    */

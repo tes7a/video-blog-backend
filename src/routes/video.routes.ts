@@ -5,10 +5,10 @@ import {
   RequestWithParams,
   RequestWithParamsAndBody,
 } from "../types";
-import { VideoURIParamsModel } from "../models/VideoURIParamsModel";
-import { VideoUpdateModel } from "../models/VideoUpdateModel";
-import { VideoCreateModel } from "../models/VideoCreateModel";
 import { VideosType, videos } from "../db/videos.db";
+import { VideoCreateModel } from "../models/videos-models/VideoCreateModel";
+import { VideoUpdateModel } from "../models/videos-models/VideoUpdateModel";
+import { URIParamsModel } from "../models/universal/URIParamsModel";
 
 export const videosRoute = Router({});
 
@@ -18,7 +18,7 @@ videosRoute.get("/", (req: Request, res: Response<VideosType[]>) => {
 
 videosRoute.get(
   "/:id",
-  (req: RequestWithParams<VideoURIParamsModel>, res: Response) => {
+  (req: RequestWithParams<URIParamsModel>, res: Response) => {
     const video = videos.find((v) => v.id === +req.params.id);
     if (!video) return res.sendStatus(404);
     return res.status(200).send(video);
@@ -72,7 +72,7 @@ videosRoute.post(
 videosRoute.put(
   "/:id",
   (
-    req: RequestWithParamsAndBody<VideoURIParamsModel, VideoUpdateModel>,
+    req: RequestWithParamsAndBody<URIParamsModel, VideoUpdateModel>,
     res: Response<VideoUpdateModel | any>
   ) => {
     const {
@@ -136,7 +136,7 @@ videosRoute.put(
 
 videosRoute.delete(
   "/:id",
-  (req: RequestWithParams<VideoURIParamsModel>, res: Response) => {
+  (req: RequestWithParams<URIParamsModel>, res: Response) => {
     if (videos.find((v) => v.id === +req.params.id)) {
       videos.splice(
         videos.findIndex((v) => v.id === +req.params.id),
@@ -148,5 +148,3 @@ videosRoute.delete(
     return res.sendStatus(404);
   }
 );
-
-
