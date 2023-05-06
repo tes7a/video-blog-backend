@@ -2,7 +2,7 @@ import { body } from "express-validator";
 import { inputValidationMiddleware } from "./input-validation.middleware";
 
 const titleMiddleware = body("title")
-  .notEmpty()
+  .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
   .withMessage("Should be a string")
@@ -10,7 +10,7 @@ const titleMiddleware = body("title")
   .withMessage("Max length 15 charters");
 
 const shortDescriptionMiddleware = body("shortDescription")
-  .notEmpty()
+  .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
   .withMessage("Should be a string")
@@ -18,7 +18,7 @@ const shortDescriptionMiddleware = body("shortDescription")
   .withMessage("Max length 15 charters");
 
 const contentMiddleware = body("content")
-  .notEmpty()
+  .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
   .withMessage("Should be a string")
@@ -26,10 +26,12 @@ const contentMiddleware = body("content")
   .withMessage("Max length 15 charters");
 
 const blogIdMiddleware = body("blogId")
-  .notEmpty()
+  .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
-  .withMessage("Should be a string");
+  .withMessage("Should be a string")
+  .isNumeric({ no_symbols: true })
+  .withMessage("Should be number");
 
 export const createPostsValidationMiddleware = [
   titleMiddleware,

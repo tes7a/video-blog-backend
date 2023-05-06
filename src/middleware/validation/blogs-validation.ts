@@ -2,7 +2,7 @@ import { body } from "express-validator";
 import { inputValidationMiddleware } from "./input-validation.middleware";
 
 const nameMiddleware = body("name")
-  .notEmpty()
+  .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
   .withMessage("Should be a string")
@@ -10,7 +10,7 @@ const nameMiddleware = body("name")
   .withMessage("Max length 15 charters");
 
 const descriptionMiddleware = body("description")
-  .notEmpty()
+  .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
   .withMessage("Should be a string")
@@ -18,7 +18,7 @@ const descriptionMiddleware = body("description")
   .withMessage("Max length 500 charters");
 
 const websiteUrlMiddleware = body("websiteUrl")
-  .notEmpty()
+  .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
   .withMessage("Should be a string")
