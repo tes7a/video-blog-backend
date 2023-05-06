@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "..";
-import { VideoUpdateModel } from "../models/VideoUpdateModel";
+import { VideoUpdateModel } from "../models/videos-models/VideoUpdateModel";
 
 describe("/videos", () => {
   let newVideo: VideoUpdateModel | null = null;
