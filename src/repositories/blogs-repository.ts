@@ -19,6 +19,21 @@ export const blogsRepository = {
     }
     return false;
   },
+  updateBlog(
+    id: argumentType,
+    description: argumentType,
+    name: argumentType,
+    websiteUrl: argumentType
+  ) {
+    let blog = blogs.find((b) => b.id === id);
+    if (blog) {
+      blog.description = description ? description : blog.description;
+      blog.name = name ? name : blog.name;
+      blog.websiteUrl = websiteUrl ? websiteUrl : blog.websiteUrl;
+      return blog;
+    }
+    return false;
+  },
   createdBlog(
     name: argumentType,
     description: argumentType,
