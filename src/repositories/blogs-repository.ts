@@ -1,51 +1,47 @@
-import { BlogType } from "../db/blogs.db";
-import { blogs } from "../db/blogs.db";
+import { blogsDb } from "../db/db";
+import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
 
 type argumentType = string | undefined;
 
 export const blogsRepository = {
-  getBlogById(id: argumentType): BlogType[] | BlogType | undefined {
-    if (id) return blogs.find((b) => b.id === id);
+  async getAllBlogs(): Promise<BlogDbModel[]> {
+    return await blogsDb.find({}).toArray();
+  },
+  async getBlogById(id: argumentType): Promise<BlogDbModel> {
+    return (await blogsDb.find({ id: { $regex: id } }).toArray())[0];
+  },
+  async deleteById(id: argumentType): Promise<boolean> {
+    const { deletedCount } = await blogsDb.deleteOne({ id: id });
 
-    return blogs;
+    return deletedCount === 1;
   },
-  deleteById(id: argumentType): boolean {
-    if (id && blogs.find((v) => v.id === id)) {
-      blogs.splice(
-        blogs.findIndex((v) => v.id === id),
-        1
-      );
-      return true;
-    }
-    return false;
-  },
-  updateBlog(
-    id: argumentType,
-    description: argumentType,
-    name: argumentType,
-    websiteUrl: argumentType
-  ) {
-    let blog = blogs.find((b) => b.id === id);
-    if (blog) {
-      blog.description = description ? description : blog.description;
-      blog.name = name ? name : blog.name;
-      blog.websiteUrl = websiteUrl ? websiteUrl : blog.websiteUrl;
-      return blog;
-    }
-    return false;
-  },
-  createdBlog(
+  async createdBlog(
     name: argumentType,
     description: argumentType,
     websiteUrl: argumentType
-  ) {
+  ): Promise<BlogDbModel> {
     const newBlog = {
       id: new Date().getMilliseconds().toString(),
       name: name!,
       description: description!,
       websiteUrl: websiteUrl!,
+      createdAt: new Date().toISOString(),
+      isMembership: false,
     };
-    blogs.push(newBlog);
+    await blogsDb.insertOne(newBlog);
     return newBlog;
+  },
+  async updateBlog(
+    id: argumentType,
+    description: argumentType,
+    name: argumentType,
+    websiteUrl: argumentType
+  ): Promise<boolean> {
+    const { matchedCount } = await blogsDb.updateOne(
+      { id: id },
+      { $set: { description, name, websiteUrl } }
+    );
+
+    return matchedCount === 1;
   },
 };

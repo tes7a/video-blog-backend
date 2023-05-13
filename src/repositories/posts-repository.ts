@@ -1,32 +1,29 @@
+import { postsDb } from "../db/db";
 import { posts } from "../db/posts.db";
 import { PostType } from "../db/posts.db";
+import { PostDbModel } from "../models/posts/PostDbModel";
 
 type argumentType = string | undefined;
 
 export const postsRepository = {
-  getBlogById(id: argumentType): PostType[] | PostType | undefined {
-    if (id) return posts.find((p) => p.id === id);
-
-    return posts;
+  async getAllPosts(): Promise<PostDbModel[]> {
+    return await postsDb.find({}).toArray();
+  },
+  async getBlogById(id: argumentType): Promise<PostDbModel> {
+    return (await postsDb.find({ id: { $regex: id } }).toArray())[0];
   },
 
-  deleteById(id: argumentType): boolean {
-    if (id && posts.find((p) => p.id === id)) {
-      posts.splice(
-        posts.findIndex((p) => p.id === id),
-        1
-      );
-      return true;
-    }
-    return false;
+  async deleteById(id: argumentType): Promise<boolean> {
+    const { deletedCount } = await postsDb.deleteOne({ id: id });
+    return deletedCount === 1;
   },
 
-  createPost(
+  async createPost(
     title: argumentType,
     shortDescription: argumentType,
     content: argumentType,
     blogId: argumentType
-  ) {
+  ): Promise<PostDbModel> {
     const newPost = {
       id: new Date().getMilliseconds().toString(),
       title: title!,
@@ -34,26 +31,24 @@ export const postsRepository = {
       content: content!,
       blogId: blogId!,
       blogName: `Blog Name #`,
+      createdAt: new Date().toISOString(),
     };
-    posts.push(newPost);
+    await postsDb.insertOne(newPost);
+
     return newPost;
   },
 
-  updatePost(
+  async updatePost(
     id: argumentType,
     title: argumentType,
     shortDescription: argumentType,
     content: argumentType,
     blogId: argumentType
-  ) {
-    let post = posts.find((p) => p.id === id);
-    if (post) {
-      post.title = title!;
-      post.shortDescription = shortDescription!;
-      post.content = content!;
-      post.blogId = blogId!;
-      return post;
-    }
-    return false;
+  ): Promise<boolean> {
+    const { matchedCount } = await postsDb.updateOne(
+      { id: id },
+      { $set: { title, shortDescription, content, blogId } }
+    );
+    return matchedCount === 1;
   },
 };

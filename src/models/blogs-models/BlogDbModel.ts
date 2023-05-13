@@ -1,7 +1,4 @@
-export type BlogResponseModel = {
-  /**
-   * model for response to UI
-   */
+export type BlogDbModel = {
   id: string;
   name: string;
   description: string;

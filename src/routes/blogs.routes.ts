@@ -1,8 +1,6 @@
 import { Request, Response, Router } from "express";
-import { BlogType, blogs } from "../db/blogs.db";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { blogsRepository } from "../repositories/blogs-repository";
-import { validationResult } from "express-validator";
 import {
   RequestWithBody,
   RequestWithParams,
@@ -11,36 +9,43 @@ import {
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { createBlogValidationMiddleware } from "../middleware/validation/blogs-validation";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
+import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
 import { BlogPostModel } from "../models/blogs-models/BlogPostModel";
+import { BlogResponseModel } from "../models/blogs-models/BlogResponseModel";
 
 export const blogsRoute = Router({});
-const { OK, Not_Found, No_Content, Unauthorized, Created, Bad_Request } =
-  HTTPS_ANSWERS;
+const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
-blogsRoute.get("/", (req: Request, res: Response<BlogType[]>) => {
-  return res.status(OK).send(blogs);
-});
+blogsRoute.get(
+  "/",
+  async (req: Request, res: Response<BlogResponseModel[]>) => {
+    return res.status(OK).send(await blogsRepository.getAllBlogs());
+  }
+);
 
 blogsRoute.get(
   "/:id",
-  (
+  async (
     req: RequestWithParams<URIParamsModel>,
-    res: Response<BlogType[] | BlogType | undefined>
+    res: Response<BlogResponseModel>
   ) => {
-    if (!blogsRepository.getBlogById(req.params.id))
-      return res.sendStatus(Not_Found);
-    return res.status(OK).send(blogsRepository.getBlogById(req.params.id));
+    const blog = await blogsRepository.getBlogById(req.params.id);
+    if (!blog) return res.sendStatus(Not_Found);
+    return res.status(OK).send(blog);
   }
 );
 blogsRoute.post(
   "/",
   authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
-  (req: RequestWithBody<BlogPostModel>, res: Response) => {
+  async (
+    req: RequestWithBody<BlogPostModel>,
+    res: Response<BlogResponseModel>
+  ) => {
     return res
       .status(Created)
       .send(
-        blogsRepository.createdBlog(
+        await blogsRepository.createdBlog(
           req.body.name,
           req.body.description,
           req.body.websiteUrl
@@ -53,18 +58,18 @@ blogsRoute.put(
   "/:id",
   authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
-  (
+  async (
     req: RequestWithParamsAndBody<URIParamsModel, BlogPostModel>,
     res: Response
   ) => {
     const { description, name, websiteUrl } = req.body;
-    const result = blogsRepository.updateBlog(
+    const result = await blogsRepository.updateBlog(
       req.params.id,
       description,
       name,
       websiteUrl
     );
-    if (result) return res.status(No_Content).send(result);
+    if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Not_Found);
   }
 );
@@ -72,10 +77,10 @@ blogsRoute.put(
 blogsRoute.delete(
   "/:id",
   authMiddlewareCustomVariant,
-  (req: Request, res: Response) => {
-    if (!validationResult(req).isEmpty()) return res.sendStatus(Unauthorized);
-    if (!blogsRepository.deleteById(req.params.id))
-      return res.sendStatus(Not_Found);
+  inputValidationMiddleware,
+  async (req: Request, res: Response) => {
+    const result = await blogsRepository.deleteById(req.params.id);
+    if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(No_Content);
   }
 );
