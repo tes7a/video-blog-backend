@@ -29,7 +29,14 @@ export const blogsRepository = {
       isMembership: false,
     };
     await blogsDb.insertOne(newBlog);
-    return newBlog;
+    return {
+      id: newBlog.id,
+      name: newBlog.name,
+      description: newBlog.description,
+      websiteUrl: newBlog.websiteUrl,
+      createdAt: newBlog.createdAt,
+      isMembership: newBlog.isMembership,
+    };
   },
   async updateBlog(
     id: argumentType,
