@@ -1,3 +1,4 @@
+import { log } from "console";
 import { postsDb } from "../db/db";
 import { PostDbModel } from "../models/posts/PostDbModel";
 
@@ -5,10 +6,11 @@ type argumentType = string | undefined;
 
 export const postsRepository = {
   async getAllPosts(): Promise<PostDbModel[]> {
-    return await postsDb.find({}).toArray();
+    return await postsDb.find({}, { projection: { _id: 0 } }).toArray();
   },
-  async getBlogById(id: argumentType): Promise<PostDbModel> {
+  async getBlogById(id: argumentType): Promise<PostDbModel | undefined> {
     const res = (await postsDb.find({ id: { $regex: id } }).toArray())[0];
+    if (!res) return undefined;
     return {
       blogId: res.blogId,
       blogName: res.blogName,

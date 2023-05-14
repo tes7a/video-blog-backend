@@ -5,10 +5,11 @@ type argumentType = string | undefined;
 
 export const blogsRepository = {
   async getAllBlogs(): Promise<BlogDbModel[]> {
-    return await blogsDb.find({}).toArray();
+    return await blogsDb.find({}, { projection: { _id: 0 } }).toArray();
   },
-  async getBlogById(id: argumentType): Promise<BlogDbModel> {
+  async getBlogById(id: argumentType): Promise<BlogDbModel | undefined> {
     const res = (await blogsDb.find({ id: { $regex: id } }).toArray())[0];
+    if (!res) return undefined;
     return {
       id: res.id,
       name: res.name,
