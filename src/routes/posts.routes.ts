@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { PostType, posts } from "../db/posts.db";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { postsRepository } from "../repositories/posts-repository";
 import {

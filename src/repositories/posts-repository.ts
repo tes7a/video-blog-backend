@@ -1,6 +1,4 @@
 import { postsDb } from "../db/db";
-import { posts } from "../db/posts.db";
-import { PostType } from "../db/posts.db";
 import { PostDbModel } from "../models/posts/PostDbModel";
 
 type argumentType = string | undefined;
