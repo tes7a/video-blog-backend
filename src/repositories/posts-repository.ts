@@ -8,7 +8,16 @@ export const postsRepository = {
     return await postsDb.find({}).toArray();
   },
   async getBlogById(id: argumentType): Promise<PostDbModel> {
-    return (await postsDb.find({ id: { $regex: id } }).toArray())[0];
+    const res = (await postsDb.find({ id: { $regex: id } }).toArray())[0];
+    return {
+      blogId: res.blogId,
+      blogName: res.blogName,
+      content: res.content,
+      createdAt: res.createdAt,
+      id: res.id,
+      shortDescription: res.shortDescription,
+      title: res.title,
+    };
   },
 
   async deleteById(id: argumentType): Promise<boolean> {

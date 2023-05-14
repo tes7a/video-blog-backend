@@ -8,7 +8,15 @@ export const blogsRepository = {
     return await blogsDb.find({}).toArray();
   },
   async getBlogById(id: argumentType): Promise<BlogDbModel> {
-    return (await blogsDb.find({ id: { $regex: id } }).toArray())[0];
+    const res = (await blogsDb.find({ id: { $regex: id } }).toArray())[0];
+    return {
+      id: res.id,
+      name: res.name,
+      createdAt: res.createdAt,
+      description: res.description,
+      isMembership: res.isMembership,
+      websiteUrl: res.websiteUrl,
+    };
   },
   async deleteById(id: argumentType): Promise<boolean> {
     const { deletedCount } = await blogsDb.deleteOne({ id: id });
