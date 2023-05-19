@@ -12,6 +12,7 @@ import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middl
 import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
 import { BlogPostModel } from "../models/blogs-models/BlogPostModel";
 import { BlogResponseModel } from "../models/blogs-models/BlogResponseModel";
+import { blogsServices } from "../services/blogs-service";
 
 export const blogsRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
@@ -19,7 +20,7 @@ const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 blogsRoute.get(
   "/",
   async (req: Request, res: Response<BlogResponseModel[]>) => {
-    return res.status(OK).send(await blogsRepository.getAllBlogs());
+    return res.status(OK).send(await blogsServices.getAllBlogs());
   }
 );
 
@@ -29,7 +30,7 @@ blogsRoute.get(
     req: RequestWithParams<URIParamsModel>,
     res: Response<BlogResponseModel>
   ) => {
-    const blog = await blogsRepository.getBlogById(req.params.id);
+    const blog = await blogsServices.getBlogById(req.params.id);
     if (!blog) return res.sendStatus(Not_Found);
     return res.status(OK).send(blog);
   }
@@ -45,7 +46,7 @@ blogsRoute.post(
     return res
       .status(Created)
       .send(
-        await blogsRepository.createdBlog(
+        await blogsServices.createdBlog(
           req.body.name,
           req.body.description,
           req.body.websiteUrl
@@ -63,7 +64,7 @@ blogsRoute.put(
     res: Response
   ) => {
     const { description, name, websiteUrl } = req.body;
-    const result = await blogsRepository.updateBlog(
+    const result = await blogsServices.updateBlog(
       req.params.id,
       description,
       name,
@@ -79,7 +80,7 @@ blogsRoute.delete(
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
-    const result = await blogsRepository.deleteById(req.params.id);
+    const result = await blogsServices.deleteById(req.params.id);
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(No_Content);
   }

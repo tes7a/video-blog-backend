@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
-import { postsRepository } from "../repositories/posts-repository";
 import {
   RequestWithBody,
   RequestWithParams,
@@ -13,13 +12,14 @@ import { createPostsValidationMiddleware } from "../middleware/validation/posts-
 import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
 import { PostDbModel } from "../models/posts/PostDbModel";
+import { postsServices } from "../services/posts-service";
 
 export const postsRoute = Router({});
 
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
 postsRoute.get("/", async (req: Request, res: Response<PostDbModel[]>) => {
-  res.status(OK).send(await postsRepository.getAllPosts());
+  res.status(OK).send(await postsServices.getAllPosts());
 });
 
 postsRoute.get(
@@ -28,7 +28,7 @@ postsRoute.get(
     req: RequestWithParams<URIParamsModel>,
     res: Response<PostDbModel>
   ) => {
-    const post = await postsRepository.getBlogById(req.params.id);
+    const post = await postsServices.getBlogById(req.params.id);
     if (!post) res.sendStatus(Not_Found);
     return res.status(OK).send(post);
   }
@@ -43,12 +43,7 @@ postsRoute.post(
     return res
       .status(Created)
       .send(
-        await postsRepository.createPost(
-          title,
-          shortDescription,
-          content,
-          blogId
-        )
+        await postsServices.createPost(title, shortDescription, content, blogId)
       );
   }
 );
@@ -62,7 +57,7 @@ postsRoute.put(
     res: Response
   ) => {
     const { title, shortDescription, content, blogId } = req.body;
-    const result = await postsRepository.updatePost(
+    const result = await postsServices.updatePost(
       req.params.id,
       title,
       shortDescription,
@@ -79,7 +74,7 @@ postsRoute.delete(
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
   async (req: RequestWithParams<URIParamsModel>, res: Response) => {
-    const result = await postsRepository.deleteById(req.params.id);
+    const result = await postsServices.deleteById(req.params.id);
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(No_Content);
   }

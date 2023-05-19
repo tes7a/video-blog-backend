@@ -27,21 +27,7 @@ export const postsRepository = {
     return deletedCount === 1;
   },
 
-  async createPost(
-    title: argumentType,
-    shortDescription: argumentType,
-    content: argumentType,
-    blogId: argumentType
-  ): Promise<PostDbModel> {
-    const newPost = {
-      id: new Date().getMilliseconds().toString(),
-      title: title!,
-      shortDescription: shortDescription!,
-      content: content!,
-      blogId: blogId!,
-      blogName: `Blog Name #`,
-      createdAt: new Date().toISOString(),
-    };
+  async createPost(newPost: PostDbModel): Promise<PostDbModel> {
     await postsDb.insertOne(newPost);
     return {
       id: newPost.id,
