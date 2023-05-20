@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
-import { blogsRepository } from "../repositories/blogs-repository";
 import {
   RequestWithBody,
   RequestWithParams,

@@ -4,10 +4,21 @@ import { PostDbModel } from "../models/posts/PostDbModel";
 import { postsRepository } from "../repositories/posts-repository";
 
 type argumentType = string | undefined;
+type queryParams = string | null;
 
 export const postsServices = {
-  async getAllPosts(): Promise<PostDbModel[]> {
-    return await postsRepository.getAllPosts();
+  async getAllPosts(
+    sortBy?: queryParams,
+    sortDirection?: queryParams,
+    pageNumber?: queryParams,
+    pageSize?: queryParams
+  ): Promise<PostDbModel[]> {
+    return await postsRepository.getAllPosts(
+      sortBy,
+      sortDirection,
+      pageNumber,
+      pageSize
+    );
   },
   async getBlogById(id: argumentType): Promise<PostDbModel | undefined> {
     return await postsRepository.getBlogById(id);

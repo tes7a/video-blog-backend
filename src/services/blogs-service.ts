@@ -3,6 +3,7 @@ import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
 import { blogsRepository } from "../repositories/blogs-repository";
 
 type argumentType = string | undefined;
+type queryParams = string | null;
 
 export const blogsServices = {
   async getAllBlogs(): Promise<BlogDbModel[]> {

@@ -19,7 +19,17 @@ export const postsRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
 postsRoute.get("/", async (req: Request, res: Response<PostDbModel[]>) => {
-  res.status(OK).send(await postsServices.getAllPosts());
+  const { sortBy, sortDirection, pageNumber, pageSize } = req.query;
+  res
+    .status(OK)
+    .send(
+      await postsServices.getAllPosts(
+        sortBy?.toString(),
+        sortDirection?.toString(),
+        pageNumber?.toString(),
+        pageSize?.toString()
+      )
+    );
 });
 
 postsRoute.get(
