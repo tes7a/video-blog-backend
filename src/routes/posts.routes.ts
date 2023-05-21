@@ -47,7 +47,7 @@ postsRoute.get(
     req: RequestWithParams<URIParamsModel>,
     res: Response<PostDbModel>
   ) => {
-    const post = await postsServices.getBlogById(req.params.id);
+    const post = await postsServices.getPostById(req.params.id);
     if (!post) res.sendStatus(Not_Found);
     return res.status(OK).send(post);
   }
