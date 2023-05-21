@@ -23,11 +23,11 @@ export const blogsRepository = {
     const pagesCount = Math.ceil(allBlogs.length / defaultPageSize);
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
     const endIndex = defaultPageNumber * defaultPageSize;
-    const totalCount = allBlogs.length;
-    const modifiedArray = allBlogs
-      .filter((b) =>
-        searchNameTerm ? b.name.indexOf(searchNameTerm!) > -1 : b
-      )
+    const filteredArray = allBlogs.filter((b) =>
+      searchNameTerm ? b.name.indexOf(searchNameTerm!) > -1 : b
+    );
+    const totalCount = filteredArray.length;
+    const modifiedArray = filteredArray
       .sort((b1, b2) => {
         if (
           b1[defaultSortBy as SortType].toLowerCase() <
