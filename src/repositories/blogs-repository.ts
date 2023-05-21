@@ -30,12 +30,12 @@ export const blogsRepository = {
           b1[defaultSortBy as SortType].toLowerCase() <
           b2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "desc" ? -1 : 1;
+          return defaultSortDirection === "desc" ? 1 : -1;
         if (
           b1[defaultSortBy as SortType].toLowerCase() >
           b2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "asc" ? 1 : -1;
+          return defaultSortDirection === "asc" ? -1 : 1;
         return 0;
       })
       .filter((b) =>
