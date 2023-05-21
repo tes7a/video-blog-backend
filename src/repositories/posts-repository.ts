@@ -37,7 +37,7 @@ export const postsRepository = {
         if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
           return defaultSortDirection === "asc" ? -1 : 1;
         if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
-          return defaultSortDirection === "asc" ? 1 : -1;
+          return defaultSortDirection === "desc" ? 1 : -1;
         return 0;
       });
 
@@ -70,7 +70,9 @@ export const postsRepository = {
     sortBy: ArgumentType,
     sortDirection: ArgumentType
   ): Promise<WithQueryModel<PostDbModel[]>> {
-    const res = await postsDb.find({ blogId: { $regex: blogId } }).toArray();
+    const res = await postsDb
+      .find({ blogId: { $regex: blogId } }, { projection: { _id: 0 } })
+      .toArray();
     const defaultSortBy = sortBy || "createdAt";
     const defaultSortDirection = sortDirection || "desc";
     const defaultPageSize = +pageSize! || 10;
@@ -84,7 +86,7 @@ export const postsRepository = {
       if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
         return defaultSortDirection === "asc" ? -1 : 1;
       if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
-        return defaultSortDirection === "asc" ? 1 : -1;
+        return defaultSortDirection === "desc" ? 1 : -1;
       return 0;
     });
     return {
