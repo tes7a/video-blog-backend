@@ -27,8 +27,8 @@ export const postsRepository = {
     const defaultPageSize = +pageSize! || 10;
     const defaultPageNumber = +pageNumber! || 1;
     const pagesCount = Math.ceil(allPosts.length / defaultPageSize);
-    const startIndex = (defaultPageNumber - 1) * defaultPageSize ;
-    const endIndex = defaultPageNumber * defaultPageSize + 1;
+    const startIndex = (defaultPageNumber - 1) * defaultPageSize;
+    const endIndex = defaultPageNumber * defaultPageSize;
     const totalCount = allPosts.length;
 
     const modifiedArray = allPosts

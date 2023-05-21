@@ -25,6 +25,9 @@ export const blogsRepository = {
     const endIndex = defaultPageNumber * defaultPageSize;
     const totalCount = allBlogs.length;
     const modifiedArray = allBlogs
+      .filter((b) =>
+        searchNameTerm ? b.name.indexOf(searchNameTerm!) > -1 : b
+      )
       .sort((b1, b2) => {
         if (
           b1[defaultSortBy as SortType].toLowerCase() <
@@ -38,9 +41,6 @@ export const blogsRepository = {
           return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
       })
-      .filter((b) =>
-        searchNameTerm ? b.name.indexOf(searchNameTerm!) > -1 : b
-      )
       .slice(startIndex, endIndex);
 
     return {
