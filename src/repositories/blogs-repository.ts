@@ -20,12 +20,12 @@ export const blogsRepository = {
     const defaultSortDirection = sortDirection || "desc";
     const defaultPageSize = +pageSize! || 10;
     const defaultPageNumber = +pageNumber! || 1;
-    const pagesCount = Math.ceil(allBlogs.length / defaultPageSize);
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
     const endIndex = defaultPageNumber * defaultPageSize;
     const filteredArray = allBlogs.filter((b) =>
-      searchNameTerm ? b.name.indexOf(searchNameTerm!) > -1 : b
+      searchNameTerm ? b.name.toLowerCase().indexOf(searchNameTerm!) > -1 : b
     );
+    const pagesCount = Math.ceil(filteredArray.length / defaultPageSize);
     const totalCount = filteredArray.length;
     const modifiedArray = filteredArray
       .sort((b1, b2) => {
