@@ -37,12 +37,12 @@ export const postsRepository = {
           p1[defaultSortBy as SortType].toLowerCase() <
           p2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "asc" ? -1 : 1;
+          return defaultSortDirection === "desc" ? -1 : 1;
         if (
           p1[defaultSortBy as SortType].toLowerCase() >
           p2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "desc" ? 1 : -1;
+          return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
       })
       .slice(startIndex, endIndex);
@@ -93,12 +93,12 @@ export const postsRepository = {
           p1[defaultSortBy as SortType].toLowerCase() <
           p2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "asc" ? -1 : 1;
+          return defaultSortDirection === "desc" ? -1 : 1;
         if (
           p1[defaultSortBy as SortType].toLowerCase() >
           p2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "desc" ? 1 : -1;
+          return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
       })
       .slice(startIndex, endIndex);
