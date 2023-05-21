@@ -23,7 +23,7 @@ export const blogsRepository = {
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
     const endIndex = defaultPageNumber * defaultPageSize;
     const filteredArray = allBlogs.filter((b) =>
-      searchNameTerm!.toLowerCase()
+      searchNameTerm && searchNameTerm.toLowerCase()
         ? b.name.toLowerCase().indexOf(searchNameTerm!) > -1
         : b
     );
