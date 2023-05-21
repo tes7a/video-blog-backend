@@ -3,12 +3,7 @@ import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
 import { WithQueryModel } from "../models/universal/WithQueryModel";
 
 type ArgumentType = string | undefined;
-type SortType =
-  | "createdAt"
-  | "name"
-  | "description"
-  | "websiteUrl"
-  | "isMembership";
+type SortType = "createdAt" | "name" | "description" | "websiteUrl";
 
 export const blogsRepository = {
   async getAllBlogs(
@@ -31,10 +26,16 @@ export const blogsRepository = {
     const totalCount = allBlogs.length;
     const modifiedArray = allBlogs
       .sort((b1, b2) => {
-        if (b1[defaultSortBy as SortType] < b2[defaultSortBy as SortType])
-          return defaultSortDirection === "desc" ? -1 : 1;
-        if (b1[defaultSortBy as SortType] > b2[defaultSortBy as SortType])
-          return defaultSortDirection === "asc" ? 1 : -1;
+        if (
+          b1[defaultSortBy as SortType].toLowerCase() <
+          b2[defaultSortBy as SortType].toLowerCase()
+        )
+          return defaultSortDirection === "asc" ? -1 : 1;
+        if (
+          b1[defaultSortBy as SortType].toLowerCase() >
+          b2[defaultSortBy as SortType].toLowerCase()
+        )
+          return defaultSortDirection === "desc" ? 1 : -1;
         return 0;
       })
       .filter((b) =>
