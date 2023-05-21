@@ -23,7 +23,9 @@ export const blogsRepository = {
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
     const endIndex = defaultPageNumber * defaultPageSize;
     const filteredArray = allBlogs.filter((b) =>
-      searchNameTerm ? b.name.toLowerCase().indexOf(searchNameTerm!) > -1 : b
+      searchNameTerm!.toLowerCase()
+        ? b.name.toLowerCase().indexOf(searchNameTerm!) > -1
+        : b
     );
     const pagesCount = Math.ceil(filteredArray.length / defaultPageSize);
     const totalCount = filteredArray.length;
