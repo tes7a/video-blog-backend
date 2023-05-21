@@ -40,3 +40,10 @@ export const createPostsValidationMiddleware = [
   blogIdMiddleware,
   inputValidationMiddleware,
 ];
+
+export const createPostForBlogIdValidationMiddleware = [
+  titleMiddleware,
+  shortDescriptionMiddleware,
+  contentMiddleware,
+  inputValidationMiddleware,
+]

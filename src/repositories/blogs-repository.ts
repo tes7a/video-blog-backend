@@ -1,13 +1,56 @@
 import { blogsDb } from "../db/db";
 import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
+import { WithQueryModel } from "../models/universal/WithQueryModel";
 
-type argumentType = string | undefined;
+type ArgumentType = string | undefined;
+type SortType =
+  | "createdAt"
+  | "name"
+  | "description"
+  | "websiteUrl"
+  | "isMembership";
 
 export const blogsRepository = {
-  async getAllBlogs(): Promise<BlogDbModel[]> {
-    return await blogsDb.find({}, { projection: { _id: 0 } }).toArray();
+  async getAllBlogs(
+    searchNameTerm: ArgumentType,
+    sortBy: ArgumentType,
+    sortDirection: ArgumentType,
+    pageNumber: ArgumentType,
+    pageSize: ArgumentType
+  ): Promise<WithQueryModel<BlogDbModel[]>> {
+    const allBlogs = await blogsDb
+      .find({}, { projection: { _id: 0 } })
+      .toArray();
+    const defaultSortBy = sortBy || "createdAt";
+    const defaultSortDirection = sortDirection || "desc";
+    const defaultPageSize = +pageSize! || 10;
+    const defaultPageNumber = +pageNumber! || 1;
+    const pagesCount = Math.ceil(allBlogs.length / defaultPageSize);
+    const startIndex = (defaultPageNumber - 1) * defaultPageSize;
+    const endIndex = defaultPageNumber * defaultPageSize;
+    const totalCount = allBlogs.length;
+    const modifiedArray = allBlogs
+      .slice(startIndex, endIndex)
+      .sort((b1, b2) => {
+        if (b1[defaultSortBy as SortType] < b2[defaultSortBy as SortType])
+          return defaultSortDirection === "asc" ? -1 : 1;
+        if (b1[defaultSortBy as SortType] > b2[defaultSortBy as SortType])
+          return defaultSortDirection === "asc" ? 1 : -1;
+        return 0;
+      })
+      .filter((b) =>
+        searchNameTerm ? b.name.indexOf(searchNameTerm!) > -1 : b
+      );
+
+    return {
+      pagesCount,
+      page: defaultPageNumber,
+      pageSize: defaultPageSize,
+      totalCount,
+      items: modifiedArray,
+    };
   },
-  async getBlogById(id: argumentType): Promise<BlogDbModel | undefined> {
+  async getBlogById(id: ArgumentType): Promise<BlogDbModel | undefined> {
     const res = (await blogsDb.find({ id: { $regex: id } }).toArray())[0];
     if (!res) return undefined;
     return {
@@ -19,7 +62,7 @@ export const blogsRepository = {
       websiteUrl: res.websiteUrl,
     };
   },
-  async deleteById(id: argumentType): Promise<boolean> {
+  async deleteById(id: ArgumentType): Promise<boolean> {
     const { deletedCount } = await blogsDb.deleteOne({ id: id });
 
     return deletedCount === 1;
@@ -36,10 +79,10 @@ export const blogsRepository = {
     };
   },
   async updateBlog(
-    id: argumentType,
-    description: argumentType,
-    name: argumentType,
-    websiteUrl: argumentType
+    id: ArgumentType,
+    description: ArgumentType,
+    name: ArgumentType,
+    websiteUrl: ArgumentType
   ): Promise<boolean> {
     const { matchedCount } = await blogsDb.updateOne(
       { id: id },

@@ -1,24 +1,36 @@
 import { blogsDb } from "../db/db";
 import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
+import { WithQueryModel } from "../models/universal/WithQueryModel";
 import { blogsRepository } from "../repositories/blogs-repository";
 
-type argumentType = string | undefined;
-type queryParams = string | null;
+type ArgumentType = string | undefined;
 
 export const blogsServices = {
-  async getAllBlogs(): Promise<BlogDbModel[]> {
-    return await blogsRepository.getAllBlogs();
+  async getAllBlogs(
+    searchNameTerm: ArgumentType,
+    sortBy: ArgumentType,
+    sortDirection: ArgumentType,
+    pageNumber: ArgumentType,
+    pageSize: ArgumentType
+  ): Promise<WithQueryModel<BlogDbModel[]>> {
+    return await blogsRepository.getAllBlogs(
+      searchNameTerm!,
+      sortBy!,
+      sortDirection!,
+      pageNumber!,
+      pageSize!
+    );
   },
-  async getBlogById(id: argumentType): Promise<BlogDbModel | undefined> {
+  async getBlogById(id: ArgumentType): Promise<BlogDbModel | undefined> {
     return await blogsRepository.getBlogById(id);
   },
-  async deleteById(id: argumentType): Promise<boolean> {
+  async deleteById(id: ArgumentType): Promise<boolean> {
     return await blogsRepository.deleteById(id);
   },
   async createdBlog(
-    name: argumentType,
-    description: argumentType,
-    websiteUrl: argumentType
+    name: ArgumentType,
+    description: ArgumentType,
+    websiteUrl: ArgumentType
   ): Promise<BlogDbModel> {
     const newBlog = {
       id: new Date().getMilliseconds().toString(),
@@ -31,10 +43,10 @@ export const blogsServices = {
     return await blogsRepository.createdBlog(newBlog);
   },
   async updateBlog(
-    id: argumentType,
-    description: argumentType,
-    name: argumentType,
-    websiteUrl: argumentType
+    id: ArgumentType,
+    description: ArgumentType,
+    name: ArgumentType,
+    websiteUrl: ArgumentType
   ): Promise<boolean> {
     return await blogsRepository.updateBlog(id, description, name, websiteUrl);
   },

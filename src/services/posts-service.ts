@@ -2,37 +2,53 @@ import { log } from "console";
 import { postsDb } from "../db/db";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { postsRepository } from "../repositories/posts-repository";
+import { WithQueryModel } from "../models/universal/WithQueryModel";
 
-type argumentType = string | undefined;
-type queryParams = string | null;
+type ArgumentType = string | undefined;
 
 export const postsServices = {
   async getAllPosts(
-    sortBy?: queryParams,
-    sortDirection?: queryParams,
-    pageNumber?: queryParams,
-    pageSize?: queryParams
-  ): Promise<PostDbModel[]> {
+    sortBy?: ArgumentType,
+    sortDirection?: ArgumentType,
+    pageNumber?: ArgumentType,
+    pageSize?: ArgumentType
+  ): Promise<WithQueryModel<PostDbModel[]>> {
     return await postsRepository.getAllPosts(
-      sortBy,
-      sortDirection,
-      pageNumber,
-      pageSize
+      sortBy!,
+      sortDirection!,
+      pageNumber!,
+      pageSize!
     );
   },
-  async getBlogById(id: argumentType): Promise<PostDbModel | undefined> {
-    return await postsRepository.getBlogById(id);
+  async getPostById(id: ArgumentType): Promise<PostDbModel | undefined> {
+    return await postsRepository.getPostById(id);
   },
 
-  async deleteById(id: argumentType): Promise<boolean> {
+  async getPostByBlogID(
+    blogId: ArgumentType,
+    pageNumber: ArgumentType,
+    pageSize: ArgumentType,
+    sortBy: ArgumentType,
+    sortDirection: ArgumentType
+  ): Promise<WithQueryModel<PostDbModel[]>> {
+    return await postsRepository.getPostByBlogID(
+      blogId,
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortDirection
+    );
+  },
+
+  async deleteById(id: ArgumentType): Promise<boolean> {
     return await postsRepository.deleteById(id);
   },
 
   async createPost(
-    title: argumentType,
-    shortDescription: argumentType,
-    content: argumentType,
-    blogId: argumentType
+    title: ArgumentType,
+    shortDescription: ArgumentType,
+    content: ArgumentType,
+    blogId: ArgumentType
   ): Promise<PostDbModel> {
     const newPost = {
       id: new Date().getMilliseconds().toString(),
@@ -46,12 +62,29 @@ export const postsServices = {
     return postsRepository.createPost(newPost);
   },
 
+  async createPostForCurrentBlog(
+    blogId: ArgumentType,
+    title: ArgumentType,
+    shortDescription: ArgumentType,
+    content: ArgumentType
+  ): Promise<PostDbModel> {
+    const newPost = {
+      id: new Date().getMilliseconds().toString(),
+      title: title!,
+      shortDescription: shortDescription!,
+      content: content!,
+      blogId: blogId!,
+      blogName: `Blog Name #`,
+      createdAt: new Date().toISOString(),
+    };
+    return postsRepository.createPost(newPost);
+  },
   async updatePost(
-    id: argumentType,
-    title: argumentType,
-    shortDescription: argumentType,
-    content: argumentType,
-    blogId: argumentType
+    id: ArgumentType,
+    title: ArgumentType,
+    shortDescription: ArgumentType,
+    content: ArgumentType,
+    blogId: ArgumentType
   ): Promise<boolean> {
     return await postsRepository.updatePost(
       id,

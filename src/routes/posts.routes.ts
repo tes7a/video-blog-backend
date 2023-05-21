@@ -4,6 +4,7 @@ import {
   RequestWithBody,
   RequestWithParams,
   RequestWithParamsAndBody,
+  RequestWithQuery,
 } from "../types";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
@@ -13,24 +14,32 @@ import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { postsServices } from "../services/posts-service";
+import { WithQueryModel } from "../models/universal/WithQueryModel";
+import { PostRequestModel } from "../models/posts/PostRequestModel";
 
 export const postsRoute = Router({});
 
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
-postsRoute.get("/", async (req: Request, res: Response<PostDbModel[]>) => {
-  const { sortBy, sortDirection, pageNumber, pageSize } = req.query;
-  res
-    .status(OK)
-    .send(
-      await postsServices.getAllPosts(
-        sortBy?.toString(),
-        sortDirection?.toString(),
-        pageNumber?.toString(),
-        pageSize?.toString()
-      )
-    );
-});
+postsRoute.get(
+  "/",
+  async (
+    req: RequestWithQuery<PostRequestModel>,
+    res: Response<WithQueryModel<PostDbModel[]>>
+  ) => {
+    const { sortBy, sortDirection, pageNumber, pageSize } = req.query;
+    res
+      .status(OK)
+      .send(
+        await postsServices.getAllPosts(
+          sortBy?.toString(),
+          sortDirection?.toString(),
+          pageNumber?.toString(),
+          pageSize?.toString()
+        )
+      );
+  }
+);
 
 postsRoute.get(
   "/:id",
