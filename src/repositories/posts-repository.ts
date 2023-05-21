@@ -27,8 +27,8 @@ export const postsRepository = {
     const defaultPageSize = +pageSize! || 10;
     const defaultPageNumber = +pageNumber! || 1;
     const pagesCount = Math.ceil(allPosts.length / defaultPageSize);
-    const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    const endIndex = defaultPageNumber * defaultPageSize;
+    const startIndex = (defaultPageNumber - 1) * defaultPageSize ;
+    const endIndex = defaultPageNumber * defaultPageSize + 1;
     const totalCount = allPosts.length;
 
     const modifiedArray = allPosts
@@ -37,12 +37,12 @@ export const postsRepository = {
           p1[defaultSortBy as SortType].toLowerCase() <
           p2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "desc" ? 1 : -1;
+          return defaultSortDirection === "asc" ? -1 : 1;
         if (
           p1[defaultSortBy as SortType].toLowerCase() >
           p2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "asc" ? -1 : 1;
+          return defaultSortDirection === "desc" ? 1 : -1;
         return 0;
       })
       .slice(startIndex, endIndex);
@@ -93,12 +93,12 @@ export const postsRepository = {
           p1[defaultSortBy as SortType].toLowerCase() <
           p2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "desc" ? 1 : -1;
+          return defaultSortDirection === "asc" ? -1 : 1;
         if (
           p1[defaultSortBy as SortType].toLowerCase() >
           p2[defaultSortBy as SortType].toLowerCase()
         )
-          return defaultSortDirection === "asc" ? -1 : 1;
+          return defaultSortDirection === "desc" ? 1 : -1;
         return 0;
       })
       .slice(startIndex, endIndex);
