@@ -30,7 +30,6 @@ export const blogsRepository = {
     const endIndex = defaultPageNumber * defaultPageSize;
     const totalCount = allBlogs.length;
     const modifiedArray = allBlogs
-      .slice(startIndex, endIndex)
       .sort((b1, b2) => {
         if (b1[defaultSortBy as SortType] < b2[defaultSortBy as SortType])
           return defaultSortDirection === "desc" ? -1 : 1;
@@ -40,7 +39,8 @@ export const blogsRepository = {
       })
       .filter((b) =>
         searchNameTerm ? b.name.indexOf(searchNameTerm!) > -1 : b
-      );
+      )
+      .slice(startIndex, endIndex);
 
     return {
       pagesCount,

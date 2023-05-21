@@ -32,15 +32,14 @@ export const postsRepository = {
     const totalCount = allPosts.length;
 
     const modifiedArray = allPosts
-      .slice(startIndex, endIndex)
       .sort((p1, p2) => {
         if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
           return defaultSortDirection === "desc" ? -1 : 1;
         if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
           return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
-      });
-
+      })
+      .slice(startIndex, endIndex);
     return {
       pagesCount,
       page: defaultPageNumber,
@@ -82,13 +81,15 @@ export const postsRepository = {
     const endIndex = defaultPageNumber * defaultPageSize;
     const totalCount = res.length;
 
-    const modifiedArray = res.slice(startIndex, endIndex).sort((p1, p2) => {
-      if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
-        return defaultSortDirection === "desc" ? -1 : 1;
-      if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
-        return defaultSortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
+    const modifiedArray = res
+      .sort((p1, p2) => {
+        if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
+          return defaultSortDirection === "desc" ? -1 : 1;
+        if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
+          return defaultSortDirection === "asc" ? 1 : -1;
+        return 0;
+      })
+      .slice(startIndex, endIndex);
     return {
       pagesCount,
       page: defaultPageNumber,
