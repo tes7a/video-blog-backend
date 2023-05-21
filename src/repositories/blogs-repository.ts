@@ -31,15 +31,9 @@ export const blogsRepository = {
     const totalCount = filteredArray.length;
     const modifiedArray = filteredArray
       .sort((b1, b2) => {
-        if (
-          b1[defaultSortBy as SortType].toLowerCase() <
-          b2[defaultSortBy as SortType].toLowerCase()
-        )
+        if (b1[defaultSortBy as SortType] < b2[defaultSortBy as SortType])
           return defaultSortDirection === "asc" ? -1 : 1;
-        if (
-          b1[defaultSortBy as SortType].toLowerCase() >
-          b2[defaultSortBy as SortType].toLowerCase()
-        )
+        if (b1[defaultSortBy as SortType] > b2[defaultSortBy as SortType])
           return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
       })
