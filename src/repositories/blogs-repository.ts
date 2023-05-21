@@ -33,9 +33,9 @@ export const blogsRepository = {
       .slice(startIndex, endIndex)
       .sort((b1, b2) => {
         if (b1[defaultSortBy as SortType] < b2[defaultSortBy as SortType])
-          return defaultSortDirection === "asc" ? -1 : 1;
+          return defaultSortDirection === "desc" ? -1 : 1;
         if (b1[defaultSortBy as SortType] > b2[defaultSortBy as SortType])
-          return defaultSortDirection === "desc" ? 1 : -1;
+          return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
       })
       .filter((b) =>

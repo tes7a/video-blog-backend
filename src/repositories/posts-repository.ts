@@ -35,9 +35,9 @@ export const postsRepository = {
       .slice(startIndex, endIndex)
       .sort((p1, p2) => {
         if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
-          return defaultSortDirection === "asc" ? -1 : 1;
+          return defaultSortDirection === "desc" ? -1 : 1;
         if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
-          return defaultSortDirection === "desc" ? 1 : -1;
+          return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
       });
 
@@ -84,9 +84,9 @@ export const postsRepository = {
 
     const modifiedArray = res.slice(startIndex, endIndex).sort((p1, p2) => {
       if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
-        return defaultSortDirection === "asc" ? -1 : 1;
+        return defaultSortDirection === "desc" ? -1 : 1;
       if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
-        return defaultSortDirection === "desc" ? 1 : -1;
+        return defaultSortDirection === "asc" ? 1 : -1;
       return 0;
     });
     return {
