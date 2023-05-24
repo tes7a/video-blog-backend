@@ -33,15 +33,9 @@ export const postsRepository = {
 
     const modifiedArray = allPosts
       .sort((p1, p2) => {
-        if (
-          p1[defaultSortBy as SortType].toLowerCase() <
-          p2[defaultSortBy as SortType].toLowerCase()
-        )
+        if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
           return defaultSortDirection === "asc" ? -1 : 1;
-        if (
-          p1[defaultSortBy as SortType].toLowerCase() >
-          p2[defaultSortBy as SortType].toLowerCase()
-        )
+        if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
           return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
       })
@@ -89,15 +83,9 @@ export const postsRepository = {
 
     const modifiedArray = res
       .sort((p1, p2) => {
-        if (
-          p1[defaultSortBy as SortType].toLowerCase() <
-          p2[defaultSortBy as SortType].toLowerCase()
-        )
+        if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
           return defaultSortDirection === "asc" ? -1 : 1;
-        if (
-          p1[defaultSortBy as SortType].toLowerCase() >
-          p2[defaultSortBy as SortType].toLowerCase()
-        )
+        if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
           return defaultSortDirection === "asc" ? 1 : -1;
         return 0;
       })
