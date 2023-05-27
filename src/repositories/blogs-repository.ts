@@ -24,7 +24,7 @@ export const blogsRepository = {
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
 
     const allBlogs = await blogsDb
-      .find({}, { projection: { _id: 0 } })
+      .find(defaultSearchName, { projection: { _id: 0 } })
       .toArray();
     const filteredArray = await blogsDb
       .find(defaultSearchName, { projection: { _id: 0 } })

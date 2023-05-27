@@ -29,7 +29,7 @@ export const postsRepository = {
     // const pagesCount = Math.ceil(allPosts.length / defaultPageSize);
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
     // const endIndex = defaultPageNumber * defaultPageSize;
-    const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
+    const sortDirectionMongoDb = defaultSortDirection === "desc" ? 1 : -1;
     // const totalCount = allPosts.length;
     const filteredArray = await postsDb
       .find({}, { projection: { _id: 0 } })
