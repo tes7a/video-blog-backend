@@ -33,7 +33,10 @@ export const postsRepository = {
     // const totalCount = allPosts.length;
     const filteredArray = await postsDb
       .find({}, { projection: { _id: 0 } })
-      .sort({ [defaultSortBy]: sortDirectionMongoDb, createdAt: 1 })
+      .sort({
+        [defaultSortBy]: sortDirectionMongoDb,
+        createdAt: sortDirectionMongoDb,
+      })
       .skip(startIndex)
       .limit(+defaultPageSize!)
       .toArray();
