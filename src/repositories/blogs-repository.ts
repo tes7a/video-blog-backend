@@ -3,7 +3,7 @@ import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
 import { WithQueryModel } from "../models/universal/WithQueryModel";
 
 type ArgumentType = string | undefined;
-type SortType = "createdAt" | "name" | "description" | "websiteUrl";
+// type SortType = "createdAt" | "name" | "description" | "websiteUrl";
 
 export const blogsRepository = {
   async getAllBlogs(

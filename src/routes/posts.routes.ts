@@ -28,7 +28,7 @@ postsRoute.get(
     res: Response<WithQueryModel<PostDbModel[]>>
   ) => {
     const { sortBy, sortDirection, pageNumber, pageSize } = req.query;
-    res
+    return res
       .status(OK)
       .send(
         await postsServices.getAllPosts(
