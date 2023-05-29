@@ -38,7 +38,7 @@ export const usersQueryRepository = {
       )
       .sort({ [defaultSortBy]: sortDirectionMongoDb })
       .skip(startIndex)
-      .limit(defaultPageNumber)
+      .limit(defaultPageSize)
       .toArray();
 
     const pagesCount = Math.ceil(allUsers.length / defaultPageSize);
