@@ -3,14 +3,20 @@ import { usersRepository } from "../repositories/users-repository";
 import { UsersDbModel } from "../models/users/UsersDbModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 
-type payloadType = {
+type PayloadCreateUserType = {
   email: string;
   login: string;
   password: string;
 };
+type PayloadCheckUserType = {
+  loginOrEmail: string;
+  password: string;
+};
 
 export const userService = {
-  async createUser(payload: payloadType): Promise<UsersCreateOutputModel> {
+  async createUser(
+    payload: PayloadCreateUserType
+  ): Promise<UsersCreateOutputModel> {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
@@ -25,6 +31,16 @@ export const userService = {
     };
 
     return usersRepository.createUser(newUser);
+  },
+  async checkUserCredentials(payload: PayloadCheckUserType): Promise<boolean> {
+    const user = await usersRepository.findByLoginOrEmail(payload.loginOrEmail);
+    if (!user) return false;
+    const passwordHash = await this._generateHash(
+      payload.password,
+      user.passwordSalt
+    );
+    if (user.passwordHash !== passwordHash) return false;
+    return true;
   },
   async _generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);

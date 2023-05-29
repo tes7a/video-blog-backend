@@ -5,12 +5,14 @@ import { blogsRoute } from "./routes/blogs.routes";
 import { postsRoute } from "./routes/posts.routes";
 import { runDb } from "./db/db";
 import { usersRoute } from "./routes/users.routes";
+import { authRoute } from "./routes/auth.routes";
 
 const express = require("express");
 export const app = express();
 app.use(bodyParser.json());
 const port = process.env.port || 3000;
 
+app.use("/auth", authRoute);
 app.use("/videos", videosRoute);
 app.use("/testing", testingRoute);
 app.use("/blogs", blogsRoute);

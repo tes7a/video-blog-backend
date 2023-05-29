@@ -8,6 +8,7 @@ import { UsersQueryModel } from "../models/users/UsersQueryModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { userService } from "../services/users-service";
+import { createUserValidationMiddleware } from "../middleware/validation/users-validation";
 
 export const usersRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
@@ -39,9 +40,9 @@ usersRoute.get(
   }
 );
 
-//need validation body req
 usersRoute.post(
   "/",
+  createUserValidationMiddleware,
   async (
     req: RequestWithBody<UsersCreateModel>,
     res: Response<UsersCreateOutputModel>

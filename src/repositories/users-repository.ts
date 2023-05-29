@@ -10,6 +10,11 @@ export const usersRepository = {
     await usersDb.insertOne(newUser);
     return await this._mapUser(newUser);
   },
+  async findByLoginOrEmail(loginOrEmail: string): Promise<UsersDbModel | null> {
+    return await usersDb.findOne({
+      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+    });
+  },
   async _mapUser(user: UsersDbModel): Promise<UsersCreateOutputModel> {
     return {
       id: user.id,
