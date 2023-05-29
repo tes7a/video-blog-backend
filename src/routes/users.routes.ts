@@ -59,7 +59,7 @@ usersRoute.post(
 );
 
 usersRoute.delete(
-  "/",
+  "/:id",
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
   async (req: RequestWithParams<URIParamsModel>, res: Response) => {
