@@ -29,11 +29,16 @@ export const usersQueryRepository = {
     const defaultPageSize = +payload.pageSize! || 10;
     const defaultPageNumber = +payload.pageNumber! || 1;
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    const allUsers = await usersDb.find().toArray();
+    const allUsers = await usersDb
+      .find(
+        { $or: [defaultSearchEMail, defaultSearchLogin] },
+        { projection: { _id: 0 } }
+      )
+      .toArray();
 
     const sortedUsers = await usersDb
       .find(
-        { $and: [defaultSearchEMail, defaultSearchLogin] },
+        { $or: [defaultSearchEMail, defaultSearchLogin] },
         { projection: { _id: 0 } }
       )
       .sort({ [defaultSortBy]: sortDirectionMongoDb })
