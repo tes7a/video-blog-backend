@@ -56,10 +56,10 @@ export const usersQueryRepository = {
   async _mapUsers(items: UsersDbModel[]): Promise<UsersOutputModel[]> {
     return items.map((user) => {
       return {
-        createdAt: user.createdAt,
-        email: user.email,
         id: user.id,
+        email: user.email,
         login: user.login,
+        createdAt: user.createdAt,
       };
     });
   },

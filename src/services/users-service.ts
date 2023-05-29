@@ -42,6 +42,9 @@ export const userService = {
     if (user.passwordHash !== passwordHash) return false;
     return true;
   },
+  async deleteUser(id: string): Promise<boolean> {
+    return await usersRepository.deleteUser(id);
+  },
   async _generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
   },

@@ -15,6 +15,11 @@ export const usersRepository = {
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
   },
+  async deleteUser(id: string) {
+    const { deletedCount } = await usersDb.deleteOne({ id: id });
+
+    return deletedCount === 1;
+  },
   async _mapUser(user: UsersDbModel): Promise<UsersCreateOutputModel> {
     return {
       id: user.id,
