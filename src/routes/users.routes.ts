@@ -45,6 +45,7 @@ usersRoute.get(
 
 usersRoute.post(
   "/",
+  authMiddlewareCustomVariant,
   createUserValidationMiddleware,
   async (
     req: RequestWithBody<UsersCreateModel>,
