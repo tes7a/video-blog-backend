@@ -1,4 +1,4 @@
-export type BlogRequestModel = {
+export type BlogWithQueryModel = {
   searchNameTerm: string;
   sortBy: string;
   sortDirection: string;

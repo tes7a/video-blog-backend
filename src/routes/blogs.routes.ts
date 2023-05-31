@@ -11,17 +11,17 @@ import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { createBlogValidationMiddleware } from "../middleware/validation/blogs-validation";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
-import { BlogPostModel } from "../models/blogs-models/BlogPostModel";
-import { BlogResponseModel } from "../models/blogs-models/BlogResponseModel";
+import { BlogCreateModel } from "../models/blogs-models/BlogCreateModel";
 import { blogsServices } from "../services/blogs-service";
 import { WithQueryModel } from "../models/universal/WithQueryModel";
-import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
-import { BlogRequestModel } from "../models/blogs-models/BlogRequestModel";
+import { BlogWithQueryModel } from "../models/blogs-models/BlogWithQueryModel";
 import { PostBlogIdCreateModel } from "../models/posts/PostBlogIdCreateModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { postsServices } from "../services/posts-service";
 import { createPostForBlogIdValidationMiddleware } from "../middleware/validation/posts-validation";
 import { PostRequestModel } from "../models/posts/PostRequestModel";
+import { blogsQueryRepository } from "../repositories/query-repositories/blogs-query-repository";
+import { BlogsOutputMode } from "../models/blogs-models/BlogsOutputModel";
 
 export const blogsRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
@@ -29,22 +29,20 @@ const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 blogsRoute.get(
   "/",
   async (
-    req: RequestWithQuery<BlogRequestModel>,
-    res: Response<WithQueryModel<BlogDbModel[]>>
+    req: RequestWithQuery<BlogWithQueryModel>,
+    res: Response<WithQueryModel<BlogsOutputMode[]>>
   ) => {
     const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize } =
       req.query;
-    return res
-      .status(OK)
-      .send(
-        await blogsServices.getAllBlogs(
-          searchNameTerm?.toString(),
-          sortBy?.toString(),
-          sortDirection?.toString(),
-          pageNumber?.toString(),
-          pageSize?.toString()
-        )
-      );
+    return res.status(OK).send(
+      await blogsQueryRepository.getBlogs({
+        searchNameTerm: searchNameTerm?.toString(),
+        sortBy: sortBy?.toString(),
+        sortDirection: sortDirection?.toString(),
+        pageNumber: pageNumber?.toString(),
+        pageSize: pageSize?.toString(),
+      })
+    );
   }
 );
 
@@ -52,7 +50,7 @@ blogsRoute.get(
   "/:id",
   async (
     req: RequestWithParams<URIParamsModel>,
-    res: Response<BlogResponseModel>
+    res: Response<BlogsOutputMode>
   ) => {
     const blog = await blogsServices.getBlogById(req.params.id);
     if (!blog) return res.sendStatus(Not_Found);
@@ -86,18 +84,13 @@ blogsRoute.post(
   authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
   async (
-    req: RequestWithBody<BlogPostModel>,
-    res: Response<BlogResponseModel>
+    req: RequestWithBody<BlogCreateModel>,
+    res: Response<BlogsOutputMode>
   ) => {
+    const { name, description, websiteUrl } = req.body;
     return res
       .status(Created)
-      .send(
-        await blogsServices.createdBlog(
-          req.body.name,
-          req.body.description,
-          req.body.websiteUrl
-        )
-      );
+      .send(await blogsServices.createdBlog({ name, description, websiteUrl }));
   }
 );
 blogsRoute.post(
@@ -127,7 +120,7 @@ blogsRoute.put(
   authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
   async (
-    req: RequestWithParamsAndBody<URIParamsModel, BlogPostModel>,
+    req: RequestWithParamsAndBody<URIParamsModel, BlogCreateModel>,
     res: Response
   ) => {
     const { description, name, websiteUrl } = req.body;
