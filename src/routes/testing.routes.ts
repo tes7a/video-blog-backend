@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { videos } from "../db/videos.db";
 
 import { blogsDb, postsDb, usersDb } from "../db/db";
 
