@@ -19,9 +19,11 @@ import { PostBlogIdCreateModel } from "../models/posts/PostBlogIdCreateModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { postsServices } from "../services/posts-service";
 import { createPostForBlogIdValidationMiddleware } from "../middleware/validation/posts-validation";
-import { PostRequestModel } from "../models/posts/PostRequestModel";
+import { PostWIthQueryModel } from "../models/posts/PostWIthQueryModel";
 import { blogsQueryRepository } from "../repositories/query-repositories/blogs-query-repository";
 import { BlogsOutputMode } from "../models/blogs-models/BlogsOutputModel";
+import { PostOutputModel } from "../models/posts/PostOutputModel";
+import { postQueryRepository } from "../repositories/query-repositories/post-query-repository";
 
 export const blogsRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
@@ -60,20 +62,20 @@ blogsRoute.get(
 blogsRoute.get(
   "/:id/posts",
   async (
-    req: RequestWIthWithURIQueryParams<URIParamsModel, PostRequestModel>,
-    res: Response<WithQueryModel<PostDbModel[]>>
+    req: RequestWIthWithURIQueryParams<URIParamsModel, PostWIthQueryModel>,
+    res: Response<WithQueryModel<PostOutputModel[]>>
   ) => {
     const { pageNumber, pageSize, sortBy, sortDirection } = req.query;
     const blog = await blogsServices.getBlogById(req.params.id);
     if (blog) {
-      const posts = await postsServices.getPostByBlogID(
-        req.params.id,
-        pageNumber?.toString(),
-        pageSize?.toString(),
-        sortBy?.toString(),
-        sortDirection?.toString()
+      return res.status(OK).send(
+        await postQueryRepository.getPostByBlogID(req.params.id, {
+          sortBy: sortBy?.toString(),
+          sortDirection: sortDirection?.toString(),
+          pageNumber: pageNumber?.toString(),
+          pageSize: pageSize?.toString(),
+        })
       );
-      return res.status(OK).send(posts);
     }
     return res.sendStatus(Not_Found);
   }
@@ -103,12 +105,11 @@ blogsRoute.post(
   ) => {
     const blog = await blogsServices.getBlogById(req.params.id);
     if (blog) {
-      const post = await postsServices.createPostForCurrentBlog(
-        req.params.id,
-        req.body.title,
-        req.body.shortDescription,
-        req.body.content
-      );
+      const post = await postsServices.createPostForCurrentBlog(req.params.id, {
+        title: req.body.title,
+        shortDescription: req.body.shortDescription,
+        content: req.body.content,
+      });
       return res.status(Created).send(post);
     }
     return res.sendStatus(Not_Found);

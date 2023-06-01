@@ -1,61 +1,26 @@
-import { log } from "console";
-import { postsDb } from "../db/db";
+import { PostBlogIdCreateModel } from "../models/posts/PostBlogIdCreateModel";
+import { PostCreateModel } from "../models/posts/PostCreateModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
+import { PostOutputModel } from "../models/posts/PostOutputModel";
+import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 import { postsRepository } from "../repositories/posts-repository";
-import { WithQueryModel } from "../models/universal/WithQueryModel";
-
-type ArgumentType = string | undefined;
 
 export const postsServices = {
-  async getAllPosts(
-    sortBy?: ArgumentType,
-    sortDirection?: ArgumentType,
-    pageNumber?: ArgumentType,
-    pageSize?: ArgumentType
-  ): Promise<WithQueryModel<PostDbModel[]>> {
-    return await postsRepository.getAllPosts(
-      sortBy!,
-      sortDirection!,
-      pageNumber!,
-      pageSize!
-    );
-  },
-  async getPostById(id: ArgumentType): Promise<PostDbModel | undefined> {
+  async getPostById(id: string): Promise<PostDbModel | undefined> {
     return await postsRepository.getPostById(id);
   },
 
-  async getPostByBlogID(
-    blogId: ArgumentType,
-    pageNumber: ArgumentType,
-    pageSize: ArgumentType,
-    sortBy: ArgumentType,
-    sortDirection: ArgumentType
-  ): Promise<WithQueryModel<PostDbModel[]>> {
-    return await postsRepository.getPostByBlogID(
-      blogId,
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection
-    );
-  },
-
-  async deleteById(id: ArgumentType): Promise<boolean> {
+  async deleteById(id: string): Promise<boolean> {
     return await postsRepository.deleteById(id);
   },
 
-  async createPost(
-    title: ArgumentType,
-    shortDescription: ArgumentType,
-    content: ArgumentType,
-    blogId: ArgumentType
-  ): Promise<PostDbModel> {
+  async createPost(payload: PostCreateModel): Promise<PostOutputModel> {
     const newPost = {
       id: new Date().getMilliseconds().toString(),
-      title: title!,
-      shortDescription: shortDescription!,
-      content: content!,
-      blogId: blogId!,
+      title: payload.title,
+      shortDescription: payload.shortDescription,
+      content: payload.content,
+      blogId: payload.blogId,
       blogName: `Blog Name #`,
       createdAt: new Date().toISOString(),
     };
@@ -63,35 +28,27 @@ export const postsServices = {
   },
 
   async createPostForCurrentBlog(
-    blogId: ArgumentType,
-    title: ArgumentType,
-    shortDescription: ArgumentType,
-    content: ArgumentType
-  ): Promise<PostDbModel> {
+    blogId: string,
+    payload: PostBlogIdCreateModel
+  ): Promise<PostOutputModel> {
     const newPost = {
       id: new Date().getMilliseconds().toString(),
-      title: title!,
-      shortDescription: shortDescription!,
-      content: content!,
-      blogId: blogId!,
+      title: payload.title,
+      shortDescription: payload.shortDescription!,
+      content: payload.content,
+      blogId: blogId,
       blogName: `Blog Name #`,
       createdAt: new Date().toISOString(),
     };
     return postsRepository.createPost(newPost);
   },
-  async updatePost(
-    id: ArgumentType,
-    title: ArgumentType,
-    shortDescription: ArgumentType,
-    content: ArgumentType,
-    blogId: ArgumentType
-  ): Promise<boolean> {
-    return await postsRepository.updatePost(
-      id,
+  async updatePost(id: string, payload: PostUpdateModel): Promise<boolean> {
+    const { blogId, content, shortDescription, title } = payload;
+    return await postsRepository.updatePost(id, {
       title,
       shortDescription,
       content,
-      blogId
-    );
+      blogId,
+    });
   },
 };

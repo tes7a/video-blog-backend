@@ -1,4 +1,4 @@
-export type PostRequestModel = {
+export type PostWIthQueryModel = {
   sortBy: string;
   sortDirection: string;
   pageNumber: string;
