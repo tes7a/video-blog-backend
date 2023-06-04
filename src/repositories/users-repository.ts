@@ -1,9 +1,6 @@
 import { usersDb } from "../db/db";
-import { WithQueryModel } from "../models/universal/WithQueryModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersDbModel } from "../models/users/UsersDbModel";
-
-type ArgumentType = string | undefined;
 
 export const usersRepository = {
   async createUser(newUser: UsersDbModel) {

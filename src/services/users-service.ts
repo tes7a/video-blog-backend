@@ -32,15 +32,17 @@ export const userService = {
 
     return usersRepository.createUser(newUser);
   },
-  async checkUserCredentials(payload: PayloadCheckUserType): Promise<boolean> {
+  async checkUserCredentials(
+    payload: PayloadCheckUserType
+  ): Promise<undefined | UsersDbModel> {
     const user = await usersRepository.findByLoginOrEmail(payload.loginOrEmail);
-    if (!user) return false;
+    if (!user) return undefined;
     const passwordHash = await this._generateHash(
       payload.password,
       user.passwordSalt
     );
-    if (user.passwordHash !== passwordHash) return false;
-    return true;
+    if (user.passwordHash !== passwordHash) return undefined;
+    return user;
   },
   async deleteUser(id: string): Promise<boolean> {
     return await usersRepository.deleteUser(id);

@@ -4,20 +4,24 @@ import { RequestWithBody } from "../types";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { userService } from "../services/users-service";
 import { createAuthValidationMiddleware } from "../middleware/validation/auth-validation";
+import { jwtService } from "../services/jwt-service";
 
 export const authRoute = Router({});
-const { OK, Not_Found, No_Content, Unauthorized } = HTTPS_ANSWERS;
+const { Created, Unauthorized } = HTTPS_ANSWERS;
 
 authRoute.post(
   "/login",
   createAuthValidationMiddleware,
   async (req: RequestWithBody<AuthLoginModel>, res: Response) => {
     const { loginOrEmail, password } = req.body;
-    const response = await userService.checkUserCredentials({
+    const user = await userService.checkUserCredentials({
       loginOrEmail,
       password,
     });
-    if (response) return res.sendStatus(No_Content);
+    if (user) {
+      const token = await jwtService.createJWT(user);
+      return res.status(Created).send(token);
+    }
     return res.sendStatus(Unauthorized);
   }
 );
