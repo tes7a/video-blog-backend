@@ -1,4 +1,5 @@
-export type PostRequestModel = {
+export type BlogWithQueryModel = {
+  searchNameTerm: string;
   sortBy: string;
   sortDirection: string;
   pageNumber: string;

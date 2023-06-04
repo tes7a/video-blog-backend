@@ -2,20 +2,11 @@ import { usersDb } from "../../db/db";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 import { UsersDbModel } from "../../models/users/UsersDbModel";
 import { UsersOutputModel } from "../../models/users/UsersOutputModel";
-
-type ArgumentType = string | undefined;
-type PayloadQueryType = {
-  sortBy: ArgumentType;
-  sortDirection: ArgumentType;
-  pageNumber: ArgumentType;
-  pageSize: ArgumentType;
-  searchLoginTerm: ArgumentType;
-  searchEmailTerm: ArgumentType;
-};
+import { UsersQueryModel } from "../../models/users/UsersQueryModel";
 
 export const usersQueryRepository = {
   async getUsers(
-    payload: PayloadQueryType
+    payload: UsersQueryModel
   ): Promise<WithQueryModel<UsersOutputModel[]>> {
     const defaultSearchLogin = payload.searchLoginTerm
       ? { login: { $regex: payload.searchLoginTerm, $options: "i" } }

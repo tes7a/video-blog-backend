@@ -2,6 +2,7 @@ import { usersDb } from "../db/db";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersDbModel } from "../models/users/UsersDbModel";
 
+
 export const usersRepository = {
   async createUser(newUser: UsersDbModel) {
     await usersDb.insertOne(newUser);

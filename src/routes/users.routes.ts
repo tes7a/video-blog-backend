@@ -63,8 +63,8 @@ usersRoute.delete(
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
   async (req: RequestWithParams<URIParamsModel>, res: Response) => {
-    const response = await userService.deleteUser(req.params.id);
-    if (!response) return res.sendStatus(Not_Found);
+    const result = await userService.deleteUser(req.params.id);
+    if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(No_Content);
   }
 );
