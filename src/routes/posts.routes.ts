@@ -112,6 +112,7 @@ postsRoute.post(
         })
       );
     }
+    return res.sendStatus(Not_Found);
   }
 );
 
