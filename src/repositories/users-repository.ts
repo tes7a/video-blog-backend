@@ -1,4 +1,3 @@
-import { BSONType, ObjectId } from "mongodb";
 import { usersDb } from "../db/db";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersDbModel } from "../models/users/UsersDbModel";
@@ -13,8 +12,8 @@ export const usersRepository = {
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
   },
-  async findUserById(id: ObjectId) {
-    return await usersDb.findOne({ _id: id });
+  async findUserById(id: string): Promise<UsersDbModel | null> {
+    return await usersDb.findOne({ id: id });
   },
   async deleteUser(id: string) {
     const { deletedCount } = await usersDb.deleteOne({ id: id });

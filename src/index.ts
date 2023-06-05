@@ -5,6 +5,7 @@ import { postsRoute } from "./routes/posts.routes";
 import { runDb } from "./db/db";
 import { usersRoute } from "./routes/users.routes";
 import { authRoute } from "./routes/auth.routes";
+import { commentsRoute } from "./routes/comments.routes";
 
 const express = require("express");
 export const app = express();
@@ -16,6 +17,7 @@ app.use("/testing", testingRoute);
 app.use("/blogs", blogsRoute);
 app.use("/posts", postsRoute);
 app.use("/users", usersRoute);
+app.use("/comments", commentsRoute);
 
 const starApp = async () => {
   await runDb();

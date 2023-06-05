@@ -7,7 +7,6 @@ import {
   RequestWithQuery,
 } from "../types/types";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
-import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 import { PostCreateModel } from "../models/posts/PostCreateModel";
 import { createPostsValidationMiddleware } from "../middleware/validation/posts-validation";
 import { PostUpdateModel } from "../models/posts/PostUpdateModel";
@@ -17,6 +16,13 @@ import { WithQueryModel } from "../models/universal/WithQueryModel";
 import { PostWIthQueryModel } from "../models/posts/PostWIthQueryModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { postQueryRepository } from "../repositories/query-repositories/post-query-repository";
+import { createCommentsValidationMiddleware } from "../middleware/validation/comments-validation";
+import { commentsService } from "../services/comments-service";
+import { authMiddleware } from "../middleware/validation/auth-validation";
+import { userService } from "../services/users-service";
+import { CommentsQueryModel } from "../models/comments/CommentsQueryModel";
+import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
+import { postCommentsQueryRepository } from "../repositories/query-repositories/post-comments-query-repository";
 
 export const postsRoute = Router({});
 
@@ -41,6 +47,18 @@ postsRoute.get(
 );
 
 postsRoute.get(
+  "/:id/comments",
+  async (
+    req: RequestWithQuery<CommentsQueryModel>,
+    res: Response<WithQueryModel<CommentsOutputModel[]>>
+  ) => {
+    const result = await postCommentsQueryRepository.getComments(req.query);
+    if (result) return res.status(OK).send(result);
+    return res.sendStatus(Not_Found);
+  }
+);
+
+postsRoute.get(
   "/:id",
   async (
     req: RequestWithParams<URIParamsModel>,
@@ -54,7 +72,7 @@ postsRoute.get(
 
 postsRoute.post(
   "/",
-  authMiddlewareCustomVariant,
+  authMiddleware,
   createPostsValidationMiddleware,
   async (
     req: RequestWithBody<PostCreateModel>,
@@ -72,9 +90,34 @@ postsRoute.post(
   }
 );
 
+postsRoute.post(
+  "/:id/comments",
+  authMiddleware,
+  createCommentsValidationMiddleware,
+  async (
+    req: RequestWithParamsAndBody<URIParamsModel, { content: string }>,
+    res: Response
+  ) => {
+    const { content } = req.body;
+    const post = await postsServices.getPostById(req.params.id);
+    const user = await userService.findLoggedUser(req.userId);
+    if (post && user) {
+      const { login, userId } = user;
+      return res.status(Created).send(
+        await commentsService.createdComment({
+          postId: post.id,
+          content,
+          userId,
+          userLogin: login,
+        })
+      );
+    }
+  }
+);
+
 postsRoute.put(
   "/:id",
-  authMiddlewareCustomVariant,
+  authMiddleware,
   createPostsValidationMiddleware,
   async (
     req: RequestWithParamsAndBody<URIParamsModel, PostUpdateModel>,
@@ -94,7 +137,7 @@ postsRoute.put(
 
 postsRoute.delete(
   "/:id",
-  authMiddlewareCustomVariant,
+  authMiddleware,
   inputValidationMiddleware,
   async (req: RequestWithParams<URIParamsModel>, res: Response) => {
     const result = await postsServices.deleteById(req.params.id);

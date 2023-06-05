@@ -4,7 +4,8 @@ import { UsersDbModel } from "../models/users/UsersDbModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
+import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
 
 export const userService = {
   async createUser(payload: UsersCreateModel): Promise<UsersCreateOutputModel> {
@@ -23,8 +24,20 @@ export const userService = {
 
     return usersRepository.createUser(newUser);
   },
-  async findUserById(id: ObjectId) {
+  async findUserById(id: string): Promise<UsersDbModel | null> {
     return usersRepository.findUserById(id);
+  },
+  async findLoggedUser(id: string): Promise<AuthOutputUserModel | undefined> {
+    debugger;
+    const result = await usersRepository.findUserById(id);
+    if (result) {
+      const { email, login } = result;
+      return {
+        email,
+        login,
+        userId: id,
+      };
+    }
   },
   async checkUserCredentials(
     payload: AuthLoginModel

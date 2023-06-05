@@ -1,5 +1,3 @@
-import { WithId } from "mongodb";
-
 export type UsersDbModel = {
   id: string;
   login: string;

@@ -1,23 +1,23 @@
 import { UsersDbModel } from "../models/users/UsersDbModel";
 import jwt from "jsonwebtoken";
 import { settings } from "../settings/settings";
-import { ObjectId } from "mongodb";
 import { log } from "console";
 
 export const jwtService = {
   async createJWT(user: UsersDbModel) {
-    debugger;
-    //@ts-ignore
-    return jwt.sign({ userId: user._id }, settings.JWT_SECRET, {
+    const token = jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
       expiresIn: "6h",
     });
+
+    return { accessToken: token };
   },
 
-  async getUserIdByToken(token: string) {
-    debugger;
+  async getUserIdByToken(token: string): Promise<string | null> {
     try {
-      const result: any = jwt.verify(token, settings.JWT_SECRET);
-      return new ObjectId(result.userId);
+      const result = jwt.verify(token, settings.JWT_SECRET) as {
+        userId: string;
+      };
+      return result.userId;
     } catch (e) {
       log(e);
       return null;
