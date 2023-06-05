@@ -5,7 +5,7 @@ import {
   RequestWithParams,
   RequestWithParamsAndBody,
   RequestWithQuery,
-} from "../types";
+} from "../types/types";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 import { PostCreateModel } from "../models/posts/PostCreateModel";

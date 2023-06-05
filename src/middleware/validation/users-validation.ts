@@ -19,7 +19,7 @@ const passwordMiddleware = body("password")
   .isString()
   .withMessage("Should be a string")
   .isLength({ min: 6 })
-  .withMessage("Min length 3 charters")
+  .withMessage("Min length 6 charters")
   .isLength({ max: 20 })
   .withMessage("Max length 20 charters");
 

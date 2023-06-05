@@ -1,3 +1,3 @@
-export settings = {
-    MONGO_URI: process.env.MONGO_URI || ""
-}
+export const settings = {
+  JWT_SECRET: process.env.JWT_SECRET || "123",
+};

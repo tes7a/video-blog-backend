@@ -6,7 +6,7 @@ import {
   RequestWithParams,
   RequestWithParamsAndBody,
   RequestWithQuery,
-} from "../types";
+} from "../types/types";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { createBlogValidationMiddleware } from "../middleware/validation/blogs-validation";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";

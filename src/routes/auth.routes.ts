@@ -1,10 +1,10 @@
 import { Request, Response, Router } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
-import { RequestWithBody } from "../types";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { userService } from "../services/users-service";
 import { createAuthValidationMiddleware } from "../middleware/validation/auth-validation";
 import { jwtService } from "../services/jwt-service";
+import { RequestWithBody } from "../types/types";
 
 export const authRoute = Router({});
 const { Created, Unauthorized } = HTTPS_ANSWERS;
@@ -19,8 +19,7 @@ authRoute.post(
       password,
     });
     if (user) {
-      const token = await jwtService.createJWT(user);
-      return res.status(Created).send(token);
+      return res.status(Created).send(await jwtService.createJWT(user));
     }
     return res.sendStatus(Unauthorized);
   }

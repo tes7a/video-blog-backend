@@ -3,7 +3,11 @@ import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { WithQueryModel } from "../models/universal/WithQueryModel";
 import { UsersOutputModel } from "../models/users/UsersOutputModel";
 import { usersQueryRepository } from "../repositories/query-repositories/users-query-repository";
-import { RequestWithBody, RequestWithParams, RequestWithQuery } from "../types";
+import {
+  RequestWithBody,
+  RequestWithParams,
+  RequestWithQuery,
+} from "../types/types";
 import { UsersQueryModel } from "../models/users/UsersQueryModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
@@ -12,12 +16,14 @@ import { createUserValidationMiddleware } from "../middleware/validation/users-v
 import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
+import { authMiddleware } from "../middleware/validation/auth-validation";
 
 export const usersRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
 usersRoute.get(
   "/",
+  authMiddleware,
   async (
     req: RequestWithQuery<UsersQueryModel>,
     res: Response<WithQueryModel<UsersOutputModel[]>>

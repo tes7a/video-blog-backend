@@ -4,6 +4,7 @@ import { UsersDbModel } from "../models/users/UsersDbModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
+import { ObjectId } from "mongodb";
 
 export const userService = {
   async createUser(payload: UsersCreateModel): Promise<UsersCreateOutputModel> {
@@ -22,7 +23,12 @@ export const userService = {
 
     return usersRepository.createUser(newUser);
   },
-  async checkUserCredentials(payload: AuthLoginModel): Promise<boolean> {
+  async findUserById(id: ObjectId) {
+    return usersRepository.findUserById(id);
+  },
+  async checkUserCredentials(
+    payload: AuthLoginModel
+  ): Promise<undefined | UsersDbModel> {
     const user = await usersRepository.findByLoginOrEmail(payload.loginOrEmail);
     if (!user) return undefined;
     const passwordHash = await this._generateHash(
