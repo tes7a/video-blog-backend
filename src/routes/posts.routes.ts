@@ -54,16 +54,19 @@ postsRoute.get(
     req: RequestWIthWithURIQueryParams<URIParamsModel, CommentsQueryModel>,
     res: Response<WithQueryModel<CommentsOutputModel[]>>
   ) => {
-    const result = await postCommentsQueryRepository.getComments(
-      req.params.id,
-      {
-        pageNumber: req.query.pageNumber,
-        pageSize: req.query.pageSize,
-        sortBy: req.query.sortBy,
-        sortDirection: req.query.sortDirection,
-      }
-    );
-    if (result) return res.status(OK).send(result);
+    const post = await postsServices.getPostById(req.params.id);
+    if (post) {
+      const result = await postCommentsQueryRepository.getComments(
+        req.params.id,
+        {
+          pageNumber: req.query.pageNumber,
+          pageSize: req.query.pageSize,
+          sortBy: req.query.sortBy,
+          sortDirection: req.query.sortDirection,
+        }
+      );
+      if (result) return res.status(OK).send(result);
+    }
     return res.sendStatus(Not_Found);
   }
 );
