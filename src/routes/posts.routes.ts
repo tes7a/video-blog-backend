@@ -23,6 +23,7 @@ import { CommentsQueryModel } from "../models/comments/CommentsQueryModel";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { postCommentsQueryRepository } from "../repositories/query-repositories/post-comments-query-repository";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
+import { authMiddleware } from "../middleware/validation/auth-validation";
 
 export const postsRoute = Router({});
 
@@ -92,7 +93,7 @@ postsRoute.post(
 
 postsRoute.post(
   "/:id/comments",
-  authMiddlewareCustomVariant,
+  authMiddleware,
   createCommentsValidationMiddleware,
   async (
     req: RequestWithParamsAndBody<URIParamsModel, { content: string }>,
