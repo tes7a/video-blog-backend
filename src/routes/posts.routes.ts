@@ -5,6 +5,7 @@ import {
   RequestWithParams,
   RequestWithParamsAndBody,
   RequestWithQuery,
+  RequestWIthWithURIQueryParams,
 } from "../types/types";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { PostCreateModel } from "../models/posts/PostCreateModel";
@@ -50,10 +51,18 @@ postsRoute.get(
 postsRoute.get(
   "/:id/comments",
   async (
-    req: RequestWithQuery<CommentsQueryModel>,
+    req: RequestWIthWithURIQueryParams<URIParamsModel, CommentsQueryModel>,
     res: Response<WithQueryModel<CommentsOutputModel[]>>
   ) => {
-    const result = await postCommentsQueryRepository.getComments(req.query);
+    const result = await postCommentsQueryRepository.getComments(
+      req.params.id,
+      {
+        pageNumber: req.query.pageNumber,
+        pageSize: req.query.pageSize,
+        sortBy: req.query.sortBy,
+        sortDirection: req.query.sortDirection,
+      }
+    );
     if (result) return res.status(OK).send(result);
     return res.sendStatus(Not_Found);
   }

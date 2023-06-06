@@ -6,10 +6,11 @@ import { WithQueryModel } from "../../models/universal/WithQueryModel";
 
 export const postCommentsQueryRepository = {
   async getComments(
+    postId: string,
     payload: CommentsQueryModel
   ): Promise<WithQueryModel<CommentsOutputModel[]>> {
     const allComments = await commentsDb
-      .find({ postId: { $regex: payload.postId } }, { projection: { _id: 0 } })
+      .find({ postId }, { projection: { _id: 0 } })
       .toArray();
     const defaultSortBy = payload.sortBy || "createdAt";
     const defaultSortDirection = payload.sortDirection || "desc";
@@ -18,7 +19,7 @@ export const postCommentsQueryRepository = {
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
     const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
     const filteredArray = await commentsDb
-      .find({}, { projection: { _id: 0 } })
+      .find({ postId }, { projection: { _id: 0 } })
       .sort({
         [defaultSortBy]: sortDirectionMongoDb,
         createdAt: sortDirectionMongoDb,
