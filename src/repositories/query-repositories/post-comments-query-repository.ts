@@ -2,7 +2,6 @@ import { commentsDb } from "../../db/db";
 import { CommentsOutputModel } from "../../models/comments/CommentsOutputModel";
 import { CommentsQueryModel } from "../../models/comments/CommentsQueryModel";
 import { CommentsDbModel } from "../../models/comments/CommetnsDbModel";
-import { PostDbModel } from "../../models/posts/PostDbModel";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 
 export const postCommentsQueryRepository = {
@@ -10,7 +9,7 @@ export const postCommentsQueryRepository = {
     payload: CommentsQueryModel
   ): Promise<WithQueryModel<CommentsOutputModel[]>> {
     const allComments = await commentsDb
-      .find({}, { projection: { _id: 0 } })
+      .find({ postId: { $regex: payload.postId } }, { projection: { _id: 0 } })
       .toArray();
     const defaultSortBy = payload.sortBy || "createdAt";
     const defaultSortDirection = payload.sortDirection || "desc";

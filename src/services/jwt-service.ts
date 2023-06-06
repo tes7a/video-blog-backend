@@ -13,7 +13,6 @@ export const jwtService = {
   },
 
   async getUserIdByToken(token: string): Promise<string | null> {
-    //test
     try {
       const result = jwt.verify(token, settings.JWT_SECRET) as {
         userId: string;
