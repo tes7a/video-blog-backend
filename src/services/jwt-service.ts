@@ -6,7 +6,7 @@ import { log } from "console";
 export const jwtService = {
   async createJWT(user: UsersDbModel) {
     const token = jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
-      expiresIn: "6h",
+      expiresIn: "10sec",
     });
 
     return { accessToken: token };
