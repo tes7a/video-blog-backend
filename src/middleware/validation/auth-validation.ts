@@ -17,9 +17,10 @@ export const authMiddleware = async (
   if (userId) {
     const user = await userService.findUserById(userId);
     req.userId = user!.id;
-    return next();
+    next();
+  } else {
+    return res.sendStatus(401);
   }
-  return res.sendStatus(401);
 };
 
 const loginOrEmailMiddleware = body("loginOrEmail")
