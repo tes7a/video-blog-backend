@@ -33,7 +33,7 @@ authRoute.post(
       password,
     });
     if (user) {
-      return res.status(Created).send(await jwtService.createJWT(user));
+      return res.status(OK).send(await jwtService.createJWT(user));
     }
     return res.sendStatus(Unauthorized);
   }
