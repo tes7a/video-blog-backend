@@ -11,7 +11,7 @@ import { inputValidationMiddleware } from "../middleware/validation/input-valida
 
 export const commentsRoute = Router({});
 
-const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
+const { OK, Not_Found, No_Content, Forbidden } = HTTPS_ANSWERS;
 
 commentsRoute.get(
   "/:id",
@@ -34,8 +34,14 @@ commentsRoute.put(
     res: Response<CommentsOutputModel>
   ) => {
     const { content } = req.body;
+    const comments = await commentsService.getCommentsById(req.params.id);
     const result = await commentsService.updateComment(req.params.id, content);
-    if (result) return res.sendStatus(No_Content);
+    if (result) {
+      if (req.userId === comments?.commentatorInfo.userId) {
+        return res.sendStatus(No_Content);
+      }
+      return res.sendStatus(Forbidden);
+    }
     return res.sendStatus(Not_Found);
   }
 );
