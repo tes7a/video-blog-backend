@@ -36,12 +36,10 @@ commentsRoute.put(
     const { content } = req.body;
     const comments = await commentsService.getCommentsById(req.params.id);
     const result = await commentsService.updateComment(req.params.id, content);
-    if (result) {
-      if (req.userId === comments?.commentatorInfo.userId) {
-        return res.sendStatus(No_Content);
-      }
+    if (req.userId !== comments?.commentatorInfo.userId)
       return res.sendStatus(Forbidden);
-    }
+    if (result) return res.sendStatus(No_Content);
+
     return res.sendStatus(Not_Found);
   }
 );
@@ -51,8 +49,11 @@ commentsRoute.delete(
   authMiddleware,
   inputValidationMiddleware,
   async (req: RequestWithParams<URIParamsModel>, res: Response) => {
+    const comments = await commentsService.getCommentsById(req.params.id);
     const result = await commentsService.deleteComment(req.params.id);
     if (!result) return res.sendStatus(Not_Found);
+    if (req.userId !== comments?.commentatorInfo.userId)
+      return res.sendStatus(Forbidden);
     return res.sendStatus(No_Content);
   }
 );
