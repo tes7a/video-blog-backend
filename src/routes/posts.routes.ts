@@ -18,11 +18,11 @@ import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { postQueryRepository } from "../repositories/query-repositories/post-query-repository";
 import { createCommentsValidationMiddleware } from "../middleware/validation/comments-validation";
 import { commentsService } from "../services/comments-service";
-import { authMiddleware } from "../middleware/validation/auth-validation";
 import { userService } from "../services/users-service";
 import { CommentsQueryModel } from "../models/comments/CommentsQueryModel";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { postCommentsQueryRepository } from "../repositories/query-repositories/post-comments-query-repository";
+import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 
 export const postsRoute = Router({});
 
@@ -72,7 +72,7 @@ postsRoute.get(
 
 postsRoute.post(
   "/",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   createPostsValidationMiddleware,
   async (
     req: RequestWithBody<PostCreateModel>,
@@ -92,7 +92,7 @@ postsRoute.post(
 
 postsRoute.post(
   "/:id/comments",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   createCommentsValidationMiddleware,
   async (
     req: RequestWithParamsAndBody<URIParamsModel, { content: string }>,
@@ -118,7 +118,7 @@ postsRoute.post(
 
 postsRoute.put(
   "/:id",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   createPostsValidationMiddleware,
   async (
     req: RequestWithParamsAndBody<URIParamsModel, PostUpdateModel>,
@@ -138,7 +138,7 @@ postsRoute.put(
 
 postsRoute.delete(
   "/:id",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   inputValidationMiddleware,
   async (req: RequestWithParams<URIParamsModel>, res: Response) => {
     const result = await postsServices.deleteById(req.params.id);

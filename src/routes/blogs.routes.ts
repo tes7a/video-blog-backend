@@ -23,7 +23,7 @@ import { blogsQueryRepository } from "../repositories/query-repositories/blogs-q
 import { BlogsOutputMode } from "../models/blogs-models/BlogsOutputModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { postQueryRepository } from "../repositories/query-repositories/post-query-repository";
-import { authMiddleware } from "../middleware/validation/auth-validation";
+import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 
 export const blogsRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
@@ -83,7 +83,7 @@ blogsRoute.get(
 
 blogsRoute.post(
   "/",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
   async (
     req: RequestWithBody<BlogCreateModel>,
@@ -97,7 +97,7 @@ blogsRoute.post(
 );
 blogsRoute.post(
   "/:id/posts",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   createPostForBlogIdValidationMiddleware,
   async (
     req: RequestWithParamsAndBody<URIParamsModel, PostBlogIdCreateModel>,
@@ -118,7 +118,7 @@ blogsRoute.post(
 
 blogsRoute.put(
   "/:id",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
   async (
     req: RequestWithParamsAndBody<URIParamsModel, BlogCreateModel>,
@@ -138,7 +138,7 @@ blogsRoute.put(
 
 blogsRoute.delete(
   "/:id",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const result = await blogsServices.deleteById(req.params.id);

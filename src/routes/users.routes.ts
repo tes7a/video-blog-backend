@@ -15,7 +15,7 @@ import { userService } from "../services/users-service";
 import { createUserValidationMiddleware } from "../middleware/validation/users-validation";
 import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
-import { authMiddleware } from "../middleware/validation/auth-validation";
+import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 
 export const usersRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
@@ -49,7 +49,7 @@ usersRoute.get(
 
 usersRoute.post(
   "/",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   createUserValidationMiddleware,
   async (
     req: RequestWithBody<UsersCreateModel>,
@@ -64,7 +64,7 @@ usersRoute.post(
 
 usersRoute.delete(
   "/:id",
-  authMiddleware,
+  authMiddlewareCustomVariant,
   inputValidationMiddleware,
   async (req: RequestWithParams<URIParamsModel>, res: Response) => {
     const result = await userService.deleteUser(req.params.id);
