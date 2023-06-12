@@ -53,9 +53,9 @@ export const usersQueryRepository = {
     return items.map((user) => {
       return {
         id: user.id,
-        email: user.email,
-        login: user.login,
-        createdAt: user.createdAt,
+        email: user.accountData.email,
+        login: user.accountData.login,
+        createdAt: user.accountData.createdAt,
       };
     });
   },

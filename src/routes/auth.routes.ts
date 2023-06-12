@@ -14,7 +14,7 @@ import { AuthRegistrationModel } from "../models/auth/AuthRegistrationModel";
 import { emailAdapters } from "../adapters/email-adapters";
 
 export const authRoute = Router({});
-const { Created, Unauthorized, OK } = HTTPS_ANSWERS;
+const { No_Content, Unauthorized, OK } = HTTPS_ANSWERS;
 
 authRoute.get(
   "/me",
@@ -30,8 +30,9 @@ authRoute.post(
   registrationAuthValidationMiddleware,
   async (req: RequestWithBody<AuthRegistrationModel>, res: Response) => {
     const { email, login, password } = req.body;
+    userService.createUser({ email, login, password });
     emailAdapters.sendEmail(email);
-    res.sendStatus(OK);
+    res.sendStatus(No_Content);
   }
 );
 

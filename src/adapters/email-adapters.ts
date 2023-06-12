@@ -3,15 +3,13 @@ import nodemailer from "nodemailer";
 export const emailAdapters = {
   async sendEmail(email: string) {
     const transport = nodemailer.createTransport({
-      //@ts-ignore
       service: "Gmail",
       auth: {
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASSWORD,
       },
     });
-
-    const info = await transport.sendMail({
+    await transport.sendMail({
       from: "Video Blogs <teset@gmail.com>",
       to: email,
       subject: "test",

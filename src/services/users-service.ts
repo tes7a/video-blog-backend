@@ -4,8 +4,8 @@ import { UsersDbModel } from "../models/users/UsersDbModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
-import { ObjectId, WithId } from "mongodb";
 import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
+import { add } from "date-fns";
 
 export const userService = {
   async createUser(payload: UsersCreateModel): Promise<UsersCreateOutputModel> {
@@ -15,11 +15,19 @@ export const userService = {
 
     const newUser: UsersDbModel = {
       id: new Date().getMilliseconds().toString(),
-      email,
-      passwordHash,
-      passwordSalt,
-      login,
-      createdAt: new Date().toISOString(),
+      accountData: {
+        email,
+        passwordHash,
+        passwordSalt,
+        login,
+        createdAt: new Date().toISOString(),
+      },
+      emailConfirmation: {
+        confirmationCode: "",
+        expirationDate: add(new Date(), {
+          hours: 2,
+        }),
+      },
     };
 
     return usersRepository.createUser(newUser);
@@ -31,7 +39,9 @@ export const userService = {
     debugger;
     const result = await usersRepository.findUserById(id);
     if (result) {
-      const { email, login } = result;
+      const {
+        accountData: { email, login },
+      } = result;
       return {
         email,
         login,
@@ -46,9 +56,9 @@ export const userService = {
     if (!user) return undefined;
     const passwordHash = await this._generateHash(
       payload.password,
-      user.passwordSalt
+      user.accountData.passwordSalt
     );
-    if (user.passwordHash !== passwordHash) return undefined;
+    if (user.accountData.passwordHash !== passwordHash) return undefined;
     return user;
   },
   async deleteUser(id: string): Promise<boolean> {
