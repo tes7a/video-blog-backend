@@ -65,6 +65,12 @@ const emailRegMiddleware = body("email")
   .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   .withMessage("Must be valid");
 
+const confirmationCodeMiddleware = body("code")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string");
+
 export const registrationAuthValidationMiddleware = [
   loginRegMiddleware,
   passwordRegMiddleware,
@@ -75,5 +81,10 @@ export const registrationAuthValidationMiddleware = [
 export const createAuthValidationMiddleware = [
   loginOrEmailMiddleware,
   passwordMiddleware,
+  inputValidationMiddleware,
+];
+
+export const checkConfirmationCodeMiddleware = [
+  confirmationCodeMiddleware,
   inputValidationMiddleware,
 ];

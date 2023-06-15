@@ -3,6 +3,7 @@ import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { userService } from "../services/users-service";
 import {
+  checkConfirmationCodeMiddleware,
   createAuthValidationMiddleware,
   registrationAuthValidationMiddleware,
 } from "../middleware/validation/auth-validation";
@@ -11,7 +12,7 @@ import { RequestWithBody } from "../types/types";
 import { authMiddleware } from "../middleware/validation/auth-validation";
 import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
 import { AuthRegistrationModel } from "../models/auth/AuthRegistrationModel";
-import { emailAdapters } from "../adapters/email-adapters";
+import { authService } from "../services/auth-service";
 
 export const authRoute = Router({});
 const { No_Content, Unauthorized, OK } = HTTPS_ANSWERS;
@@ -30,8 +31,7 @@ authRoute.post(
   registrationAuthValidationMiddleware,
   async (req: RequestWithBody<AuthRegistrationModel>, res: Response) => {
     const { email, login, password } = req.body;
-    userService.createUser({ email, login, password });
-    emailAdapters.sendEmail(email);
+    authService.createUser({ email, login, password });
     res.sendStatus(No_Content);
   }
 );
@@ -52,5 +52,13 @@ authRoute.post(
       return res.status(OK).send(await jwtService.createJWT(user));
     }
     return res.sendStatus(Unauthorized);
+  }
+);
+
+authRoute.post(
+  "registration-confirmation",
+  checkConfirmationCodeMiddleware,
+  async (req: RequestWithBody<{ code: string }>, res: Response) => {
+    const { code } = req.body;
   }
 );

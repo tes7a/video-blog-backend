@@ -5,7 +5,6 @@ import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel"
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
-import { add } from "date-fns";
 
 export const userService = {
   async createUser(payload: UsersCreateModel): Promise<UsersCreateOutputModel> {
@@ -21,12 +20,6 @@ export const userService = {
         passwordSalt,
         login,
         createdAt: new Date().toISOString(),
-      },
-      emailConfirmation: {
-        confirmationCode: "",
-        expirationDate: add(new Date(), {
-          hours: 2,
-        }),
       },
     };
 
