@@ -5,13 +5,14 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { emailsManager } from "../managers/emails-manager";
 import { usersRepository } from "../repositories/users-repository";
+import { log } from "console";
 
 export const authService = {
-  async createUser(payload: UsersCreateModel) {
+  async createUser(payload: UsersCreateModel): Promise<boolean> {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
-
+    debugger;
     const confirmationCode = uuidv4();
 
     const newUser: UsersDbModel = {
@@ -28,11 +29,28 @@ export const authService = {
         expirationDate: add(new Date(), {
           hours: 2,
         }),
+        isConfirmed: false,
       },
     };
-
-    emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
     usersRepository.createUser(newUser);
+    try {
+      emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  async confirmCode(code: string): Promise<boolean> {
+    const user = await usersRepository.findUserByConfirmCode(code);
+    if (!user) return false;
+    if (
+      user.emailConfirmation?.confirmationCode === code &&
+      user.emailConfirmation!.expirationDate! > new Date()
+    ) {
+      return await usersRepository.updateConfirmation(user.id);
+    }
+    return false;
   },
 
   async _generateHash(password: string, salt: string) {

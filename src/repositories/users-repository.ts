@@ -20,6 +20,18 @@ export const usersRepository = {
 
     return deletedCount === 1;
   },
+  async findUserByConfirmCode(code: string): Promise<UsersDbModel | null> {
+    return usersDb.findOne({ "emailConfirmation.confirmationCode": code });
+  },
+
+  async updateConfirmation(id: string): Promise<boolean> {
+    const { matchedCount } = await usersDb.updateOne(
+      { id: id },
+      { $set: { "emailConfirmation.isConfirmed": true } }
+    );
+
+    return matchedCount === 1;
+  },
   async _mapUser(user: UsersDbModel): Promise<UsersCreateOutputModel> {
     return {
       id: user.id,

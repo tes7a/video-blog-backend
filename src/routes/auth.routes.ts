@@ -15,7 +15,7 @@ import { AuthRegistrationModel } from "../models/auth/AuthRegistrationModel";
 import { authService } from "../services/auth-service";
 
 export const authRoute = Router({});
-const { No_Content, Unauthorized, OK } = HTTPS_ANSWERS;
+const { No_Content, Unauthorized, OK, Bad_Request } = HTTPS_ANSWERS;
 
 authRoute.get(
   "/me",
@@ -31,8 +31,9 @@ authRoute.post(
   registrationAuthValidationMiddleware,
   async (req: RequestWithBody<AuthRegistrationModel>, res: Response) => {
     const { email, login, password } = req.body;
-    authService.createUser({ email, login, password });
-    res.sendStatus(No_Content);
+    const result = await authService.createUser({ email, login, password });
+    if (result) return res.sendStatus(No_Content);
+    return res.sendStatus(Bad_Request);
   }
 );
 
@@ -56,9 +57,12 @@ authRoute.post(
 );
 
 authRoute.post(
-  "registration-confirmation",
+  "/registration-confirmation",
   checkConfirmationCodeMiddleware,
   async (req: RequestWithBody<{ code: string }>, res: Response) => {
     const { code } = req.body;
+    const result = await authService.confirmCode(code);
+    if (result) return res.sendStatus(No_Content);
+    return res.sendStatus(Bad_Request);
   }
 );
