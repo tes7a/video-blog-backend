@@ -4,6 +4,7 @@ import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { userService } from "../services/users-service";
 import {
   checkConfirmationCodeMiddleware,
+  checkEmailMiddleware,
   createAuthValidationMiddleware,
   registrationAuthValidationMiddleware,
 } from "../middleware/validation/auth-validation";
@@ -62,6 +63,17 @@ authRoute.post(
   async (req: RequestWithBody<{ code: string }>, res: Response) => {
     const { code } = req.body;
     const result = await authService.confirmCode(code);
+    if (result) return res.sendStatus(No_Content);
+    return res.sendStatus(Bad_Request);
+  }
+);
+
+authRoute.post(
+  "/registration-email-resending",
+  checkEmailMiddleware,
+  async (req: RequestWithBody<{ email: string }>, res: Response) => {
+    const { email } = req.body;
+    const result = await authService.resendingMail(email);
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Bad_Request);
   }

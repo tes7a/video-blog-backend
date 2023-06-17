@@ -52,7 +52,15 @@ export const authService = {
     }
     return false;
   },
-
+  async resendingMail(email: string): Promise<boolean> {
+    try {
+      const confirmationCode = uuidv4();
+      emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
+      return await usersRepository.refreshToken(email, confirmationCode);
+    } catch (e) {
+      return false;
+    }
+  },
   async _generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
   },

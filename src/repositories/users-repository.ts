@@ -32,6 +32,7 @@ export const usersRepository = {
 
     return matchedCount === 1;
   },
+  async refreshToken(token: string): Promise<boolean> {},
   async _mapUser(user: UsersDbModel): Promise<UsersCreateOutputModel> {
     return {
       id: user.id,

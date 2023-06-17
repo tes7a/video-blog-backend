@@ -106,3 +106,8 @@ export const checkConfirmationCodeMiddleware = [
   confirmationCodeMiddleware,
   inputValidationForRegistrationMiddleware,
 ];
+
+export const checkEmailMiddleware = [
+  emailRegMiddleware,
+  inputValidationForRegistrationMiddleware
+]
