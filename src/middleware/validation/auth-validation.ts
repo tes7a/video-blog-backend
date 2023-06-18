@@ -85,6 +85,14 @@ const confirmationCodeMiddleware = body("code")
   .isString()
   .withMessage("Should be a string");
 
+const emailResendMiddleware = body("email")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string")
+  .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  .withMessage("Must be valid");
+
 export const inputValidationForRegistrationMiddleware = (
   req: Request,
   res: Response,
@@ -121,6 +129,6 @@ export const checkConfirmationCodeMiddleware = [
 ];
 
 export const checkEmailMiddleware = [
-  emailRegMiddleware,
+  emailResendMiddleware,
   inputValidationForRegistrationMiddleware,
 ];
