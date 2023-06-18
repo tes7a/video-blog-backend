@@ -35,7 +35,7 @@ export const usersRepository = {
 
     return matchedCount === 1;
   },
-  async refreshToken(id: string, code: string): Promise<boolean> {
+  async refreshConfirmCode(id: string, code: string): Promise<boolean> {
     const { matchedCount } = await usersDb.updateOne(
       { id: id },
       { $set: { "emailConfirmation.confirmationCode": code } }

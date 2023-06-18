@@ -51,13 +51,16 @@ export const authService = {
     }
     return false;
   },
+
   async resendingMail(email: string): Promise<boolean> {
     try {
       const user = await usersRepository.findByLoginOrEmail(email);
-      if (!user || !user.emailConfirmation?.confirmationCode) return false;
+      if (!user) return false;
+      if (user.emailConfirmation?.isConfirmed) return false;
       const confirmationCode = uuidv4();
-      emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
-      return await usersRepository.refreshToken(user.id, confirmationCode);
+      await usersRepository.refreshConfirmCode(user.id, confirmationCode);
+      await emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
+      return true;
     } catch (e) {
       return false;
     }
