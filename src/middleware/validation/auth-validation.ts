@@ -47,7 +47,13 @@ const loginRegMiddleware = body("login")
   .isLength({ max: 10 })
   .withMessage("Max length 10 charters")
   .matches(/^[a-zA-Z0-9_-]*$/)
-  .withMessage("Must be valid");
+  .withMessage("Must be valid")
+  .custom(async (value) => {
+    const user = await authService.checkUser(value);
+    if (user) throw new Error("This login is already being used");
+
+    return true;
+  });
 
 const passwordRegMiddleware = body("password")
   .notEmpty({ ignore_whitespace: true })

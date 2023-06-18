@@ -39,8 +39,8 @@ export const authService = {
     }
   },
 
-  async checkUser(email: string) {
-    return usersRepository.findByLoginOrEmail(email);
+  async checkUser(value: string) {
+    return usersRepository.findByLoginOrEmail(value);
   },
 
   async confirmCode(code: string): Promise<boolean> {
