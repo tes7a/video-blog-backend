@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { emailsManager } from "../managers/emails-manager";
 import { usersRepository } from "../repositories/users-repository";
-import { log } from "console";
 
 export const authService = {
   async createUser(payload: UsersCreateModel): Promise<boolean> {
@@ -31,8 +30,8 @@ export const authService = {
         isConfirmed: false,
       },
     };
-    await usersRepository.createUser(newUser);
     try {
+      await usersRepository.createUser(newUser);
       await emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
       return true;
     } catch (e) {
