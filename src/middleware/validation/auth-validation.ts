@@ -1,8 +1,9 @@
-import { body } from "express-validator";
+import { body, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "./input-validation.middleware";
 import { NextFunction, Request, Response } from "express";
 import { jwtService } from "../../services/jwt-service";
 import { userService } from "../../services/users-service";
+import { HTTPS_ANSWERS } from "../../utils/https-answers";
 
 export const authMiddleware = async (
   req: Request,
@@ -35,8 +36,78 @@ const passwordMiddleware = body("password")
   .isString()
   .withMessage("Should be a string");
 
+const loginRegMiddleware = body("login")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string")
+  .isLength({ min: 3 })
+  .withMessage("Min length 3 charters")
+  .isLength({ max: 10 })
+  .withMessage("Max length 10 charters")
+  .matches(/^[a-zA-Z0-9_-]*$/)
+  .withMessage("Must be valid");
+
+const passwordRegMiddleware = body("password")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string")
+  .isLength({ min: 6 })
+  .withMessage("Min length 6 charters")
+  .isLength({ max: 20 })
+  .withMessage("Max length 20 charters");
+
+const emailRegMiddleware = body("email")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string")
+  .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  .withMessage("Must be valid");
+
+const confirmationCodeMiddleware = body("code")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string");
+
+export const inputValidationForRegistrationMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const errorsMessages = errors
+      .array({ onlyFirstError: true })
+      .map((e: any) => ({ message: e.msg, field: e.path }));
+
+    return res.status(HTTPS_ANSWERS.Bad_Request).send({ errorsMessages });
+  }
+
+  return next();
+};
+
+export const registrationAuthValidationMiddleware = [
+  loginRegMiddleware,
+  passwordRegMiddleware,
+  emailRegMiddleware,
+  inputValidationMiddleware,
+];
+
 export const createAuthValidationMiddleware = [
   loginOrEmailMiddleware,
   passwordMiddleware,
-  inputValidationMiddleware,
+  inputValidationForRegistrationMiddleware,
 ];
+
+export const checkConfirmationCodeMiddleware = [
+  confirmationCodeMiddleware,
+  inputValidationForRegistrationMiddleware,
+];
+
+export const checkEmailMiddleware = [
+  emailRegMiddleware,
+  inputValidationForRegistrationMiddleware
+]
