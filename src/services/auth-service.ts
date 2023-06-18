@@ -7,13 +7,11 @@ import { emailsManager } from "../managers/emails-manager";
 import { usersRepository } from "../repositories/users-repository";
 
 export const authService = {
-  async createUser(payload: UsersCreateModel): Promise<boolean> {
+  async createUser(payload: UsersCreateModel): Promise<boolean | Error> {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
     const confirmationCode = uuidv4();
-    const user = await usersRepository.findByLoginOrEmail(email);
-    if (user) return false;
     const newUser: UsersDbModel = {
       id: new Date().getMilliseconds().toString(),
       accountData: {
@@ -39,6 +37,10 @@ export const authService = {
     } catch (e) {
       return false;
     }
+  },
+
+  async checkUser(email: string) {
+    return usersRepository.findByLoginOrEmail(email);
   },
 
   async confirmCode(code: string): Promise<boolean> {

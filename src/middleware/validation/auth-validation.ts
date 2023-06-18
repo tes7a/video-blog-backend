@@ -4,6 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { jwtService } from "../../services/jwt-service";
 import { userService } from "../../services/users-service";
 import { HTTPS_ANSWERS } from "../../utils/https-answers";
+import { authService } from "../../services/auth-service";
 
 export const authMiddleware = async (
   req: Request,
@@ -64,7 +65,13 @@ const emailRegMiddleware = body("email")
   .isString()
   .withMessage("Should be a string")
   .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  .withMessage("Must be valid");
+  .withMessage("Must be valid")
+  .custom(async (value) => {
+    const user = await authService.checkUser(value);
+    if (user) throw new Error("This email is already being used");
+
+    return true;
+  });
 
 const confirmationCodeMiddleware = body("code")
   .notEmpty({ ignore_whitespace: true })
@@ -109,5 +116,5 @@ export const checkConfirmationCodeMiddleware = [
 
 export const checkEmailMiddleware = [
   emailRegMiddleware,
-  inputValidationForRegistrationMiddleware
-]
+  inputValidationForRegistrationMiddleware,
+];

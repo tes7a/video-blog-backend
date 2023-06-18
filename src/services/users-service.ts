@@ -29,7 +29,6 @@ export const userService = {
     return usersRepository.findUserById(id);
   },
   async findLoggedUser(id: string): Promise<AuthOutputUserModel | undefined> {
-    debugger;
     const result = await usersRepository.findUserById(id);
     if (result) {
       const {
