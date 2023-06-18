@@ -9,7 +9,10 @@ export const usersRepository = {
   },
   async findByLoginOrEmail(loginOrEmail: string): Promise<UsersDbModel | null> {
     return await usersDb.findOne({
-      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+      $or: [
+        { "accountData.email": loginOrEmail },
+        { "accountData.login": loginOrEmail },
+      ],
     });
   },
   async findUserById(id: string): Promise<UsersDbModel | null> {
@@ -32,7 +35,14 @@ export const usersRepository = {
 
     return matchedCount === 1;
   },
-  async refreshToken(token: string): Promise<boolean> {},
+  async refreshToken(id: string, code: string): Promise<boolean> {
+    const { matchedCount } = await usersDb.updateOne(
+      { id: id },
+      { $set: { "emailConfirmation.confirmationCode": code } }
+    );
+
+    return matchedCount === 1;
+  },
   async _mapUser(user: UsersDbModel): Promise<UsersCreateOutputModel> {
     return {
       id: user.id,

@@ -12,7 +12,6 @@ export const authService = {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
-    debugger;
     const confirmationCode = uuidv4();
 
     const newUser: UsersDbModel = {
@@ -43,7 +42,7 @@ export const authService = {
 
   async confirmCode(code: string): Promise<boolean> {
     const user = await usersRepository.findUserByConfirmCode(code);
-    if (!user) return false;
+    if (!user || !user.emailConfirmation?.isConfirmed) return false;
     if (
       user.emailConfirmation?.confirmationCode === code &&
       user.emailConfirmation!.expirationDate! > new Date()
@@ -54,9 +53,11 @@ export const authService = {
   },
   async resendingMail(email: string): Promise<boolean> {
     try {
+      const user = await usersRepository.findByLoginOrEmail(email);
+      if (!user || !user.emailConfirmation?.confirmationCode) return false;
       const confirmationCode = uuidv4();
       emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
-      return await usersRepository.refreshToken(email, confirmationCode);
+      return await usersRepository.refreshToken(user.id, confirmationCode);
     } catch (e) {
       return false;
     }
