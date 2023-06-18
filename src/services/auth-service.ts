@@ -31,9 +31,9 @@ export const authService = {
         isConfirmed: false,
       },
     };
-    usersRepository.createUser(newUser);
+    await usersRepository.createUser(newUser);
     try {
-      emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
+      await emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
       return true;
     } catch (e) {
       return false;

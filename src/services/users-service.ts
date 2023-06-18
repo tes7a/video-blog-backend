@@ -47,6 +47,7 @@ export const userService = {
   ): Promise<undefined | UsersDbModel> {
     const user = await usersRepository.findByLoginOrEmail(payload.loginOrEmail);
     if (!user) return undefined;
+    if (!user.emailConfirmation?.isConfirmed) return undefined;
     const passwordHash = await this._generateHash(
       payload.password,
       user.accountData.passwordSalt
