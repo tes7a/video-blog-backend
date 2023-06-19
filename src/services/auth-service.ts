@@ -44,12 +44,9 @@ export const authService = {
   },
 
   async confirmCode(code: string): Promise<boolean> {
+    debugger;
     const user = await usersRepository.findUserByConfirmCode(code);
-    if (!user || !user.emailConfirmation?.isConfirmed) return false;
-    if (
-      user.emailConfirmation?.confirmationCode === code &&
-      user.emailConfirmation!.expirationDate! > new Date()
-    ) {
+    if (user) {
       return await usersRepository.updateConfirmation(user.id);
     }
     return false;
@@ -69,9 +66,15 @@ export const authService = {
     }
   },
   async checkConfirmationCode(code: string): Promise<boolean | undefined> {
-    const result = await usersRepository.findUserByConfirmCode(code);
+    const user = await usersRepository.findUserByConfirmCode(code);
 
-    return result?.emailConfirmation?.isConfirmed;
+    if (!user || !user.emailConfirmation?.isConfirmed) return true;
+    if (user.emailConfirmation?.isConfirmed) return true;
+    if (
+      user.emailConfirmation?.confirmationCode === code &&
+      user.emailConfirmation!.expirationDate! > new Date()
+    )
+      return false;
   },
 
   async _generateHash(password: string, salt: string) {

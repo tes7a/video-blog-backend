@@ -85,8 +85,9 @@ const confirmationCodeMiddleware = body("code")
   .isString()
   .withMessage("Should be a string")
   .custom(async (value) => {
+    debugger;
     const result = await authService.checkConfirmationCode(value);
-    if (result) throw new Error("This code is already being used");
+    if (result) throw new Error("The code is invalid or has already been used");
 
     return true;
   });
@@ -100,7 +101,8 @@ const emailResendMiddleware = body("email")
   .withMessage("Must be valid")
   .custom(async (value) => {
     const user = await authService.checkUser(value);
-    if (user) throw new Error("This email is already being used");
+    if (user?.emailConfirmation?.isConfirmed)
+      throw new Error("Email already confirmed");
 
     return true;
   });
