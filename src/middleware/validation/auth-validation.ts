@@ -83,7 +83,13 @@ const confirmationCodeMiddleware = body("code")
   .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
-  .withMessage("Should be a string");
+  .withMessage("Should be a string")
+  .custom(async (value) => {
+    const result = await authService.checkConfirmationCode(value);
+    if (result) throw new Error("This code is already being used");
+
+    return true;
+  });
 
 const emailResendMiddleware = body("email")
   .notEmpty({ ignore_whitespace: true })
@@ -91,7 +97,13 @@ const emailResendMiddleware = body("email")
   .isString()
   .withMessage("Should be a string")
   .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  .withMessage("Must be valid");
+  .withMessage("Must be valid")
+  .custom(async (value) => {
+    const user = await authService.checkUser(value);
+    if (user) throw new Error("This email is already being used");
+
+    return true;
+  });
 
 export const inputValidationForRegistrationMiddleware = (
   req: Request,

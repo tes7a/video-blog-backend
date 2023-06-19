@@ -68,6 +68,12 @@ export const authService = {
       return false;
     }
   },
+  async checkConfirmationCode(code: string): Promise<boolean | undefined> {
+    const result = await usersRepository.findUserByConfirmCode(code);
+
+    return result?.emailConfirmation?.isConfirmed;
+  },
+
   async _generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
   },
