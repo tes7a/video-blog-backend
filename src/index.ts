@@ -1,23 +1,7 @@
-import bodyParser from "body-parser";
-import { testingRoute } from "./routes/testing.routes";
-import { blogsRoute } from "./routes/blogs.routes";
-import { postsRoute } from "./routes/posts.routes";
 import { runDb } from "./db/db";
-import { usersRoute } from "./routes/users.routes";
-import { authRoute } from "./routes/auth.routes";
-import { commentsRoute } from "./routes/comments.routes";
+import { app } from "./app";
 
-const express = require("express");
-export const app = express();
-app.use(bodyParser.json());
 const port = process.env.port || 3000;
-
-app.use("/auth", authRoute);
-app.use("/testing", testingRoute);
-app.use("/blogs", blogsRoute);
-app.use("/posts", postsRoute);
-app.use("/users", usersRoute);
-app.use("/comments", commentsRoute);
 
 const starApp = async () => {
   await runDb();
