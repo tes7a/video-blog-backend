@@ -100,6 +100,7 @@ const emailResendMiddleware = body("email")
   .withMessage("Must be valid")
   .custom(async (value) => {
     const user = await authService.checkUser(value);
+    if (!user) throw new Error("User email doesnt exist");
     if (user?.emailConfirmation?.isConfirmed)
       throw new Error("Email already confirmed");
 
