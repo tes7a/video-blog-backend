@@ -1,7 +1,10 @@
-import nodemailer from "nodemailer";
+import nodemailer, { SentMessageInfo } from "nodemailer";
 
 export const emailAdapters = {
-  async sendEmail(email: string, template: string) {
+  async sendEmail(email: string, template: string): Promise<SentMessageInfo> {
+    debugger;
+    const ema = process.env.EMAIL;
+    const aps = process.env.EMAIL_PASSWORD;
     const transport = nodemailer.createTransport({
       service: "Gmail",
       auth: {

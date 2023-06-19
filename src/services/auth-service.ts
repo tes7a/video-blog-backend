@@ -13,7 +13,7 @@ export const authService = {
     const passwordHash = await this._generateHash(password, passwordSalt);
     const confirmationCode = uuidv4();
     const newUser: UsersDbModel = {
-      id: new Date().getMilliseconds().toString(),
+      id: uuidv4(),
       accountData: {
         email,
         passwordHash,
@@ -44,7 +44,6 @@ export const authService = {
   },
 
   async confirmCode(code: string): Promise<boolean> {
-    debugger;
     const user = await usersRepository.findUserByConfirmCode(code);
     if (user) {
       return await usersRepository.updateConfirmation(user.id);
@@ -69,12 +68,8 @@ export const authService = {
     const user = await usersRepository.findUserByConfirmCode(code);
 
     if (!user || !user.emailConfirmation?.isConfirmed) return true;
-    if (user.emailConfirmation?.isConfirmed) return true;
-    if (
-      user.emailConfirmation?.confirmationCode === code &&
-      user.emailConfirmation!.expirationDate! > new Date()
-    )
-      return false;
+    if (user.emailConfirmation!.expirationDate! < new Date()) return true;
+    return false;
   },
 
   async _generateHash(password: string, salt: string) {

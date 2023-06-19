@@ -85,7 +85,6 @@ const confirmationCodeMiddleware = body("code")
   .isString()
   .withMessage("Should be a string")
   .custom(async (value) => {
-    debugger;
     const result = await authService.checkConfirmationCode(value);
     if (result) throw new Error("The code is invalid or has already been used");
 
