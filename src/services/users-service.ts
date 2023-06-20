@@ -21,6 +21,11 @@ export const userService = {
         login,
         createdAt: new Date().toISOString(),
       },
+      emailConfirmation: {
+        confirmationCode: "",
+        expirationDate: new Date(),
+        isConfirmed: true,
+      },
     };
 
     return usersRepository.createUser(newUser);
@@ -44,6 +49,7 @@ export const userService = {
   async checkUserCredentials(
     payload: AuthLoginModel
   ): Promise<undefined | UsersDbModel> {
+    debugger;
     const user = await usersRepository.findByLoginOrEmail(payload.loginOrEmail);
     if (!user) return undefined;
     if (!user.emailConfirmation?.isConfirmed) return undefined;
