@@ -1,4 +1,4 @@
-import { body, validationResult } from "express-validator";
+import { body, cookie, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "./input-validation.middleware";
 import { NextFunction, Request, Response } from "express";
 import { jwtService } from "../../services/jwt-service";
@@ -124,6 +124,29 @@ export const inputValidationForRegistrationMiddleware = (
   return next();
 };
 
+export const inputValidationForCookieMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const errorsMessages = errors
+      .array({ onlyFirstError: true })
+      .map((e: any) => ({ message: e.msg, field: e.path }));
+
+    return res.status(HTTPS_ANSWERS.Unauthorized).send({ errorsMessages });
+  }
+
+  return next();
+};
+
+const cookieValidation = cookie("refresh_token")
+  .notEmpty()
+  .withMessage("No Cookie");
+
+
+
 export const registrationAuthValidationMiddleware = [
   loginRegMiddleware,
   passwordRegMiddleware,
@@ -146,3 +169,8 @@ export const checkEmailMiddleware = [
   emailResendMiddleware,
   inputValidationForRegistrationMiddleware,
 ];
+
+export const checkCookieMiddleware = [
+  inputValidationForCookieMiddleware,
+  cookieValidation
+]

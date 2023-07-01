@@ -1,15 +1,21 @@
 import { UsersDbModel } from "../models/users/UsersDbModel";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { settings } from "../settings/settings";
 import { log } from "console";
 
 export const jwtService = {
-  async createJWT(user: UsersDbModel) {
+  async createJWT(user: UsersDbModel): Promise<{ accessToken: string }> {
     const token = jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "10",
     });
 
     return { accessToken: token };
+  },
+
+  async createRefreshJWT(user: UsersDbModel): Promise<string> {
+    return jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
+      expiresIn: "20",
+    });
   },
 
   async getUserIdByToken(token: string): Promise<string | null> {

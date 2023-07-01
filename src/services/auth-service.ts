@@ -14,6 +14,7 @@ export const authService = {
     const confirmationCode = uuidv4();
     const newUser: UsersDbModel = {
       id: new Date().getMilliseconds().toString(),
+      token: "",
       accountData: {
         email,
         passwordHash,
@@ -70,6 +71,18 @@ export const authService = {
     if (!user) return true;
     if (user.emailConfirmation?.isConfirmed) return true;
     if (user.emailConfirmation!.expirationDate! < new Date()) return true;
+    return false;
+  },
+
+  async findByToken(token: string): Promise<UsersDbModel | null> {
+    return await usersRepository.findByToken(token);
+  },
+
+  async logout(token: string): Promise<boolean> {
+    const user = await usersRepository.findByToken(token);
+    if (user) {
+      return usersRepository.updateToken(user.id, "");
+    }
     return false;
   },
 

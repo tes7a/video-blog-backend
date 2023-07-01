@@ -18,6 +18,10 @@ export const usersRepository = {
   async findUserById(id: string): Promise<UsersDbModel | null> {
     return await usersDb.findOne({ id: id });
   },
+  async findByToken(token: string): Promise<UsersDbModel | null> {
+    return await usersDb.findOne({ token });
+  },
+
   async deleteUser(id: string) {
     const { deletedCount } = await usersDb.deleteOne({ id: id });
 
@@ -31,6 +35,14 @@ export const usersRepository = {
     const { matchedCount } = await usersDb.updateOne(
       { id: id },
       { $set: { "emailConfirmation.isConfirmed": true } }
+    );
+
+    return matchedCount === 1;
+  },
+  async updateToken(id: string, token: string): Promise<boolean> {
+    const { matchedCount } = await usersDb.updateOne(
+      { id: id },
+      { $set: { token: token } }
     );
 
     return matchedCount === 1;

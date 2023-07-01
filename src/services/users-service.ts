@@ -14,6 +14,7 @@ export const userService = {
 
     const newUser: UsersDbModel = {
       id: new Date().getMilliseconds().toString(),
+      token: "",
       accountData: {
         email,
         passwordHash,
@@ -46,10 +47,12 @@ export const userService = {
       };
     }
   },
+  async updateToken(id: string, token: string): Promise<boolean> {
+    return usersRepository.updateToken(id, token);
+  },
   async checkUserCredentials(
     payload: AuthLoginModel
   ): Promise<undefined | UsersDbModel> {
-    debugger;
     const user = await usersRepository.findByLoginOrEmail(payload.loginOrEmail);
     if (!user) return undefined;
     if (!user.emailConfirmation?.isConfirmed) return undefined;
