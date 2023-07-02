@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { emailsManager } from "../managers/emails-manager";
 import { usersRepository } from "../repositories/users-repository";
-import { jwtService } from "./jwt-service";
 
 export const authService = {
   async createUser(payload: UsersCreateModel): Promise<boolean | Error> {
@@ -81,8 +80,7 @@ export const authService = {
 
   async logout(token: string): Promise<boolean> {
     const user = await usersRepository.findByToken(token);
-    const userId = await jwtService.getUserIdByToken(token);
-    if (userId && user) {
+    if (user) {
       return usersRepository.updateToken(user.id, "");
     }
     return false;
