@@ -6,7 +6,7 @@ import { log } from "console";
 export const jwtService = {
   async createJWT(user: UsersDbModel): Promise<{ accessToken: string }> {
     const token = jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
-      expiresIn: "10sec",
+      expiresIn: "10s",
     });
 
     return { accessToken: token };
@@ -14,7 +14,7 @@ export const jwtService = {
 
   async createRefreshJWT(user: UsersDbModel): Promise<string> {
     return jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
-      expiresIn: "20sec",
+      expiresIn: "20s",
     });
   },
 
