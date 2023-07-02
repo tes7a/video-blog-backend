@@ -5,10 +5,12 @@ import { blogsRoute } from "./routes/blogs.routes";
 import { postsRoute } from "./routes/posts.routes";
 import { usersRoute } from "./routes/users.routes";
 import { commentsRoute } from "./routes/comments.routes";
+import cookieParser from "cookie-parser";
 
 const express = require("express");
 export const app = express();
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.use("/auth", authRoute);
 app.use("/testing", testingRoute);

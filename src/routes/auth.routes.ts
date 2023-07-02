@@ -4,6 +4,7 @@ import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { userService } from "../services/users-service";
 import {
   checkConfirmationCodeMiddleware,
+  checkCookieMiddleware,
   checkEmailMiddleware,
   createAuthValidationMiddleware,
   registrationAuthValidationMiddleware,
@@ -51,6 +52,13 @@ authRoute.post(
       password,
     });
     if (user) {
+      const refreshToken = await jwtService.createRefreshJWT(user);
+      const result = await userService.updateToken(user.id, refreshToken);
+      if (!result) return res.sendStatus(Unauthorized);
+      res.cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: true,
+      });
       return res.status(OK).send(await jwtService.createJWT(user));
     }
     return res.sendStatus(Unauthorized);
@@ -76,5 +84,37 @@ authRoute.post(
     const result = await authService.resendingMail(email);
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Bad_Request);
+  }
+);
+
+authRoute.post(
+  "/refresh-token",
+  checkCookieMiddleware,
+  async (req: Request, res: Response<{ accessToken: string }>) => {
+    const token = req.cookies.refresh_token;
+    const user = await authService.findByToken(token);
+    if (user) {
+      const refreshToken = await jwtService.createRefreshJWT(user);
+      const result = await userService.updateToken(user.id, refreshToken);
+      if (!result) return res.sendStatus(Unauthorized);
+      res.cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: true,
+      });
+      return res.status(OK).send(await jwtService.createJWT(user));
+    }
+    if (!user) return res.sendStatus(Unauthorized);
+    return res.sendStatus(Unauthorized);
+  }
+);
+
+authRoute.post(
+  "/refresh-token",
+  checkCookieMiddleware,
+  async (req: Request, res: Response) => {
+    const token = req.cookies.refresh_token;
+    const result = await authService.logout(token);
+    if (result) return res.sendStatus(No_Content);
+    return res.sendStatus(Unauthorized);
   }
 );

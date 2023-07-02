@@ -1,5 +1,6 @@
 export type UsersDbModel = {
   id: string;
+  token: string;
   accountData: {
     login: string;
     passwordHash: string;
