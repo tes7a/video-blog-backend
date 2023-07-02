@@ -1,5 +1,5 @@
 import { UsersDbModel } from "../models/users/UsersDbModel";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { settings } from "../settings/settings";
 import { log } from "console";
 

@@ -141,11 +141,9 @@ export const inputValidationForCookieMiddleware = (
   return next();
 };
 
-const cookieValidation = cookie("refresh_token")
+const cookieValidation = cookie("refreshToken")
   .notEmpty()
   .withMessage("No Cookie");
-
-
 
 export const registrationAuthValidationMiddleware = [
   loginRegMiddleware,
@@ -172,5 +170,5 @@ export const checkEmailMiddleware = [
 
 export const checkCookieMiddleware = [
   inputValidationForCookieMiddleware,
-  cookieValidation
-]
+  cookieValidation,
+];
