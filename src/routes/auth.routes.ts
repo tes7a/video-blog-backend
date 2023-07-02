@@ -109,7 +109,7 @@ authRoute.post(
 );
 
 authRoute.post(
-  "/refresh-token",
+  "/logout",
   checkCookieMiddleware,
   async (req: Request, res: Response) => {
     const token = req.cookies.refreshToken;
