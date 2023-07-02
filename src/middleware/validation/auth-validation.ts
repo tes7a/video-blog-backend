@@ -143,7 +143,12 @@ export const inputValidationForCookieMiddleware = (
 
 const cookieValidation = cookie("refreshToken")
   .notEmpty()
-  .withMessage("No Cookie");
+  .withMessage("No Cookie")
+  .custom(async (value) => {
+    const userId = await jwtService.getUserIdByToken(value);
+    if (!userId) throw new Error("Token Expired");
+    return true;
+  });
 
 export const registrationAuthValidationMiddleware = [
   loginRegMiddleware,
@@ -169,6 +174,6 @@ export const checkEmailMiddleware = [
 ];
 
 export const checkCookieMiddleware = [
-  inputValidationForCookieMiddleware,
   cookieValidation,
+  inputValidationForCookieMiddleware,
 ];
