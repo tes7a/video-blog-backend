@@ -113,7 +113,6 @@ authRoute.post(
   checkCookieMiddleware,
   async (req: Request, res: Response) => {
     const token = req.cookies.refreshToken;
-    if (await !jwtService.createJWT(token)) return res.sendStatus(Unauthorized);
     const result = await authService.logout(token);
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Unauthorized);
