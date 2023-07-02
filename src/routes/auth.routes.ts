@@ -55,7 +55,7 @@ authRoute.post(
       const refreshToken = await jwtService.createRefreshJWT(user);
       const result = await userService.updateToken(user.id, refreshToken);
       if (!result) return res.sendStatus(Unauthorized);
-      res.cookie("refresh", refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
       });
@@ -91,13 +91,13 @@ authRoute.post(
   "/refresh-token",
   checkCookieMiddleware,
   async (req: Request, res: Response<{ accessToken: string }>) => {
-    const token = req.cookies.refresh;
+    const token = req.cookies.refreshToken;
     const user = await authService.findByToken(token);
     if (user) {
       const refreshToken = await jwtService.createRefreshJWT(user);
       const result = await userService.updateToken(user.id, refreshToken);
       if (!result) return res.sendStatus(Unauthorized);
-      res.cookie("refresh", refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
       });
@@ -112,7 +112,7 @@ authRoute.post(
   "/refresh-token",
   checkCookieMiddleware,
   async (req: Request, res: Response) => {
-    const token = req.cookies.refresh_token;
+    const token = req.cookies.refreshToken;
     const result = await authService.logout(token);
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Unauthorized);
