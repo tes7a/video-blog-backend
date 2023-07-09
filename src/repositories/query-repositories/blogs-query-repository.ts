@@ -1,7 +1,7 @@
 import { blogsDb } from "../../db/db";
-import { BlogDbModel } from "../../models/blogs-models/BlogDbModel";
-import { BlogWithQueryModel } from "../../models/blogs-models/BlogWithQueryModel";
-import { BlogsOutputMode } from "../../models/blogs-models/BlogsOutputModel";
+import { BlogDbModel } from "../../models/blogs/BlogDbModel";
+import { BlogWithQueryModel } from "../../models/blogs/BlogWithQueryModel";
+import { BlogsOutputMode } from "../../models/blogs/BlogsOutputModel";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 
 export const blogsQueryRepository = {

@@ -1,6 +1,6 @@
 import { blogsDb } from "../db/db";
-import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
-import { BlogsOutputMode } from "../models/blogs-models/BlogsOutputModel";
+import { BlogDbModel } from "../models/blogs/BlogDbModel";
+import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
 
 export const blogsRepository = {
   async getBlogById(id: string): Promise<BlogsOutputMode | undefined> {

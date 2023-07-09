@@ -1,10 +1,11 @@
 import { log } from "console";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
-import { BlogDbModel } from "../models/blogs-models/BlogDbModel";
+import { BlogDbModel } from "../models/blogs/BlogDbModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { UsersDbModel } from "../models/users/UsersDbModel";
 import { CommentsDbModel } from "../models/comments/CommetnsDbModel";
+import { DeviceDbModel } from "../models/devices/DeviceDbModel";
 dotenv.config();
 
 const mongoUri = process.env.MONGO_URL;
@@ -19,6 +20,8 @@ export const postsDb = dbConnect("posts").collection<PostDbModel>("inventory");
 export const usersDb = dbConnect("users").collection<UsersDbModel>("inventory");
 export const commentsDb =
   dbConnect("comments").collection<CommentsDbModel>("inventory");
+export const devicesDb =
+  dbConnect("devices").collection<DeviceDbModel[]>("inventory");
 
 export async function runDb() {
   try {

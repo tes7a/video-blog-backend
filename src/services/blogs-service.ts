@@ -1,5 +1,5 @@
-import { BlogCreateModel } from "../models/blogs-models/BlogCreateModel";
-import { BlogsOutputMode } from "../models/blogs-models/BlogsOutputModel";
+import { BlogCreateModel } from "../models/blogs/BlogCreateModel";
+import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
 import { blogsRepository } from "../repositories/blogs-repository";
 
 export const blogsServices = {

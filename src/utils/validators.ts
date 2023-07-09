@@ -1,4 +1,4 @@
-import { ErrorResponseModel } from "../models/videos-models/ErrorResponseModel";
+import { ErrorResponseModel } from "../models/videos/ErrorResponseModel";
 
 const returnErrorMessage = (message: string, field: string) => {
   return {

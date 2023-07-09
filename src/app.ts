@@ -6,6 +6,7 @@ import { postsRoute } from "./routes/posts.routes";
 import { usersRoute } from "./routes/users.routes";
 import { commentsRoute } from "./routes/comments.routes";
 import cookieParser from "cookie-parser";
+import { devicesRoute } from "./routes/devices.routes";
 
 const express = require("express");
 export const app = express();
@@ -18,3 +19,4 @@ app.use("/blogs", blogsRoute);
 app.use("/posts", postsRoute);
 app.use("/users", usersRoute);
 app.use("/comments", commentsRoute);
+app.use("/security", devicesRoute);
