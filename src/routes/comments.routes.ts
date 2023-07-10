@@ -7,7 +7,7 @@ import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { RequestWithParamsAndBody } from "../types/types";
 import { createCommentsValidationMiddleware } from "../middleware/validation/comments-validation";
 import { authMiddleware } from "../middleware/validation/auth-validation";
-import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
+import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
 
 export const commentsRoute = Router({});
 

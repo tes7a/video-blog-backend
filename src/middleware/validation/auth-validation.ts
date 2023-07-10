@@ -1,5 +1,5 @@
 import { body, cookie, validationResult } from "express-validator";
-import { inputValidationMiddleware } from "./input-validation.middleware";
+import { inputValidationMiddleware } from "../input-validation.middleware";
 import { NextFunction, Request, Response } from "express";
 import { jwtService } from "../../services/jwt-service";
 import { userService } from "../../services/users-service";

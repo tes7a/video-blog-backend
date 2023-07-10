@@ -1,6 +1,7 @@
 export type DeviceDbModel = {
-  id: string;
+  ip: string;
   title: string;
   lastActiveDate: string;
   deviceId: string;
+  // userID ????
 };

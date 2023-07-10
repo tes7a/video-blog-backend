@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { inputValidationMiddleware } from "./input-validation.middleware";
+import { inputValidationMiddleware } from "../input-validation.middleware";
 
 const loginMiddleware = body("login")
   .notEmpty({ ignore_whitespace: true })

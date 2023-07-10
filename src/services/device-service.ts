@@ -2,7 +2,7 @@ import { DeviceDbModel } from "../models/devices/DeviceDbModel";
 import { deviceRepository } from "../repositories/device-repository";
 
 export const deviceService = {
-  async getAllDevices(): Promise<DeviceDbModel[] | null> {
+  async getAllDevices(): Promise<DeviceDbModel | null> {
     return await deviceRepository.getAllDevices();
   },
 

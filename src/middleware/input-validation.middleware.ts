@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
-import { HTTPS_ANSWERS } from "../../utils/https-answers";
+import { HTTPS_ANSWERS } from "../utils/https-answers";
 
 export const inputValidationMiddleware = (
   req: Request,

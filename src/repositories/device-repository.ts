@@ -2,7 +2,7 @@ import { devicesDb } from "../db/db";
 import { DeviceDbModel } from "../models/devices/DeviceDbModel";
 
 export const deviceRepository = {
-  async getAllDevices(): Promise<DeviceDbModel[] | null> {
+  async getAllDevices(): Promise<DeviceDbModel | null> {
     return await devicesDb.findOne({});
   },
 

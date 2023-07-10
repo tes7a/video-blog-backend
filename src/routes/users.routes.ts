@@ -13,7 +13,7 @@ import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { userService } from "../services/users-service";
 import { createUserValidationMiddleware } from "../middleware/validation/users-validation";
-import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
+import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 

@@ -6,6 +6,7 @@ import { PostDbModel } from "../models/posts/PostDbModel";
 import { UsersDbModel } from "../models/users/UsersDbModel";
 import { CommentsDbModel } from "../models/comments/CommetnsDbModel";
 import { DeviceDbModel } from "../models/devices/DeviceDbModel";
+import { ApiConnectsModel } from "../models/api-connects/ApiConnectsModel";
 dotenv.config();
 
 const mongoUri = process.env.MONGO_URL;
@@ -21,7 +22,9 @@ export const usersDb = dbConnect("users").collection<UsersDbModel>("inventory");
 export const commentsDb =
   dbConnect("comments").collection<CommentsDbModel>("inventory");
 export const devicesDb =
-  dbConnect("devices").collection<DeviceDbModel[]>("inventory");
+  dbConnect("devices").collection<DeviceDbModel>("inventory");
+export const apiConnects =
+  dbConnect("api-connects").collection<ApiConnectsModel>("inventory");
 
 export async function runDb() {
   try {

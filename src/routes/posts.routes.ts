@@ -11,7 +11,7 @@ import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { PostCreateModel } from "../models/posts/PostCreateModel";
 import { createPostsValidationMiddleware } from "../middleware/validation/posts-validation";
 import { PostUpdateModel } from "../models/posts/PostUpdateModel";
-import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
+import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
 import { postsServices } from "../services/posts-service";
 import { WithQueryModel } from "../models/universal/WithQueryModel";
 import { PostWIthQueryModel } from "../models/posts/PostWIthQueryModel";

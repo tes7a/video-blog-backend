@@ -9,7 +9,7 @@ import {
 } from "../types/types";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { createBlogValidationMiddleware } from "../middleware/validation/blogs-validation";
-import { inputValidationMiddleware } from "../middleware/validation/input-validation.middleware";
+import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
 import { BlogCreateModel } from "../models/blogs/BlogCreateModel";
 import { blogsServices } from "../services/blogs-service";
 import { WithQueryModel } from "../models/universal/WithQueryModel";
