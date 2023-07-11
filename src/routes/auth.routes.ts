@@ -15,6 +15,7 @@ import { authMiddleware } from "../middleware/validation/auth-validation";
 import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
 import { AuthRegistrationModel } from "../models/auth/AuthRegistrationModel";
 import { authService } from "../services/auth-service";
+import { deviceService } from "../services/device-service";
 
 export const authRoute = Router({});
 const { No_Content, Unauthorized, OK, Bad_Request } = HTTPS_ANSWERS;
@@ -54,6 +55,15 @@ authRoute.post(
     if (user) {
       const refreshToken = await jwtService.createRefreshJWT(user);
       const result = await userService.updateToken(user.id, refreshToken);
+      await deviceService.createDevice({
+        userId: user.id,
+        lastActiveDate: new Date().toISOString(),
+        ip:
+          (req.headers["x-forwarded-for"] as string) ||
+          (req.socket.remoteAddress as string),
+        deviceId: req.headers["x-device-id"] as string,
+        title: req.headers["user-agent"] as string, /// need to ask ????
+      });
       if (!result) return res.sendStatus(Unauthorized);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
