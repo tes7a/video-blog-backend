@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { emailsManager } from "../managers/emails-manager";
 import { usersRepository } from "../repositories/users-repository";
 import { jwtService } from "./jwt-service";
+import { deviceRepository } from "../repositories/device-repository";
 
 export const authService = {
   async createUser(payload: UsersCreateModel): Promise<boolean | Error> {
@@ -82,11 +83,12 @@ export const authService = {
   async logout(token: string): Promise<boolean> {
     const result = await jwtService.getUserIdByToken(token);
     if (!result) return false;
-    const user = await usersRepository.findUserById(result?.userId);
-    if (user) {
-      return usersRepository.updateToken(user.id, "");
-    }
-    return false;
+    const deleted = await deviceRepository.deleteDevice(
+      result.deviceId,
+      result.userId
+    );
+    if (!deleted) return false;
+    return true;
   },
 
   async _generateHash(password: string, salt: string) {
