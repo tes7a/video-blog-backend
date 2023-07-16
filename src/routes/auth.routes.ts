@@ -105,10 +105,10 @@ authRoute.post(
   checkCookieMiddleware,
   async (req: Request, res: Response<{ accessToken: string }>) => {
     const token = req.cookies.refreshToken;
-    const user = await authService.findByToken(token);
+    const result = await jwtService.getUserIdByToken(token);
+    if (!result) return res.sendStatus(Unauthorized);
+    const user = await userService.findUserById(result.userId);
     if (user) {
-      const result = await jwtService.getUserIdByToken(token);
-      if (!result) return res.sendStatus(Unauthorized);
       const tokenDate = await jwtService.getJwtDate(token);
       const isDevice = await deviceService.getDevice(req.params.id, tokenDate!);
       if (isDevice) return res.sendStatus(Unauthorized);
