@@ -120,14 +120,14 @@ authRoute.post(
         user,
         result.deviceId
       );
-      // const date = await jwtService.getJwtDate(refreshToken);
-      // await deviceService.createDevice({
-      //   userId: user.id,
-      //   lastActiveDate: date!.toISOString(),
-      //   ip: req.ip,
-      //   deviceId: result.deviceId,
-      //   title: req.headers["user-agent"] || ("custom user-agent" as string),
-      // });
+      const date = await jwtService.getJwtDate(refreshToken);
+      await deviceService.createDevice({
+        userId: user.id,
+        lastActiveDate: date!.toISOString(),
+        ip: req.ip,
+        deviceId: result.deviceId,
+        title: req.headers["user-agent"] || ("custom user-agent" as string),
+      });
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
