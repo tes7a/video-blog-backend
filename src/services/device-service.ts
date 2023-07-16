@@ -15,6 +15,12 @@ export const deviceService = {
     return await deviceRepository.checkDeviceId(id);
   },
 
+  async getDevice(deviceId: string, date: Date): Promise<boolean> {
+    const result = await deviceRepository.getDevice(deviceId, date);
+    if(!result) return false
+    return true;
+  },
+
   async deleteAllDevices(id: string) {
     return await deviceRepository.deleteAllDevices(id);
   },

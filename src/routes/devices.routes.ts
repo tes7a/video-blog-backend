@@ -12,8 +12,9 @@ devicesRoute.get(
   "/devices",
   checkCookieMiddleware,
   async (req: Request, res: Response) => {
-    const id = await jwtService.getUserIdByToken(req.cookies.refreshToken);
-    if (id) res.status(OK).send(await deviceService.getAllDevices(id));
+    const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
+    if (result)
+      res.status(OK).send(await deviceService.getAllDevices(result.userId));
   }
 );
 
@@ -21,8 +22,8 @@ devicesRoute.delete(
   "/devices",
   checkCookieMiddleware,
   async (req: Request, res: Response) => {
-    const id = await jwtService.getUserIdByToken(req.cookies.refreshToken);
-    if (id) await deviceService.deleteAllDevices(id);
+    const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
+    if (result) await deviceService.deleteAllDevices(result.userId);
     res.sendStatus(No_Content);
   }
 );
@@ -31,12 +32,12 @@ devicesRoute.delete(
   "/devices/:id",
   checkCookieMiddleware,
   async (req: RequestWithParams<{ id: string }>, res: Response) => {
-    const userId = await jwtService.getUserIdByToken(req.cookies.refreshToken);
+    const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
     const deviceId = await deviceService.checkDeviceId(req.params.id);
-    if (userId && deviceId) {
-      const result = await deviceService.deleteDevice(req.params.id, userId);
-      if (result) return res.sendStatus(No_Content);
-      if (!result) return res.sendStatus(Forbidden);
+    if (result && deviceId) {
+      const response = await deviceService.deleteDevice(req.params.id, result.userId);
+      if (response) return res.sendStatus(No_Content);
+      if (!response) return res.sendStatus(Forbidden);
     }
     return res.sendStatus(Not_Found);
   }

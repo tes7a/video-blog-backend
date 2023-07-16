@@ -15,14 +15,11 @@ export const authMiddleware = async (
     return res.send(401);
   }
   const token = req.headers.authorization.split(" ")[1];
-  const userId = await jwtService.getUserIdByToken(token);
-  if (userId) {
-    const user = await userService.findUserById(userId);
-    req.userId = user!.id;
-    next();
-  } else {
-    return res.sendStatus(401);
-  }
+  const result = await jwtService.getUserIdByToken(token);
+  if (!result) return res.sendStatus(401);
+  const user = await userService.findUserById(result.userId);
+  req.userId = user!.id;
+  next();
 };
 
 const loginOrEmailMiddleware = body("loginOrEmail")
@@ -128,8 +125,8 @@ const cookieValidation = cookie("refreshToken")
   .notEmpty()
   .withMessage("No Cookie")
   .custom(async (value) => {
-    const userId = await jwtService.getUserIdByToken(value);
-    if (!userId) throw new Error("Token Expired");
+    const result = await jwtService.getUserIdByToken(value);
+    if (!result) throw new Error("Token Expired");
     return true;
   });
 

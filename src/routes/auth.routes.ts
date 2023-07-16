@@ -107,18 +107,23 @@ authRoute.post(
     const token = req.cookies.refreshToken;
     const user = await authService.findByToken(token);
     if (user) {
-      const deviceId = randomUUID();
-      const refreshToken = await jwtService.createRefreshJWT(user, deviceId);
-      const result = await userService.updateToken(user.id, refreshToken);
+      const result = await jwtService.getUserIdByToken(token);
+      if (!result) return res.sendStatus(Unauthorized);
+      const tokenDate = await jwtService.getJwtDate(token);
+      const isDevice = await deviceService.getDevice(req.params.id, tokenDate!);
+      if (isDevice) return res.sendStatus(Unauthorized);
+      const refreshToken = await jwtService.createRefreshJWT(
+        user,
+        result.deviceId
+      );
       const date = await jwtService.getJwtDate(refreshToken);
       await deviceService.createDevice({
         userId: user.id,
         lastActiveDate: date!.toISOString(),
         ip: req.ip,
-        deviceId,
+        deviceId: result.deviceId,
         title: req.headers["user-agent"] || ("custom user-agent" as string),
       });
-      if (!result) return res.sendStatus(Unauthorized);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,

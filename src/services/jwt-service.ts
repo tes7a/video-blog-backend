@@ -23,12 +23,15 @@ export const jwtService = {
     });
   },
 
-  async getUserIdByToken(token: string): Promise<string | null> {
+  async getUserIdByToken(
+    token: string
+  ): Promise<{ userId: string; deviceId: string } | null> {
     try {
       const result = jwt.verify(token, settings.JWT_SECRET) as {
         userId: string;
+        deviceId: string;
       };
-      return result.userId;
+      return result;
     } catch (e) {
       log(e);
       return null;
