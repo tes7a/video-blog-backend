@@ -124,6 +124,15 @@ export const inputValidationForRegistrationMiddleware = (
   return next();
 };
 
+const cookieValidation = cookie("refreshToken")
+  .notEmpty()
+  .withMessage("No Cookie")
+  .custom(async (value) => {
+    const userId = await jwtService.getUserIdByToken(value);
+    if (!userId) throw new Error("Token Expired");
+    return true;
+  });
+
 export const inputValidationForCookieMiddleware = (
   req: Request,
   res: Response,
@@ -140,15 +149,6 @@ export const inputValidationForCookieMiddleware = (
 
   return next();
 };
-
-const cookieValidation = cookie("refreshToken")
-  .notEmpty()
-  .withMessage("No Cookie")
-  .custom(async (value) => {
-    const userId = await jwtService.getUserIdByToken(value);
-    if (!userId) throw new Error("Token Expired");
-    return true;
-  });
 
 export const registrationAuthValidationMiddleware = [
   loginRegMiddleware,

@@ -7,6 +7,7 @@ export const jwtService = {
   async createJWT(user: UsersDbModel): Promise<{ accessToken: string }> {
     const token = jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
       expiresIn: "10s",
+      // expiresIn: "1h",
     });
 
     return { accessToken: token };
@@ -18,6 +19,7 @@ export const jwtService = {
   ): Promise<string> {
     return jwt.sign({ userId: user.id, deviceId }, settings.JWT_SECRET, {
       expiresIn: "20s",
+      // expiresIn: "1h",
     });
   },
 

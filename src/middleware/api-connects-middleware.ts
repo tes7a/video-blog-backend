@@ -25,7 +25,6 @@ export const apiConnectMiddleware = (
         r.url === url &&
         r.date >= new Date(currentDate.getTime() - 10000)
     ).length + 1;
-  log(countOfConnections);
 
   const limitationNumber = 5;
   requestLogs.push({

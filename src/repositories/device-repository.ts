@@ -15,13 +15,22 @@ export const deviceRepository = {
     return await devicesDb.deleteMany({ userId: id });
   },
 
-  async deleteDevice(id: string, userId: string): Promise<boolean> {
+  async deleteDevice(deviceId: string, userId: string): Promise<boolean> {
+    debugger;
     const { deletedCount } = await devicesDb.deleteOne({
-      id: id,
+      deviceId: deviceId,
       userId: userId,
     });
 
     return deletedCount === 1;
+  },
+
+  async checkDeviceId(id: string): Promise<boolean> {
+    const result = await devicesDb.findOne({ deviceId: id });
+    debugger;
+    if (result) return true;
+
+    return false;
   },
 
   async _mapDevices(items: DeviceDbModel[]): Promise<DeviceOutputModel[]> {
