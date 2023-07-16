@@ -41,6 +41,21 @@ export const deviceRepository = {
     return null;
   },
 
+  async updateDevice(device: DeviceDbModel): Promise<boolean> {
+    const { matchedCount } = await devicesDb.updateOne(
+      { deviceId: device.deviceId },
+      {
+        $set: {
+          lastActiveDate: device.lastActiveDate,
+          ip: device.ip,
+          deviceId: device.deviceId,
+          title: device.title,
+        },
+      }
+    );
+    return matchedCount === 1;
+  },
+
   async _mapDevices(items: DeviceDbModel[]): Promise<DeviceOutputModel[]> {
     return items.map((i) => ({
       ip: i.ip,

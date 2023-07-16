@@ -1,3 +1,4 @@
+import { IncomingHttpHeaders } from "http";
 import { DeviceDbModel } from "../models/devices/DeviceDbModel";
 import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
 import { deviceRepository } from "../repositories/device-repository";
@@ -15,9 +16,13 @@ export const deviceService = {
     return await deviceRepository.checkDeviceId(id);
   },
 
+  async updateDevice(device: DeviceDbModel): Promise<boolean> {
+    return await deviceRepository.updateDevice(device);
+  },
+
   async getDevice(deviceId: string, date: Date): Promise<boolean> {
     const result = await deviceRepository.getDevice(deviceId, date);
-    if(!result) return false
+    if (!result) return false;
     return true;
   },
 

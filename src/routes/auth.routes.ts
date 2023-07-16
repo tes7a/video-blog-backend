@@ -121,7 +121,7 @@ authRoute.post(
         result.deviceId
       );
       const date = await jwtService.getJwtDate(refreshToken);
-      await deviceService.createDevice({
+      await deviceService.updateDevice({
         userId: user.id,
         lastActiveDate: date!.toISOString(),
         ip: req.ip,
