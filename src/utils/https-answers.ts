@@ -7,4 +7,5 @@ export enum HTTPS_ANSWERS {
   Unauthorized = 401,
   Forbidden = 403,
   Not_Found = 404,
+  Too_Many_Requests = 429,
 }

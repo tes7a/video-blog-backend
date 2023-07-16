@@ -16,6 +16,8 @@ import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
 import { AuthRegistrationModel } from "../models/auth/AuthRegistrationModel";
 import { authService } from "../services/auth-service";
 import { deviceService } from "../services/device-service";
+import { apiConnectMiddleware } from "../middleware/api-connects-middleware";
+import { randomUUID } from "crypto";
 
 export const authRoute = Router({});
 const { No_Content, Unauthorized, OK, Bad_Request } = HTTPS_ANSWERS;
@@ -42,6 +44,7 @@ authRoute.post(
 
 authRoute.post(
   "/login",
+  apiConnectMiddleware,
   createAuthValidationMiddleware,
   async (
     req: RequestWithBody<AuthLoginModel>,
@@ -53,16 +56,16 @@ authRoute.post(
       password,
     });
     if (user) {
-      const refreshToken = await jwtService.createRefreshJWT(user);
+      const deviceId = randomUUID();
+      const refreshToken = await jwtService.createRefreshJWT(user, deviceId);
       const result = await userService.updateToken(user.id, refreshToken);
+      const date = await jwtService.getJwtDate(refreshToken);
       await deviceService.createDevice({
         userId: user.id,
-        lastActiveDate: new Date().toISOString(),
-        ip:
-          (req.headers["x-forwarded-for"] as string) ||
-          (req.socket.remoteAddress as string),
-        deviceId: req.headers["x-device-id"] as string,
-        title: req.headers["user-agent"] as string, /// need to ask ????
+        lastActiveDate: date!.toISOString(),
+        ip: req.ip,
+        deviceId,
+        title: req.headers["user-agent"] || ("custom user-agent" as string),
       });
       if (!result) return res.sendStatus(Unauthorized);
       res.cookie("refreshToken", refreshToken, {
