@@ -11,8 +11,10 @@ export const deviceRepository = {
   async createDevice(device: DeviceDbModel) {
     await devicesDb.insertOne(device);
   },
-  async deleteAllDevices(id: string) {
-    return await devicesDb.deleteMany({ userId: id });
+  async deleteAllDevices(userId: string, deviceId: string) {
+    return await devicesDb.deleteMany({
+      $and: [{ userId: userId }, { deviceId: { $ne: deviceId } }],
+    });
   },
 
   async deleteDevice(deviceId: string, userId: string): Promise<boolean> {

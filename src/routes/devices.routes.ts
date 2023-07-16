@@ -24,7 +24,7 @@ devicesRoute.delete(
   checkCookieMiddleware,
   async (req: Request, res: Response) => {
     const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
-    if (result) await deviceService.deleteAllDevices(result.userId);
+    if (result) await deviceService.deleteAllDevices(result.userId, result.deviceId);
     res.sendStatus(No_Content);
   }
 );
