@@ -33,6 +33,7 @@ authRoute.get(
 
 authRoute.post(
   "/registration",
+  apiConnectMiddleware,
   registrationAuthValidationMiddleware,
   async (req: RequestWithBody<AuthRegistrationModel>, res: Response) => {
     const { email, login, password } = req.body;
@@ -80,6 +81,7 @@ authRoute.post(
 
 authRoute.post(
   "/registration-confirmation",
+  apiConnectMiddleware,
   checkConfirmationCodeMiddleware,
   async (req: RequestWithBody<{ code: string }>, res: Response) => {
     const { code } = req.body;
@@ -91,6 +93,7 @@ authRoute.post(
 
 authRoute.post(
   "/registration-email-resending",
+  apiConnectMiddleware,
   checkEmailMiddleware,
   async (req: RequestWithBody<{ email: string }>, res: Response) => {
     const { email } = req.body;
@@ -102,6 +105,7 @@ authRoute.post(
 
 authRoute.post(
   "/refresh-token",
+  apiConnectMiddleware,
   checkCookieMiddleware,
   async (req: Request, res: Response<{ accessToken: string }>) => {
     const token = req.cookies.refreshToken;

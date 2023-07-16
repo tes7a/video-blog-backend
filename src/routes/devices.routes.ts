@@ -4,6 +4,7 @@ import { deviceService } from "../services/device-service";
 import { RequestWithParams } from "../types/types";
 import { checkCookieMiddleware } from "../middleware/validation/auth-validation";
 import { jwtService } from "../services/jwt-service";
+import { apiConnectMiddleware } from "../middleware/api-connects-middleware";
 
 export const devicesRoute = Router({});
 const { No_Content, OK, Not_Found, Forbidden } = HTTPS_ANSWERS;
@@ -30,6 +31,7 @@ devicesRoute.delete(
 
 devicesRoute.delete(
   "/devices/:id",
+  apiConnectMiddleware,
   checkCookieMiddleware,
   async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
