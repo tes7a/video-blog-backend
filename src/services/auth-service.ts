@@ -81,7 +81,6 @@ export const authService = {
 
   async logout(token: string): Promise<boolean> {
     const result = await jwtService.getUserIdByToken(token);
-    debugger;
     if (!result) return false;
     const user = await usersRepository.findUserById(result?.userId);
     if (user) {
