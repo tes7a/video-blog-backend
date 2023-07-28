@@ -7,7 +7,7 @@ export const commentsRepository = {
     idComment: string
   ): Promise<CommentsOutputModel | undefined> {
     const res = (
-      await commentsDb.find({ id: { $regex: idComment } }).toArray()
+      await commentsDb.find({ id: { $regex: idComment } }).lean()
     )[0];
     if (!res) return undefined;
     const {
@@ -29,7 +29,7 @@ export const commentsRepository = {
   async createComment(
     newComment: CommentsDbModel
   ): Promise<CommentsOutputModel> {
-    await commentsDb.insertOne(newComment);
+    await commentsDb.insertMany([newComment]);
     return {
       id: newComment.id,
       content: newComment.content,

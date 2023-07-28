@@ -8,9 +8,7 @@ export const postQueryRepository = {
   async getPosts(
     payload: PostWIthQueryModel
   ): Promise<WithQueryModel<PostOutputModel[]>> {
-    const allPosts = await postsDb
-      .find({}, { projection: { _id: 0 } })
-      .toArray();
+    const allPosts = await postsDb.find({}, { projection: { _id: 0 } }).lean();
     const defaultSortBy = payload.sortBy || "createdAt";
     const defaultSortDirection = payload.sortDirection || "desc";
     const defaultPageSize = +payload.pageSize! || 10;
@@ -28,7 +26,7 @@ export const postQueryRepository = {
       })
       .skip(startIndex)
       .limit(+defaultPageSize!)
-      .toArray();
+      .lean();
 
     const pagesCount = Math.ceil(allPosts.length / defaultPageSize);
     const totalCount = allPosts.length;
@@ -56,7 +54,7 @@ export const postQueryRepository = {
   ): Promise<WithQueryModel<PostOutputModel[]>> {
     const res = await postsDb
       .find({ blogId: { $regex: blogId } }, { projection: { _id: 0 } })
-      .toArray();
+      .lean();
     const defaultSortBy = payload.sortBy || "createdAt";
     const defaultSortDirection = payload.sortDirection || "desc";
     const defaultPageSize = +payload.pageSize! || 10;
@@ -71,7 +69,7 @@ export const postQueryRepository = {
       .sort({ [defaultSortBy]: sortDirectionMongoDb })
       .skip(startIndex)
       .limit(+defaultPageSize!)
-      .toArray();
+      .lean();
 
     const pagesCount = Math.ceil(res.length / defaultPageSize);
     const totalCount = res.length;

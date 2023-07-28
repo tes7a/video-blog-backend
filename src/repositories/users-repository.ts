@@ -4,7 +4,7 @@ import { UsersDbModel } from "../models/users/UsersDbModel";
 
 export const usersRepository = {
   async createUser(newUser: UsersDbModel) {
-    await usersDb.insertOne(newUser);
+    await usersDb.insertMany([newUser]);
     return await this._mapUser(newUser);
   },
   async findByLoginOrEmail(loginOrEmail: string): Promise<UsersDbModel | null> {

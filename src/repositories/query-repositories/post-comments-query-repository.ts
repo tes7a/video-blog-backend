@@ -11,7 +11,7 @@ export const postCommentsQueryRepository = {
   ): Promise<WithQueryModel<CommentsOutputModel[]>> {
     const allComments = await commentsDb
       .find({ postId }, { projection: { _id: 0 } })
-      .toArray();
+      .lean();
     const defaultSortBy = payload.sortBy || "createdAt";
     const defaultSortDirection = payload.sortDirection || "desc";
     const defaultPageSize = +payload.pageSize! || 10;
@@ -26,7 +26,7 @@ export const postCommentsQueryRepository = {
       })
       .skip(startIndex)
       .limit(+defaultPageSize!)
-      .toArray();
+      .lean();
     const pagesCount = Math.ceil(allComments.length / defaultPageSize);
     const totalCount = allComments.length;
 

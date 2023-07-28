@@ -5,7 +5,7 @@ import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 
 export const postsRepository = {
   async getPostById(id: string): Promise<PostDbModel | undefined> {
-    const res = (await postsDb.find({ id: { $regex: id } }).toArray())[0];
+    const res = (await postsDb.find({ id: { $regex: id } }).lean())[0];
     if (!res) return undefined;
     return {
       blogId: res.blogId,
@@ -24,7 +24,7 @@ export const postsRepository = {
   },
 
   async createPost(newPost: PostDbModel): Promise<PostOutputModel> {
-    await postsDb.insertOne(newPost);
+    await postsDb.insertMany([newPost]);
     return {
       id: newPost.id,
       title: newPost.title,

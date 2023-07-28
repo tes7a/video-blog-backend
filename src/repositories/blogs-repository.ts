@@ -4,7 +4,7 @@ import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
 
 export const blogsRepository = {
   async getBlogById(id: string): Promise<BlogsOutputMode | undefined> {
-    const res = (await blogsDb.find({ id: { $regex: id } }).toArray())[0];
+    const res = (await blogsDb.find({ id: { $regex: id } }).lean())[0];
     if (!res) return undefined;
     return {
       id: res.id,
@@ -21,7 +21,7 @@ export const blogsRepository = {
     return deletedCount === 1;
   },
   async createdBlog(newBlog: BlogDbModel): Promise<BlogsOutputMode> {
-    await blogsDb.insertOne(newBlog);
+    await blogsDb.insertMany([newBlog]);
     return {
       id: newBlog.id,
       name: newBlog.name,

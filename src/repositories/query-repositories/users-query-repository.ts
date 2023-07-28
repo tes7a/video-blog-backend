@@ -25,7 +25,7 @@ export const usersQueryRepository = {
         { $or: [defaultSearchEMail, defaultSearchLogin] },
         { projection: { _id: 0 } }
       )
-      .toArray();
+      .lean();
 
     const sortedUsers = await usersDb
       .find(
@@ -35,7 +35,7 @@ export const usersQueryRepository = {
       .sort({ [defaultSortBy]: sortDirectionMongoDb })
       .skip(startIndex)
       .limit(defaultPageSize)
-      .toArray();
+      .lean();
 
     const pagesCount = Math.ceil(allUsers.length / defaultPageSize);
     const totalCount = allUsers.length;

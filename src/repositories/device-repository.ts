@@ -4,12 +4,12 @@ import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
 
 export const deviceRepository = {
   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
-    const devices = await devicesDb.find({ userId: { $regex: id } }).toArray();
+    const devices = await devicesDb.find({ userId: { $regex: id } }).lean();
 
     return await this._mapDevices(devices);
   },
   async createDevice(device: DeviceDbModel) {
-    await devicesDb.insertOne(device);
+    await devicesDb.insertMany([device]);
   },
   async deleteAllDevices(userId: string, deviceId: string) {
     return await devicesDb.deleteMany({

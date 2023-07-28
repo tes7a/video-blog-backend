@@ -20,13 +20,13 @@ export const blogsQueryRepository = {
 
     const allBlogs = await blogsDb
       .find(defaultSearchName, { projection: { _id: 0 } })
-      .toArray();
+      .lean();
     const filteredArray = await blogsDb
       .find(defaultSearchName, { projection: { _id: 0 } })
       .sort({ [defaultSortBy]: sortDirectionMongoDb })
       .skip(startIndex)
       .limit(+defaultPageSize!)
-      .toArray();
+      .lean();
 
     const pagesCount = Math.ceil(allBlogs.length / defaultPageSize);
     const totalCount = allBlogs.length;
