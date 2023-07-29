@@ -1,4 +1,4 @@
-import { postsDb } from "../../db/db";
+import { PostModelClass } from "../../db/db";
 import { PostDbModel } from "../../models/posts/PostDbModel";
 import { PostOutputModel } from "../../models/posts/PostOutputModel";
 import { PostWIthQueryModel } from "../../models/posts/PostWIthQueryModel";
@@ -8,18 +8,20 @@ export const postQueryRepository = {
   async getPosts(
     payload: PostWIthQueryModel
   ): Promise<WithQueryModel<PostOutputModel[]>> {
-    const allPosts = await postsDb.find({}, { projection: { _id: 0 } }).lean();
+    const allPosts = await PostModelClass.find(
+      {},
+      { projection: { _id: 0 } }
+    ).lean();
     const defaultSortBy = payload.sortBy || "createdAt";
     const defaultSortDirection = payload.sortDirection || "desc";
     const defaultPageSize = +payload.pageSize! || 10;
     const defaultPageNumber = +payload.pageNumber! || 1;
-    // const pagesCount = Math.ceil(allPosts.length / defaultPageSize);
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    // const endIndex = defaultPageNumber * defaultPageSize;
     const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
-    // const totalCount = allPosts.length;
-    const filteredArray = await postsDb
-      .find({}, { projection: { _id: 0 } })
+    const filteredArray = await PostModelClass.find(
+      {},
+      { projection: { _id: 0 } }
+    )
       .sort({
         [defaultSortBy]: sortDirectionMongoDb,
         createdAt: sortDirectionMongoDb,
@@ -31,15 +33,6 @@ export const postQueryRepository = {
     const pagesCount = Math.ceil(allPosts.length / defaultPageSize);
     const totalCount = allPosts.length;
 
-    // const modifiedArray = allPosts
-    //   .sort((p1, p2) => {
-    //     if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
-    //       return defaultSortDirection === "asc" ? -1 : 1;
-    //     if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
-    //       return defaultSortDirection === "asc" ? 1 : -1;
-    //     return 0;
-    //   })
-    //   .slice(startIndex, endIndex);
     return {
       pagesCount,
       page: defaultPageNumber,
@@ -52,20 +45,20 @@ export const postQueryRepository = {
     blogId: string,
     payload: PostWIthQueryModel
   ): Promise<WithQueryModel<PostOutputModel[]>> {
-    const res = await postsDb
-      .find({ blogId: { $regex: blogId } }, { projection: { _id: 0 } })
-      .lean();
+    const res = await PostModelClass.find(
+      { blogId: { $regex: blogId } },
+      { projection: { _id: 0 } }
+    ).lean();
     const defaultSortBy = payload.sortBy || "createdAt";
     const defaultSortDirection = payload.sortDirection || "desc";
     const defaultPageSize = +payload.pageSize! || 10;
     const defaultPageNumber = +payload.pageNumber! || 1;
-    // const pagesCount = Math.ceil(res.length / defaultPageSize);
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    // const endIndex = defaultPageNumber * defaultPageSize;
-    // const totalCount = res.length;
     const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
-    const filteredArray = await postsDb
-      .find({ blogId: { $regex: blogId } }, { projection: { _id: 0 } })
+    const filteredArray = await PostModelClass.find(
+      { blogId: { $regex: blogId } },
+      { projection: { _id: 0 } }
+    )
       .sort({ [defaultSortBy]: sortDirectionMongoDb })
       .skip(startIndex)
       .limit(+defaultPageSize!)
@@ -74,15 +67,6 @@ export const postQueryRepository = {
     const pagesCount = Math.ceil(res.length / defaultPageSize);
     const totalCount = res.length;
 
-    // const modifiedArray = res
-    //   .sort((p1, p2) => {
-    //     if (p1[defaultSortBy as SortType] < p2[defaultSortBy as SortType])
-    //       return defaultSortDirection === "asc" ? -1 : 1;
-    //     if (p1[defaultSortBy as SortType] > p2[defaultSortBy as SortType])
-    //       return defaultSortDirection === "asc" ? 1 : -1;
-    //     return 0;
-    //   })
-    //   .slice(startIndex, endIndex);
     return {
       pagesCount,
       page: defaultPageNumber,

@@ -1,14 +1,14 @@
-import { usersDb } from "../db/db";
+import { UserModelClass } from "../db/db";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersDbModel } from "../models/users/UsersDbModel";
 
 export const usersRepository = {
   async createUser(newUser: UsersDbModel) {
-    await usersDb.insertMany([newUser]);
+    await UserModelClass.insertMany([newUser]);
     return await this._mapUser(newUser);
   },
   async findByLoginOrEmail(loginOrEmail: string): Promise<UsersDbModel | null> {
-    return await usersDb.findOne({
+    return await UserModelClass.findOne({
       $or: [
         { "accountData.email": loginOrEmail },
         { "accountData.login": loginOrEmail },
@@ -16,23 +16,25 @@ export const usersRepository = {
     });
   },
   async findUserById(id: string): Promise<UsersDbModel | null> {
-    return await usersDb.findOne({ id: id });
+    return await UserModelClass.findOne({ id: id });
   },
   async findByToken(token: string): Promise<UsersDbModel | null> {
-    return await usersDb.findOne({ token });
+    return await UserModelClass.findOne({ token });
   },
 
   async deleteUser(id: string) {
-    const { deletedCount } = await usersDb.deleteOne({ id: id });
+    const { deletedCount } = await UserModelClass.deleteOne({ id: id });
 
     return deletedCount === 1;
   },
   async findUserByConfirmCode(code: string): Promise<UsersDbModel | null> {
-    return usersDb.findOne({ "emailConfirmation.confirmationCode": code });
+    return UserModelClass.findOne({
+      "emailConfirmation.confirmationCode": code,
+    });
   },
 
   async updateConfirmation(id: string): Promise<boolean> {
-    const { matchedCount } = await usersDb.updateOne(
+    const { matchedCount } = await UserModelClass.updateOne(
       { id: id },
       { $set: { "emailConfirmation.isConfirmed": true } }
     );
@@ -40,7 +42,7 @@ export const usersRepository = {
     return matchedCount === 1;
   },
   async updateToken(id: string, token: string): Promise<boolean> {
-    const { matchedCount } = await usersDb.updateOne(
+    const { matchedCount } = await UserModelClass.updateOne(
       { id: id },
       { $set: { token: token } }
     );
@@ -48,7 +50,7 @@ export const usersRepository = {
     return matchedCount === 1;
   },
   async refreshConfirmCode(id: string, code: string): Promise<boolean> {
-    const { matchedCount } = await usersDb.updateOne(
+    const { matchedCount } = await UserModelClass.updateOne(
       { id: id },
       { $set: { "emailConfirmation.confirmationCode": code } }
     );

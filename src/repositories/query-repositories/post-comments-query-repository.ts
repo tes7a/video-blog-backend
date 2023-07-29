@@ -1,4 +1,4 @@
-import { commentsDb } from "../../db/db";
+import { CommentModelClass } from "../../db/db";
 import { CommentsOutputModel } from "../../models/comments/CommentsOutputModel";
 import { CommentsQueryModel } from "../../models/comments/CommentsQueryModel";
 import { CommentsDbModel } from "../../models/comments/CommetnsDbModel";
@@ -9,17 +9,20 @@ export const postCommentsQueryRepository = {
     postId: string,
     payload: CommentsQueryModel
   ): Promise<WithQueryModel<CommentsOutputModel[]>> {
-    const allComments = await commentsDb
-      .find({ postId }, { projection: { _id: 0 } })
-      .lean();
+    const allComments = await CommentModelClass.find(
+      { postId },
+      { projection: { _id: 0 } }
+    ).lean();
     const defaultSortBy = payload.sortBy || "createdAt";
     const defaultSortDirection = payload.sortDirection || "desc";
     const defaultPageSize = +payload.pageSize! || 10;
     const defaultPageNumber = +payload.pageNumber! || 1;
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
     const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
-    const filteredArray = await commentsDb
-      .find({ postId }, { projection: { _id: 0 } })
+    const filteredArray = await CommentModelClass.find(
+      { postId },
+      { projection: { _id: 0 } }
+    )
       .sort({
         [defaultSortBy]: sortDirectionMongoDb,
         createdAt: sortDirectionMongoDb,

@@ -1,4 +1,4 @@
-import { usersDb } from "../../db/db";
+import { UserModelClass } from "../../db/db";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 import { UsersDbModel } from "../../models/users/UsersDbModel";
 import { UsersOutputModel } from "../../models/users/UsersOutputModel";
@@ -20,25 +20,25 @@ export const usersQueryRepository = {
     const defaultPageSize = +payload.pageSize! || 10;
     const defaultPageNumber = +payload.pageNumber! || 1;
     const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    const allUsers = await usersDb
-      .find(
-        { $or: [defaultSearchEMail, defaultSearchLogin] },
-        { projection: { _id: 0 } }
-      )
-      .lean();
+    const allUsers = await UserModelClass.countDocuments({
+      $or: [defaultSearchEMail, defaultSearchLogin],
+    });
+    // find(
+    //   { $or: [defaultSearchEMail, defaultSearchLogin] },
+    //   { projection: { _id: 0 } }
+    // ).lean();
 
-    const sortedUsers = await usersDb
-      .find(
-        { $or: [defaultSearchEMail, defaultSearchLogin] },
-        { projection: { _id: 0 } }
-      )
+    const sortedUsers = await UserModelClass.find(
+      { $or: [defaultSearchEMail, defaultSearchLogin] },
+      { projection: { _id: 0 } }
+    )
       .sort({ [defaultSortBy]: sortDirectionMongoDb })
       .skip(startIndex)
       .limit(defaultPageSize)
       .lean();
 
-    const pagesCount = Math.ceil(allUsers.length / defaultPageSize);
-    const totalCount = allUsers.length;
+    const pagesCount = Math.ceil(allUsers / defaultPageSize);
+    const totalCount = allUsers;
 
     return {
       pagesCount,

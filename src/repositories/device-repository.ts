@@ -1,24 +1,24 @@
-import { devicesDb } from "../db/db";
+import { DeviceModelClass } from "../db/db";
 import { DeviceDbModel } from "../models/devices/DeviceDbModel";
 import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
 
 export const deviceRepository = {
   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
-    const devices = await devicesDb.find({ userId: { $regex: id } }).lean();
+    const devices = await DeviceModelClass.find({ userId: { $regex: id } }).lean();
 
     return await this._mapDevices(devices);
   },
   async createDevice(device: DeviceDbModel) {
-    await devicesDb.insertMany([device]);
+    await DeviceModelClass.insertMany([device]);
   },
   async deleteAllDevices(userId: string, deviceId: string) {
-    return await devicesDb.deleteMany({
+    return await DeviceModelClass.deleteMany({
       $and: [{ userId: userId }, { deviceId: { $ne: deviceId } }],
     });
   },
 
   async deleteDevice(deviceId: string, userId: string): Promise<boolean> {
-    const { deletedCount } = await devicesDb.deleteOne({
+    const { deletedCount } = await DeviceModelClass.deleteOne({
       deviceId: deviceId,
       userId: userId,
     });
@@ -27,14 +27,14 @@ export const deviceRepository = {
   },
 
   async checkDeviceId(id: string): Promise<boolean> {
-    const result = await devicesDb.findOne({ deviceId: id });
+    const result = await DeviceModelClass.findOne({ deviceId: id });
     if (result) return true;
 
     return false;
   },
 
   async getDevice(deviceId: string, date: Date): Promise<DeviceDbModel | null> {
-    const result = await devicesDb.findOne({
+    const result = await DeviceModelClass.findOne({
       deviceId: deviceId,
       lastActiveDate: date,
     });
@@ -44,7 +44,7 @@ export const deviceRepository = {
   },
 
   async updateDevice(device: DeviceDbModel): Promise<boolean> {
-    const { matchedCount } = await devicesDb.updateOne(
+    const { matchedCount } = await DeviceModelClass.updateOne(
       { deviceId: device.deviceId },
       {
         $set: {

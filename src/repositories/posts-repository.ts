@@ -1,11 +1,11 @@
-import { postsDb } from "../db/db";
+import { PostModelClass } from "../db/db";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 
 export const postsRepository = {
   async getPostById(id: string): Promise<PostDbModel | undefined> {
-    const res = (await postsDb.find({ id: { $regex: id } }).lean())[0];
+    const res = (await PostModelClass.find({ id: { $regex: id } }).lean())[0];
     if (!res) return undefined;
     return {
       blogId: res.blogId,
@@ -19,12 +19,12 @@ export const postsRepository = {
   },
 
   async deleteById(id: string): Promise<boolean> {
-    const { deletedCount } = await postsDb.deleteOne({ id: id });
+    const { deletedCount } = await PostModelClass.deleteOne({ id: id });
     return deletedCount === 1;
   },
 
   async createPost(newPost: PostDbModel): Promise<PostOutputModel> {
-    await postsDb.insertMany([newPost]);
+    await PostModelClass.insertMany([newPost]);
     return {
       id: newPost.id,
       title: newPost.title,
@@ -38,7 +38,7 @@ export const postsRepository = {
 
   async updatePost(id: string, payload: PostUpdateModel): Promise<boolean> {
     const { blogId, content, shortDescription, title } = payload;
-    const { matchedCount } = await postsDb.updateOne(
+    const { matchedCount } = await PostModelClass.updateOne(
       { id: id },
       { $set: { title, shortDescription, content, blogId } }
     );

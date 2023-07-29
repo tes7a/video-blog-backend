@@ -1,13 +1,13 @@
 import request from "supertest";
 import { app } from "../app";
-import { usersDb } from "../db/db";
+import { UserModelClass } from "../db/db";
 import { randomUUID } from "crypto";
 
 describe("auth tests", () => {
   it("wipe all data", async () => {
     const res = await request(app).delete("/testing/all-data");
     expect(res.status).toBe(204);
-    const users = await usersDb.countDocuments();
+    const users = await UserModelClass.countDocuments();
     expect(users).toBe(0);
   });
 
@@ -20,7 +20,7 @@ describe("auth tests", () => {
 
     const res = await request(app).post("/auth/registration").send(inputData);
     expect(res.status).toBe(204);
-    const user = await usersDb.findOne();
+    const user = await UserModelClass.findOne();
     expect(user).toBeDefined();
     expect.setState({ user });
   });
@@ -44,7 +44,7 @@ describe("auth tests", () => {
       .send(inputData);
     expect(res.status).toBe(204);
 
-    const updatedUser = await usersDb.findOne({});
+    const updatedUser = await UserModelClass.findOne({});
     expect(user.emailConfirmation.confirmationCode).not.toEqual(
       updatedUser!.emailConfirmation!.confirmationCode
     );
@@ -71,7 +71,7 @@ describe("auth tests", () => {
       .send(inputData);
     expect(res.status).toBe(204);
 
-    const updatedUser = await usersDb.findOne({});
+    const updatedUser = await UserModelClass.findOne({});
     expect(updatedUser!.emailConfirmation!.isConfirmed).toBeTruthy();
 
     const res2 = await request(app)
