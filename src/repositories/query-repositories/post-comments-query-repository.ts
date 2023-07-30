@@ -1,7 +1,6 @@
 import { CommentModelClass } from "../../db/db";
 import { CommentsOutputModel } from "../../models/comments/CommentsOutputModel";
 import { CommentsQueryModel } from "../../models/comments/CommentsQueryModel";
-import { CommentsDbModel } from "../../models/comments/CommetnsDbModel";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 
 export const postCommentsQueryRepository = {
@@ -9,50 +8,42 @@ export const postCommentsQueryRepository = {
     postId: string,
     payload: CommentsQueryModel
   ): Promise<WithQueryModel<CommentsOutputModel[]>> {
-    const allComments = await CommentModelClass.find(
-      { postId },
-      { projection: { _id: 0 } }
-    ).lean();
-    const defaultSortBy = payload.sortBy || "createdAt";
-    const defaultSortDirection = payload.sortDirection || "desc";
-    const defaultPageSize = +payload.pageSize! || 10;
-    const defaultPageNumber = +payload.pageNumber! || 1;
-    const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = payload;
+    const startIndex: number = (Number(pageNumber) - 1) * Number(pageSize);
+    const commentsCount = await CommentModelClass.countDocuments({
+      postId,
+    });
     const filteredArray = await CommentModelClass.find(
       { postId },
       { projection: { _id: 0 } }
     )
-      .sort({
-        [defaultSortBy]: sortDirectionMongoDb,
-        createdAt: sortDirectionMongoDb,
-      })
+      .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
       .skip(startIndex)
-      .limit(+defaultPageSize!)
+      .limit(Number(pageSize))
       .lean();
-    const pagesCount = Math.ceil(allComments.length / defaultPageSize);
-    const totalCount = allComments.length;
+    const pagesCount = Math.ceil(commentsCount / Number(pageSize));
 
     return {
       pagesCount,
-      page: defaultPageNumber,
-      pageSize: defaultPageSize,
-      totalCount,
-      items: await this._mapComments(filteredArray),
+      page: Number(pageNumber),
+      pageSize: Number(pageSize),
+      totalCount: commentsCount,
+      items: filteredArray.map((item) => {
+        return {
+          id: item.id,
+          content: item.content,
+          commentatorInfo: {
+            userId: item.commentatorInfo.userId,
+            userLogin: item.commentatorInfo.userLogin,
+          },
+          createdAt: item.createdAt,
+        };
+      }),
     };
-  },
-
-  async _mapComments(items: CommentsDbModel[]): Promise<CommentsOutputModel[]> {
-    return await items.map((item) => {
-      return {
-        id: item.id,
-        content: item.content,
-        commentatorInfo: {
-          userId: item.commentatorInfo.userId,
-          userLogin: item.commentatorInfo.userLogin,
-        },
-        createdAt: item.createdAt,
-      };
-    });
   },
 };

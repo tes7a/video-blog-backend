@@ -4,12 +4,21 @@ import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
 
 export const deviceRepository = {
   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
-    const devices = await DeviceModelClass.find({ userId: { $regex: id } }).lean();
+    const devices = await DeviceModelClass.find({
+      userId: { $regex: id },
+    }).lean();
 
     return await this._mapDevices(devices);
   },
   async createDevice(device: DeviceDbModel) {
-    await DeviceModelClass.insertMany([device]);
+    const createdDevice = new DeviceModelClass({
+      ip: device.ip,
+      title: device.title,
+      lastActiveDate: device.lastActiveDate,
+      deviceId: device.deviceId,
+      userId: device.userId,
+    });
+    await createdDevice.save();
   },
   async deleteAllDevices(userId: string, deviceId: string) {
     return await DeviceModelClass.deleteMany({

@@ -21,7 +21,7 @@ export const blogsQueryRepository = {
       ? { name: { $regex: searchNameTerm, $options: "i" } }
       : {};
 
-    const allBlogs = await BlogModelClass.countDocuments(defaultSearchName);
+    const blogsCount = await BlogModelClass.countDocuments(defaultSearchName);
     const filteredArray: BlogDbModel[] = await BlogModelClass.find(
       defaultSearchName,
       { projection: { _id: 0 } }
@@ -31,13 +31,13 @@ export const blogsQueryRepository = {
       .limit(Number(pageSize))
       .lean();
 
-    const pagesCount: number = Math.ceil(allBlogs / Number(pageSize));
+    const pagesCount: number = Math.ceil(blogsCount / Number(pageSize));
 
     return {
       pagesCount,
       page: Number(pageNumber),
       pageSize: Number(pageSize),
-      totalCount: allBlogs,
+      totalCount: blogsCount,
       items: filteredArray.map((b) => {
         return {
           id: b.id,

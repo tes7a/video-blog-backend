@@ -8,36 +8,31 @@ export const postQueryRepository = {
   async getPosts(
     payload: PostWIthQueryModel
   ): Promise<WithQueryModel<PostOutputModel[]>> {
-    const allPosts = await PostModelClass.find(
-      {},
-      { projection: { _id: 0 } }
-    ).lean();
-    const defaultSortBy = payload.sortBy || "createdAt";
-    const defaultSortDirection = payload.sortDirection || "desc";
-    const defaultPageSize = +payload.pageSize! || 10;
-    const defaultPageNumber = +payload.pageNumber! || 1;
-    const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
-    const filteredArray = await PostModelClass.find(
-      {},
-      { projection: { _id: 0 } }
-    )
-      .sort({
-        [defaultSortBy]: sortDirectionMongoDb,
-        createdAt: sortDirectionMongoDb,
-      })
-      .skip(startIndex)
-      .limit(+defaultPageSize!)
-      .lean();
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = payload;
 
-    const pagesCount = Math.ceil(allPosts.length / defaultPageSize);
-    const totalCount = allPosts.length;
+    const startIndex: number = (Number(pageNumber) - 1) * Number(pageSize);
+
+    const postsCount = await PostModelClass.countDocuments({});
+    const filteredArray = await this.getFilteredPosts(
+      {},
+      sortBy,
+      sortDirection,
+      startIndex,
+      Number(pageSize)
+    );
+
+    const pagesCount = Math.ceil(postsCount / Number(pageSize));
 
     return {
       pagesCount,
-      page: defaultPageNumber,
-      pageSize: defaultPageSize,
-      totalCount,
+      page: Number(pageNumber),
+      pageSize: Number(pageSize),
+      totalCount: postsCount,
       items: await this._mapPosts(filteredArray),
     };
   },
@@ -45,35 +40,47 @@ export const postQueryRepository = {
     blogId: string,
     payload: PostWIthQueryModel
   ): Promise<WithQueryModel<PostOutputModel[]>> {
-    const res = await PostModelClass.find(
-      { blogId: { $regex: blogId } },
-      { projection: { _id: 0 } }
-    ).lean();
-    const defaultSortBy = payload.sortBy || "createdAt";
-    const defaultSortDirection = payload.sortDirection || "desc";
-    const defaultPageSize = +payload.pageSize! || 10;
-    const defaultPageNumber = +payload.pageNumber! || 1;
-    const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
-    const filteredArray = await PostModelClass.find(
-      { blogId: { $regex: blogId } },
-      { projection: { _id: 0 } }
-    )
-      .sort({ [defaultSortBy]: sortDirectionMongoDb })
-      .skip(startIndex)
-      .limit(+defaultPageSize!)
-      .lean();
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = payload;
+    const filterCondition = {
+      blogId: { $regex: blogId },
+    };
+    const startIndex: number = (Number(pageNumber) - 1) * Number(pageSize);
+    const postsCount = await PostModelClass.countDocuments(filterCondition);
+    const filteredArray = await this.getFilteredPosts(
+      filterCondition,
+      sortBy,
+      sortDirection,
+      startIndex,
+      Number(pageSize)
+    );
 
-    const pagesCount = Math.ceil(res.length / defaultPageSize);
-    const totalCount = res.length;
+    const pagesCount = Math.ceil(postsCount / Number(pageSize));
 
     return {
       pagesCount,
-      page: defaultPageNumber,
-      pageSize: defaultPageSize,
-      totalCount,
+      page: Number(pageNumber),
+      pageSize: Number(pageSize),
+      totalCount: postsCount,
       items: await this._mapPosts(filteredArray),
     };
+  },
+  async getFilteredPosts(
+    filterCondition: object,
+    sortBy: string,
+    sortDirection: string,
+    startIndex: number,
+    pageSize: number
+  ): Promise<PostDbModel[]> {
+    return PostModelClass.find(filterCondition, { projection: { _id: 0 } })
+      .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
+      .skip(startIndex)
+      .limit(pageSize)
+      .lean();
   },
   async _mapPosts(items: PostDbModel[]): Promise<PostOutputModel[]> {
     return items.map((p) => {

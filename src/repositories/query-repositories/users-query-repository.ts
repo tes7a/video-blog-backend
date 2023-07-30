@@ -1,6 +1,6 @@
+import { log } from "console";
 import { UserModelClass } from "../../db/db";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
-import { UsersDbModel } from "../../models/users/UsersDbModel";
 import { UsersOutputModel } from "../../models/users/UsersOutputModel";
 import { UsersQueryModel } from "../../models/users/UsersQueryModel";
 
@@ -8,55 +8,52 @@ export const usersQueryRepository = {
   async getUsers(
     payload: UsersQueryModel
   ): Promise<WithQueryModel<UsersOutputModel[]>> {
-    const defaultSearchLogin = payload.searchLoginTerm
-      ? { login: { $regex: payload.searchLoginTerm, $options: "i" } }
-      : {};
-    const defaultSearchEMail = payload.searchEmailTerm
-      ? { email: { $regex: payload.searchEmailTerm, $options: "i" } }
-      : {};
-    const defaultSortBy = payload.sortBy || "createdAt";
-    const defaultSortDirection = payload.sortDirection || "desc";
-    const sortDirectionMongoDb = defaultSortDirection === "asc" ? 1 : -1;
-    const defaultPageSize = +payload.pageSize! || 10;
-    const defaultPageNumber = +payload.pageNumber! || 1;
-    const startIndex = (defaultPageNumber - 1) * defaultPageSize;
-    const allUsers = await UserModelClass.countDocuments({
-      $or: [defaultSearchEMail, defaultSearchLogin],
-    });
-    // find(
-    //   { $or: [defaultSearchEMail, defaultSearchLogin] },
-    //   { projection: { _id: 0 } }
-    // ).lean();
+    log(payload, "PAYLOAD");
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      searchEmailTerm,
+      searchLoginTerm,
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = payload;
 
-    const sortedUsers = await UserModelClass.find(
-      { $or: [defaultSearchEMail, defaultSearchLogin] },
-      { projection: { _id: 0 } }
-    )
-      .sort({ [defaultSortBy]: sortDirectionMongoDb })
+    const emailSearchCondition = searchEmailTerm
+      ? { email: { $regex: searchEmailTerm, $options: "i" } }
+      : {};
+    const loginSearchCondition = searchLoginTerm
+      ? { login: { $regex: searchLoginTerm, $options: "i" } }
+      : {};
+
+    const searchConditions = {
+      $or: [emailSearchCondition, loginSearchCondition],
+    };
+
+    const startIndex: number = (Number(pageNumber) - 1) * Number(pageSize);
+
+    const usersCount = await UserModelClass.countDocuments(searchConditions);
+
+    const sortedUsers = await UserModelClass.find(searchConditions, {
+      projection: { _id: 0 },
+    })
+      .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
       .skip(startIndex)
-      .limit(defaultPageSize)
+      .limit(Number(pageSize))
       .lean();
 
-    const pagesCount = Math.ceil(allUsers / defaultPageSize);
-    const totalCount = allUsers;
+    const pagesCount = Math.ceil(usersCount / Number(pageSize));
 
     return {
       pagesCount,
-      page: defaultPageNumber,
-      pageSize: defaultPageSize,
-      totalCount,
-      items: await this._mapUsers(sortedUsers),
-    };
-  },
-
-  async _mapUsers(items: UsersDbModel[]): Promise<UsersOutputModel[]> {
-    return items.map((user) => {
-      return {
+      page: Number(pageNumber),
+      pageSize: Number(pageSize),
+      totalCount: usersCount,
+      items: sortedUsers.map((user) => ({
         id: user.id,
         email: user.accountData.email,
         login: user.accountData.login,
         createdAt: user.accountData.createdAt,
-      };
-    });
+      })),
+    };
   },
 };

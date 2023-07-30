@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { CommentsDbModel } from "../../models/comments/CommetnsDbModel";
+import { CommentsDbModel } from "../../models/comments/CommentsDbModel";
 
 export const commentsSchema = new mongoose.Schema<CommentsDbModel>({
   id: String,
