@@ -8,7 +8,6 @@ export const usersQueryRepository = {
   async getUsers(
     payload: UsersQueryModel
   ): Promise<WithQueryModel<UsersOutputModel[]>> {
-    log(payload, "PAYLOAD");
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -19,10 +18,10 @@ export const usersQueryRepository = {
     } = payload;
 
     const emailSearchCondition = searchEmailTerm
-      ? { email: { $regex: searchEmailTerm, $options: "i" } }
+      ? { "accountData.email": { $regex: searchEmailTerm, $options: "i" } }
       : {};
     const loginSearchCondition = searchLoginTerm
-      ? { login: { $regex: searchLoginTerm, $options: "i" } }
+      ? { "accountData.login": { $regex: searchLoginTerm, $options: "i" } }
       : {};
 
     const searchConditions = {
@@ -33,10 +32,12 @@ export const usersQueryRepository = {
 
     const usersCount = await UserModelClass.countDocuments(searchConditions);
 
+    log(sortDirection);
+    log([`accountData[${sortBy}]`]);
     const sortedUsers = await UserModelClass.find(searchConditions, {
       projection: { _id: 0 },
     })
-      .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
+      .sort({ [`accountData.${sortBy}`]: sortDirection === "asc" ? 1 : -1 })
       .skip(startIndex)
       .limit(Number(pageSize))
       .lean();

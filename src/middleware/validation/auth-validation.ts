@@ -62,6 +62,12 @@ const passwordRegMiddleware = body("password")
   .isLength({ max: 20 })
   .withMessage("Max length 20 charters");
 
+const recoveryCodeMiddleware = body("recoveryCode")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string");
+
 const emailRegMiddleware = body("email")
   .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
@@ -173,4 +179,10 @@ export const checkEmailMiddleware = [
 export const checkCookieMiddleware = [
   cookieValidation,
   inputValidationForCookieMiddleware,
+];
+
+export const checkRecoveryPassword = [
+  passwordRegMiddleware,
+  recoveryCodeMiddleware,
+  inputValidationMiddleware,
 ];

@@ -12,4 +12,16 @@ export const emailsManager = {
     </p>`;
     return emailAdapters.sendEmail(email, templateEmailSend);
   },
+
+  async passwordRecovery(
+    email: string,
+    recoveryPassword: string
+  ): Promise<SentMessageInfo> {
+    const template = `<h1>Password recovery</h1>
+    <p>To finish password recovery please follow the link below:
+       <a href='https://somesite.com/password-recovery?recoveryCode=${recoveryPassword}'>recovery password</a>
+   </p>`;
+
+    return emailAdapters.passwordRecover(email, template);
+  },
 };

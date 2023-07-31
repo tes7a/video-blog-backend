@@ -6,6 +6,7 @@ import {
   checkConfirmationCodeMiddleware,
   checkCookieMiddleware,
   checkEmailMiddleware,
+  checkRecoveryPassword,
   createAuthValidationMiddleware,
   registrationAuthValidationMiddleware,
 } from "../middleware/validation/auth-validation";
@@ -136,6 +137,32 @@ authRoute.post(
     }
     if (!user) return res.sendStatus(Unauthorized);
     return res.sendStatus(Unauthorized);
+  }
+);
+
+authRoute.post(
+  "/password-recovery",
+  checkEmailMiddleware,
+  apiConnectMiddleware,
+  async (req: RequestWithBody<{ email: string }>, res: Response) => {
+    const { email } = req.body;
+    await authService.passwordRecovery(email);
+    return res.sendStatus(No_Content);
+  }
+);
+
+authRoute.post(
+  "new-password",
+  checkRecoveryPassword,
+  apiConnectMiddleware,
+  async (
+    req: RequestWithBody<{ newPassword: string; recoveryCode: string }>,
+    res: Response
+  ) => {
+    const { newPassword, recoveryCode } = req.body;
+    const result = await authService.changePassword(newPassword, recoveryCode);
+    if (result) return res.sendStatus(No_Content);
+    return res.sendStatus(Bad_Request);
   }
 );
 

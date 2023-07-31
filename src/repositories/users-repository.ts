@@ -57,6 +57,31 @@ export const usersRepository = {
 
     return matchedCount === 1;
   },
+
+  async setNewPassword(
+    id: string,
+    salt: string,
+    hash: string
+  ): Promise<boolean> {
+    const user = await UserModelClass.findOne({ id });
+    if (!user) return false;
+    user.accountData.passwordSalt = salt;
+    user.accountData.passwordHash = hash;
+    await user.save();
+    return true;
+  },
+
+  async passwordSearch(
+    salt: string,
+    hash: string
+  ): Promise<UsersCreateOutputModel | undefined> {
+    const user: UsersDbModel | null = await UserModelClass.findOne({
+      "accountData.salt": salt,
+      "accountData.hash": hash,
+    });
+    if (!user) return undefined;
+    return await this._mapUser(user);
+  },
   async _mapUser(user: UsersDbModel): Promise<UsersCreateOutputModel> {
     return {
       id: user.id,
