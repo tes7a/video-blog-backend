@@ -6,6 +6,7 @@ import {
   checkConfirmationCodeMiddleware,
   checkCookieMiddleware,
   checkEmailMiddleware,
+  checkEmailPasswordRecoveryMiddleware,
   checkRecoveryPassword,
   createAuthValidationMiddleware,
   registrationAuthValidationMiddleware,
@@ -142,7 +143,7 @@ authRoute.post(
 
 authRoute.post(
   "/password-recovery",
-  checkEmailMiddleware,
+  checkEmailPasswordRecoveryMiddleware,
   apiConnectMiddleware,
   async (req: RequestWithBody<{ email: string }>, res: Response) => {
     const { email } = req.body;

@@ -110,6 +110,14 @@ const emailResendMiddleware = body("email")
     return true;
   });
 
+const emailRecoveryMiddleware = body("email")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string")
+  .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  .withMessage("Must be valid");
+
 export const inputValidationForRegistrationMiddleware = (
   req: Request,
   res: Response,
@@ -184,5 +192,10 @@ export const checkCookieMiddleware = [
 export const checkRecoveryPassword = [
   passwordRegMiddleware,
   recoveryCodeMiddleware,
+  inputValidationMiddleware,
+];
+
+export const checkEmailPasswordRecoveryMiddleware = [
+  emailRecoveryMiddleware,
   inputValidationMiddleware,
 ];
