@@ -52,7 +52,7 @@ const loginRegMiddleware = body("login")
     return true;
   });
 
-const passwordRegMiddleware = body("password")
+const passwordRegMiddleware = body("newPassword")
   .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
