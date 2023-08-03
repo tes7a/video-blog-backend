@@ -153,7 +153,7 @@ authRoute.post(
 );
 
 authRoute.post(
-  "new-password",
+  "/new-password",
   checkRecoveryPassword,
   apiConnectMiddleware,
   async (
