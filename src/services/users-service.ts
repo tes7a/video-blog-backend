@@ -19,6 +19,7 @@ export const userService = {
         email,
         passwordHash,
         passwordSalt,
+        recoveryCode: "",
         login,
         createdAt: new Date().toISOString(),
       },

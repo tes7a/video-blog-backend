@@ -95,19 +95,13 @@ export const authService = {
     try {
       const user = await usersRepository.findByLoginOrEmail(email);
       if (!user) return false;
-      const recoveryPassword = uuidv4();
-      const passwordSalt = await bcrypt.genSalt(10);
-      const passwordHash = await this._generateHash(
-        recoveryPassword,
-        passwordSalt
-      );
-      const update = await usersRepository.setNewPassword(
+      const recoveryCode = uuidv4();
+      const update = await usersRepository.setRecoveryCode(
         user.id,
-        passwordSalt,
-        passwordHash
+        recoveryCode
       );
       if (!update) return false;
-      await emailsManager.passwordRecovery(email, recoveryPassword);
+      await emailsManager.passwordRecovery(email, recoveryCode);
       return true;
     } catch (e) {
       return false;
@@ -118,12 +112,13 @@ export const authService = {
     newPassword: string,
     recoveryCode: string
   ): Promise<boolean> {
-    const passwordSalt = await bcrypt.genSalt(10);
-    const passwordHash = await this._generateHash(newPassword, recoveryCode);
-    const user = await usersRepository.passwordSearch(passwordSalt, passwordHash);
+    const user = await usersRepository.findRecoveryCode(recoveryCode);
     if (!user) return false;
     const passwordNewSalt = await bcrypt.genSalt(10);
-    const passwordNewHash = await this._generateHash(newPassword, passwordNewSalt);
+    const passwordNewHash = await this._generateHash(
+      newPassword,
+      passwordNewSalt
+    );
     const update = await usersRepository.setNewPassword(
       user.id,
       passwordNewSalt,

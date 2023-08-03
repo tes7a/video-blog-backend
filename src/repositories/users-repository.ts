@@ -58,6 +58,25 @@ export const usersRepository = {
     return matchedCount === 1;
   },
 
+  async setRecoveryCode(id: string, recoveryCode: string): Promise<boolean> {
+    const user = await UserModelClass.findOne({ id });
+    if (!user) return false;
+    user.accountData.recoveryCode = recoveryCode;
+    await user.save();
+    return true;
+  },
+
+  async findRecoveryCode(
+    recoveryCode: string
+  ): Promise<UsersCreateOutputModel | undefined> {
+    const user: UsersDbModel | null = await UserModelClass.findOne({
+      "accountData.recoveryCode": recoveryCode,
+    });
+
+    if (!user) return undefined;
+    return await this._mapUser(user);
+  },
+
   async setNewPassword(
     id: string,
     salt: string,
@@ -71,17 +90,6 @@ export const usersRepository = {
     return true;
   },
 
-  async passwordSearch(
-    salt: string,
-    hash: string
-  ): Promise<UsersCreateOutputModel | undefined> {
-    const user: UsersDbModel | null = await UserModelClass.findOne({
-      "accountData.salt": salt,
-      "accountData.hash": hash,
-    });
-    if (!user) return undefined;
-    return await this._mapUser(user);
-  },
   async _mapUser(user: UsersDbModel): Promise<UsersCreateOutputModel> {
     return {
       id: user.id,

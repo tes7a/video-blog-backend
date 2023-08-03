@@ -8,6 +8,7 @@ export const userSchema = new mongoose.Schema<UsersDbModel>({
     login: String,
     passwordHash: String,
     passwordSalt: String,
+    recoveryCode: String,
     email: String,
     createdAt: String,
   },

@@ -5,6 +5,7 @@ export type UsersDbModel = {
     login: string;
     passwordHash: string;
     passwordSalt: string;
+    recoveryCode?: string;
     email: string;
     createdAt: string;
   };
