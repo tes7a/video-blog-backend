@@ -154,8 +154,8 @@ authRoute.post(
 
 authRoute.post(
   "/new-password",
-  checkRecoveryPassword,
   apiConnectMiddleware,
+  checkRecoveryPassword,
   async (
     req: RequestWithBody<{ newPassword: string; recoveryCode: string }>,
     res: Response
