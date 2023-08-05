@@ -5,6 +5,7 @@ import { jwtService } from "../../services/jwt-service";
 import { userService } from "../../services/users-service";
 import { HTTPS_ANSWERS } from "../../utils/https-answers";
 import { authService } from "../../services/auth-service";
+import { usersRepository } from "../../repositories/users-repository";
 
 export const authMiddleware = async (
   req: Request,
@@ -66,7 +67,13 @@ const recoveryCodeMiddleware = body("recoveryCode")
   .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
-  .withMessage("Should be a string");
+  .withMessage("Should be a string")
+  .custom(async (value) => {
+    const code = await usersRepository.findRecoveryCode(value);
+    if (!code) throw new Error("Bad recovery code");
+
+    return true;
+  });
 
 const emailRegMiddleware = body("email")
   .notEmpty({ ignore_whitespace: true })
