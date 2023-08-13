@@ -1,10 +1,9 @@
 import { Request, Response, Router } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
-import { deviceService } from "../services/device-service";
 import { RequestWithParams } from "../types/types";
 import { checkCookieMiddleware } from "../middleware/validation/auth-validation";
-import { jwtService } from "../services/jwt-service";
 import { apiConnectMiddleware } from "../middleware/api-connects-middleware";
+import { deviceService, jwtService } from "../services";
 
 export const devicesRoute = Router({});
 const { No_Content, OK, Not_Found, Forbidden } = HTTPS_ANSWERS;
@@ -24,7 +23,8 @@ devicesRoute.delete(
   checkCookieMiddleware,
   async (req: Request, res: Response) => {
     const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
-    if (result) await deviceService.deleteAllDevices(result.userId, result.deviceId);
+    if (result)
+      await deviceService.deleteAllDevices(result.userId, result.deviceId);
     res.sendStatus(No_Content);
   }
 );
@@ -37,7 +37,10 @@ devicesRoute.delete(
     const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
     const deviceId = await deviceService.checkDeviceId(req.params.id);
     if (result && deviceId) {
-      const response = await deviceService.deleteDevice(req.params.id, result.userId);
+      const response = await deviceService.deleteDevice(
+        req.params.id,
+        result.userId
+      );
       if (response) return res.sendStatus(No_Content);
       if (!response) return res.sendStatus(Forbidden);
     }

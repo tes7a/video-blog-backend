@@ -2,12 +2,12 @@ import { Response, Router } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { RequestWithParams } from "../types/types";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
-import { commentsService } from "../services/comments-service";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { RequestWithParamsAndBody } from "../types/types";
 import { createCommentsValidationMiddleware } from "../middleware/validation/comments-validation";
 import { authMiddleware } from "../middleware/validation/auth-validation";
 import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
+import { commentsService } from "../services";
 
 export const commentsRoute = Router({});
 

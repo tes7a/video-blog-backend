@@ -12,19 +12,17 @@ import { PostCreateModel } from "../models/posts/PostCreateModel";
 import { createPostsValidationMiddleware } from "../middleware/validation/posts-validation";
 import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
-import { postsServices } from "../services/posts-service";
 import { WithQueryModel } from "../models/universal/WithQueryModel";
 import { PostWIthQueryModel } from "../models/posts/PostWIthQueryModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { postQueryRepository } from "../repositories/query-repositories/post-query-repository";
 import { createCommentsValidationMiddleware } from "../middleware/validation/comments-validation";
-import { commentsService } from "../services/comments-service";
-import { userService } from "../services/users-service";
 import { CommentsQueryModel } from "../models/comments/CommentsQueryModel";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { postCommentsQueryRepository } from "../repositories/query-repositories/post-comments-query-repository";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 import { authMiddleware } from "../middleware/validation/auth-validation";
+import { commentsService, postsServices, userService } from "../services";
 
 export const postsRoute = Router({});
 

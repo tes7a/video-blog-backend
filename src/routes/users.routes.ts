@@ -11,11 +11,11 @@ import {
 import { UsersQueryModel } from "../models/users/UsersQueryModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
-import { userService } from "../services/users-service";
 import { createUserValidationMiddleware } from "../middleware/validation/users-validation";
 import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
+import { userService } from "../services";
 
 export const usersRoute = Router({});
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;

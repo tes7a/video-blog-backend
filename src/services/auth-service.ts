@@ -7,6 +7,12 @@ import { emailsManager } from "../managers/emails-manager";
 import { usersRepository } from "../repositories/users-repository";
 import { jwtService } from "./jwt-service";
 import { deviceRepository } from "../repositories/device-repository";
+import { randomUUID } from "crypto";
+import { userService } from "./users-service";
+import { deviceService } from "./device-service";
+import { RequestWithBody } from "../types/types";
+import { AuthLoginModel } from "../models/auth/AuthLoginModel";
+import { Request } from "express";
 
 export const authService = {
   async createUser(payload: UsersCreateModel): Promise<boolean | Error> {
@@ -80,6 +86,34 @@ export const authService = {
     return await usersRepository.findByToken(token);
   },
 
+  async login(
+    req: RequestWithBody<AuthLoginModel>
+  ): Promise<{ user: UsersDbModel; refreshToken: string } | undefined> {
+    const { loginOrEmail, password } = req.body;
+    const user = await userService.checkUserCredentials({
+      loginOrEmail,
+      password,
+    });
+    if (!user) return undefined;
+    const deviceId = randomUUID();
+    const refreshToken = await jwtService.createRefreshJWT(user, deviceId);
+    const result = await userService.updateToken(user.id, refreshToken);
+    if (!result) return undefined;
+    const date = await jwtService.getJwtDate(refreshToken);
+    await deviceService.createDevice({
+      userId: user.id,
+      lastActiveDate: date!.toISOString(),
+      ip: req.ip,
+      deviceId,
+      title: req.headers["user-agent"] || ("custom user-agent" as string),
+    });
+
+    return {
+      user,
+      refreshToken,
+    };
+  },
+
   async logout(token: string): Promise<boolean> {
     const result = await jwtService.getUserIdByToken(token);
     if (!result) return false;
@@ -89,6 +123,29 @@ export const authService = {
     );
     if (!deleted) return false;
     return true;
+  },
+
+  async refreshToken(req: Request) {
+    const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
+    if (!result) return undefined;
+    const user = await userService.findUserById(result.userId);
+    if (!user) return undefined;
+    const tokenDate = await jwtService.getJwtDate(req.cookies.refreshToken);
+    const isDevice = await deviceService.getDevice(req.params.id, tokenDate!);
+    const refreshToken = await jwtService.createRefreshJWT(
+      user,
+      result.deviceId
+    );
+    const date = await jwtService.getJwtDate(refreshToken);
+    await deviceService.updateDevice({
+      userId: user.id,
+      lastActiveDate: date!.toISOString(),
+      ip: req.ip,
+      deviceId: result.deviceId,
+      title: req.headers["user-agent"] || ("custom user-agent" as string),
+    });
+
+    return { user, isDevice };
   },
 
   async passwordRecovery(email: string): Promise<boolean> {

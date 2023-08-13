@@ -1,11 +1,9 @@
 import { body, cookie, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../input-validation.middleware";
 import { NextFunction, Request, Response } from "express";
-import { jwtService } from "../../services/jwt-service";
-import { userService } from "../../services/users-service";
 import { HTTPS_ANSWERS } from "../../utils/https-answers";
-import { authService } from "../../services/auth-service";
 import { usersRepository } from "../../repositories/users-repository";
+import { authService, jwtService, userService } from "../../services";
 
 export const authMiddleware = async (
   req: Request,
