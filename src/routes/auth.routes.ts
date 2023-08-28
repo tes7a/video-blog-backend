@@ -20,35 +20,26 @@ import { authService, jwtService, userService } from "../services";
 export const authRoute = Router({});
 const { No_Content, Unauthorized, OK, Bad_Request } = HTTPS_ANSWERS;
 
-authRoute.get(
-  "/me",
-  authMiddleware,
-  async (req: Request, res: Response<AuthOutputUserModel>) => {
+class AuthController {
+  async me(req: Request, res: Response<AuthOutputUserModel>) {
     const result = await userService.findLoggedUser(req.userId);
     if (result) return res.status(OK).send(result);
   }
-);
 
-authRoute.post(
-  "/registration",
-  apiConnectMiddleware,
-  registrationAuthValidationMiddleware,
-  async (req: RequestWithBody<AuthRegistrationModel>, res: Response) => {
+  async registration(
+    req: RequestWithBody<AuthRegistrationModel>,
+    res: Response
+  ) {
     const { email, login, password } = req.body;
     const result = await authService.createUser({ email, login, password });
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Bad_Request);
   }
-);
 
-authRoute.post(
-  "/login",
-  apiConnectMiddleware,
-  createAuthValidationMiddleware,
-  async (
+  async login(
     req: RequestWithBody<AuthLoginModel>,
     res: Response<{ accessToken: string }>
-  ) => {
+  ) {
     const result = await authService.login(req);
     if (result) {
       const { user, refreshToken } = result;
@@ -62,37 +53,25 @@ authRoute.post(
 
     return res.sendStatus(Unauthorized);
   }
-);
 
-authRoute.post(
-  "/registration-confirmation",
-  apiConnectMiddleware,
-  checkConfirmationCodeMiddleware,
-  async (req: RequestWithBody<{ code: string }>, res: Response) => {
+  async registrationConfirmation(
+    req: RequestWithBody<{ code: string }>,
+    res: Response
+  ) {
     const { code } = req.body;
     const result = await authService.confirmCode(code);
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Bad_Request);
   }
-);
 
-authRoute.post(
-  "/registration-email-resending",
-  apiConnectMiddleware,
-  checkEmailMiddleware,
-  async (req: RequestWithBody<{ email: string }>, res: Response) => {
+  async emailResending(req: RequestWithBody<{ email: string }>, res: Response) {
     const { email } = req.body;
     const result = await authService.resendingMail(email);
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Bad_Request);
   }
-);
 
-authRoute.post(
-  "/refresh-token",
-  apiConnectMiddleware,
-  checkCookieMiddleware,
-  async (req: Request, res: Response<{ accessToken: string }>) => {
+  async refreshToken(req: Request, res: Response<{ accessToken: string }>) {
     const result = await authService.refreshToken(req);
     if (result) {
       const { user, isDevice } = result;
@@ -102,40 +81,84 @@ authRoute.post(
 
     return res.sendStatus(Unauthorized);
   }
+
+  async passwordRecovery(
+    req: RequestWithBody<{ email: string }>,
+    res: Response
+  ) {
+    const { email } = req.body;
+    await authService.passwordRecovery(email);
+    return res.sendStatus(No_Content);
+  }
+
+  async newPassword(
+    req: RequestWithBody<{ newPassword: string; recoveryCode: string }>,
+    res: Response
+  ) {
+    const { newPassword, recoveryCode } = req.body;
+    const result = await authService.changePassword(newPassword, recoveryCode);
+    if (result) return res.sendStatus(No_Content);
+    return res.sendStatus(Bad_Request);
+  }
+
+  async logout(req: Request, res: Response) {
+    const result = await authService.logout(req.cookies.refreshToken);
+    if (result) return res.sendStatus(No_Content);
+    return res.sendStatus(Unauthorized);
+  }
+}
+
+const authControllerInstance = new AuthController();
+
+authRoute.get("/me", authMiddleware, authControllerInstance.me);
+
+authRoute.post(
+  "/registration",
+  apiConnectMiddleware,
+  registrationAuthValidationMiddleware,
+  authControllerInstance.registration
+);
+
+authRoute.post(
+  "/login",
+  apiConnectMiddleware,
+  createAuthValidationMiddleware,
+  authControllerInstance.login
+);
+
+authRoute.post(
+  "/registration-confirmation",
+  apiConnectMiddleware,
+  checkConfirmationCodeMiddleware,
+  authControllerInstance.registrationConfirmation
+);
+
+authRoute.post(
+  "/registration-email-resending",
+  apiConnectMiddleware,
+  checkEmailMiddleware,
+  authControllerInstance.emailResending
+);
+
+authRoute.post(
+  "/refresh-token",
+  apiConnectMiddleware,
+  checkCookieMiddleware,
+  authControllerInstance.refreshToken
 );
 
 authRoute.post(
   "/password-recovery",
   checkEmailPasswordRecoveryMiddleware,
   apiConnectMiddleware,
-  async (req: RequestWithBody<{ email: string }>, res: Response) => {
-    const { email } = req.body;
-    await authService.passwordRecovery(email);
-    return res.sendStatus(No_Content);
-  }
+  authControllerInstance.passwordRecovery
 );
 
 authRoute.post(
   "/new-password",
   apiConnectMiddleware,
   checkRecoveryPassword,
-  async (
-    req: RequestWithBody<{ newPassword: string; recoveryCode: string }>,
-    res: Response
-  ) => {
-    const { newPassword, recoveryCode } = req.body;
-    const result = await authService.changePassword(newPassword, recoveryCode);
-    if (result) return res.sendStatus(No_Content);
-    return res.sendStatus(Bad_Request);
-  }
+  authControllerInstance.newPassword
 );
 
-authRoute.post(
-  "/logout",
-  checkCookieMiddleware,
-  async (req: Request, res: Response) => {
-    const result = await authService.logout(req.cookies.refreshToken);
-    if (result) return res.sendStatus(No_Content);
-    return res.sendStatus(Unauthorized);
-  }
-);
+authRoute.post("/logout", checkCookieMiddleware, authControllerInstance.logout);

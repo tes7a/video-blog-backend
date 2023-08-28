@@ -25,14 +25,14 @@ import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middl
 import { blogsServices, postsServices } from "../services";
 
 export const blogsRoute = Router({});
+
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
-blogsRoute.get(
-  "/",
-  async (
+class BlogsController {
+  async getAllBlogs(
     req: RequestWithQuery<BlogWithQueryModel>,
     res: Response<WithQueryModel<BlogsOutputMode[]>>
-  ) => {
+  ) {
     const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize } =
       req.query;
     return res.status(OK).send(
@@ -45,25 +45,20 @@ blogsRoute.get(
       })
     );
   }
-);
 
-blogsRoute.get(
-  "/:id",
-  async (
+  async getById(
     req: RequestWithParams<URIParamsModel>,
     res: Response<BlogsOutputMode>
-  ) => {
+  ) {
     const blog = await blogsServices.getBlogById(req.params.id);
     if (!blog) return res.sendStatus(Not_Found);
     return res.status(OK).send(blog);
   }
-);
-blogsRoute.get(
-  "/:id/posts",
-  async (
+
+  async getPostsByIdBlog(
     req: RequestWIthWithURIQueryParams<URIParamsModel, PostWIthQueryModel>,
     res: Response<WithQueryModel<PostOutputModel[]>>
-  ) => {
+  ) {
     const { pageNumber, pageSize, sortBy, sortDirection } = req.query;
     const blog = await blogsServices.getBlogById(req.params.id);
     if (blog) {
@@ -78,30 +73,21 @@ blogsRoute.get(
     }
     return res.sendStatus(Not_Found);
   }
-);
 
-blogsRoute.post(
-  "/",
-  authMiddlewareCustomVariant,
-  createBlogValidationMiddleware,
-  async (
+  async createBlog(
     req: RequestWithBody<BlogCreateModel>,
     res: Response<BlogsOutputMode>
-  ) => {
+  ) {
     const { name, description, websiteUrl } = req.body;
     return res
       .status(Created)
       .send(await blogsServices.createdBlog({ name, description, websiteUrl }));
   }
-);
-blogsRoute.post(
-  "/:id/posts",
-  authMiddlewareCustomVariant,
-  createPostForBlogIdValidationMiddleware,
-  async (
+
+  async createPostForCurrentBlog(
     req: RequestWithParamsAndBody<URIParamsModel, PostBlogIdCreateModel>,
     res: Response<PostDbModel>
-  ) => {
+  ) {
     const blog = await blogsServices.getBlogById(req.params.id);
     if (blog) {
       const post = await postsServices.createPostForCurrentBlog(req.params.id, {
@@ -113,16 +99,11 @@ blogsRoute.post(
     }
     return res.sendStatus(Not_Found);
   }
-);
 
-blogsRoute.put(
-  "/:id",
-  authMiddlewareCustomVariant,
-  createBlogValidationMiddleware,
-  async (
+  async updateBlog(
     req: RequestWithParamsAndBody<URIParamsModel, BlogCreateModel>,
     res: Response
-  ) => {
+  ) {
     const { description, name, websiteUrl } = req.body;
     const result = await blogsServices.updateBlog(
       req.params.id,
@@ -133,15 +114,45 @@ blogsRoute.put(
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Not_Found);
   }
+
+  async deleteById(req: Request, res: Response) {
+    const result = await blogsServices.deleteById(req.params.id);
+    if (!result) return res.sendStatus(Not_Found);
+    return res.sendStatus(No_Content);
+  }
+}
+const blogsControllerInstance = new BlogsController();
+
+blogsRoute.get("/", blogsControllerInstance.getAllBlogs);
+
+blogsRoute.get("/:id", blogsControllerInstance.getById);
+
+blogsRoute.get("/:id/posts", blogsControllerInstance.getPostsByIdBlog);
+
+blogsRoute.post(
+  "/",
+  authMiddlewareCustomVariant,
+  createBlogValidationMiddleware,
+  blogsControllerInstance.createBlog
+);
+
+blogsRoute.post(
+  "/:id/posts",
+  authMiddlewareCustomVariant,
+  createPostForBlogIdValidationMiddleware,
+  blogsControllerInstance.createPostForCurrentBlog
+);
+
+blogsRoute.put(
+  "/:id",
+  authMiddlewareCustomVariant,
+  createBlogValidationMiddleware,
+  blogsControllerInstance.updateBlog
 );
 
 blogsRoute.delete(
   "/:id",
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
-  async (req: Request, res: Response) => {
-    const result = await blogsServices.deleteById(req.params.id);
-    if (!result) return res.sendStatus(Not_Found);
-    return res.sendStatus(No_Content);
-  }
+  blogsControllerInstance.deleteById
 );
