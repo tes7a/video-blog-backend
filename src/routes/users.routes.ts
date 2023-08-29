@@ -18,14 +18,14 @@ import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middl
 import { userService } from "../services";
 
 export const usersRoute = Router({});
+
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
-usersRoute.get(
-  "/",
-  async (
+class UsersController {
+  async getAllUsers(
     req: RequestWithQuery<UsersQueryModel>,
     res: Response<WithQueryModel<UsersOutputModel[]>>
-  ) => {
+  ) {
     const {
       pageNumber,
       pageSize,
@@ -34,6 +34,7 @@ usersRoute.get(
       sortBy,
       sortDirection,
     } = req.query;
+
     return res.status(OK).send(
       await usersQueryRepository.getUsers({
         pageNumber,
@@ -45,30 +46,38 @@ usersRoute.get(
       })
     );
   }
-);
 
-usersRoute.post(
-  "/",
-  authMiddlewareCustomVariant,
-  createUserValidationMiddleware,
-  async (
+  async createUser(
     req: RequestWithBody<UsersCreateModel>,
     res: Response<UsersCreateOutputModel>
-  ) => {
+  ) {
     const { email, login, password } = req.body;
     return res
       .status(Created)
       .send(await userService.createUser({ email, login, password }));
   }
+
+  async deleteUser(req: RequestWithParams<URIParamsModel>, res: Response) {
+    const result = await userService.deleteUser(req.params.id);
+    if (!result) return res.sendStatus(Not_Found);
+    return res.sendStatus(No_Content);
+  }
+}
+
+const usersControllerInstance = new UsersController();
+
+usersRoute.get("/", usersControllerInstance.getAllUsers);
+
+usersRoute.post(
+  "/",
+  authMiddlewareCustomVariant,
+  createUserValidationMiddleware,
+  usersControllerInstance.createUser
 );
 
 usersRoute.delete(
   "/:id",
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
-  async (req: RequestWithParams<URIParamsModel>, res: Response) => {
-    const result = await userService.deleteUser(req.params.id);
-    if (!result) return res.sendStatus(Not_Found);
-    return res.sendStatus(No_Content);
-  }
+  usersControllerInstance.deleteUser
 );

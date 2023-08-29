@@ -28,12 +28,11 @@ export const postsRoute = Router({});
 
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
-postsRoute.get(
-  "/",
-  async (
+class PostsController {
+  async getAllPosts(
     req: RequestWithQuery<PostWIthQueryModel>,
     res: Response<WithQueryModel<PostOutputModel[]>>
-  ) => {
+  ) {
     const { sortBy, sortDirection, pageNumber, pageSize } = req.query;
     return res.status(OK).send(
       await postQueryRepository.getPosts({
@@ -44,14 +43,11 @@ postsRoute.get(
       })
     );
   }
-);
 
-postsRoute.get(
-  "/:id/comments",
-  async (
+  async getCommentsPost(
     req: RequestWIthWithURIQueryParams<URIParamsModel, CommentsQueryModel>,
     res: Response<WithQueryModel<CommentsOutputModel[]>>
-  ) => {
+  ) {
     const post = await postsServices.getPostById(req.params.id);
     if (post) {
       const result = await postCommentsQueryRepository.getComments(
@@ -67,28 +63,20 @@ postsRoute.get(
     }
     return res.sendStatus(Not_Found);
   }
-);
 
-postsRoute.get(
-  "/:id",
-  async (
+  async getPostById(
     req: RequestWithParams<URIParamsModel>,
     res: Response<PostOutputModel>
-  ) => {
+  ) {
     const post = await postsServices.getPostById(req.params.id);
     if (!post) res.sendStatus(Not_Found);
     return res.status(OK).send(post);
   }
-);
 
-postsRoute.post(
-  "/",
-  authMiddlewareCustomVariant,
-  createPostsValidationMiddleware,
-  async (
+  async createPost(
     req: RequestWithBody<PostCreateModel>,
     res: Response<PostOutputModel>
-  ) => {
+  ) {
     const { title, shortDescription, content, blogId } = req.body;
     return res.status(Created).send(
       await postsServices.createPost({
@@ -99,16 +87,11 @@ postsRoute.post(
       })
     );
   }
-);
 
-postsRoute.post(
-  "/:id/comments",
-  authMiddleware,
-  createCommentsValidationMiddleware,
-  async (
+  async createComment(
     req: RequestWithParamsAndBody<URIParamsModel, { content: string }>,
     res: Response
-  ) => {
+  ) {
     const { content } = req.body;
     const post = await postsServices.getPostById(req.params.id);
     const user = await userService.findLoggedUser(req.userId);
@@ -125,16 +108,11 @@ postsRoute.post(
     }
     return res.sendStatus(Not_Found);
   }
-);
 
-postsRoute.put(
-  "/:id",
-  authMiddlewareCustomVariant,
-  createPostsValidationMiddleware,
-  async (
+  async updatePost(
     req: RequestWithParamsAndBody<URIParamsModel, PostUpdateModel>,
     res: Response
-  ) => {
+  ) {
     const { title, shortDescription, content, blogId } = req.body;
     const result = await postsServices.updatePost(req.params.id, {
       title,
@@ -145,15 +123,46 @@ postsRoute.put(
     if (result) return res.sendStatus(No_Content);
     return res.sendStatus(Not_Found);
   }
+
+  async deletePost(req: RequestWithParams<URIParamsModel>, res: Response) {
+    const result = await postsServices.deleteById(req.params.id);
+    if (!result) return res.sendStatus(Not_Found);
+    return res.sendStatus(No_Content);
+  }
+}
+
+const postsControllerInstance = new PostsController();
+
+postsRoute.get("/", postsControllerInstance.getAllPosts);
+
+postsRoute.get("/:id/comments", postsControllerInstance.getCommentsPost);
+
+postsRoute.get("/:id", postsControllerInstance.getPostById);
+
+postsRoute.post(
+  "/",
+  authMiddlewareCustomVariant,
+  createPostsValidationMiddleware,
+  postsControllerInstance.createPost
+);
+
+postsRoute.post(
+  "/:id/comments",
+  authMiddleware,
+  createCommentsValidationMiddleware,
+  postsControllerInstance.createComment
+);
+
+postsRoute.put(
+  "/:id",
+  authMiddlewareCustomVariant,
+  createPostsValidationMiddleware,
+  postsControllerInstance.updatePost
 );
 
 postsRoute.delete(
   "/:id",
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
-  async (req: RequestWithParams<URIParamsModel>, res: Response) => {
-    const result = await postsServices.deleteById(req.params.id);
-    if (!result) return res.sendStatus(Not_Found);
-    return res.sendStatus(No_Content);
-  }
+  postsControllerInstance.deletePost
 );

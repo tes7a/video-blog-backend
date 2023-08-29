@@ -10,14 +10,20 @@ import {
 
 export const testingRoute = Router({});
 
+class TestingController {
+  async deleteAll(req: Request, res: Response) {
+    await Promise.all([
+      BlogModelClass.deleteMany({}),
+      PostModelClass.deleteMany({}),
+      UserModelClass.deleteMany({}),
+      CommentModelClass.deleteMany({}),
+      DeviceModelClass.deleteMany({}),
+    ]);
+    return res.sendStatus(204);
+  }
+}
+
+const testingControllerInstance = new TestingController();
+
 // Reset the database for testing
-testingRoute.delete("/all-data", async (req: Request, res: Response) => {
-  await Promise.all([
-    BlogModelClass.deleteMany({}),
-    PostModelClass.deleteMany({}),
-    UserModelClass.deleteMany({}),
-    CommentModelClass.deleteMany({}),
-    DeviceModelClass.deleteMany({}),
-  ]);
-  return res.sendStatus(204);
-});
+testingRoute.delete("/all-data", testingControllerInstance.deleteAll);

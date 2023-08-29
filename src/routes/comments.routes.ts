@@ -13,26 +13,20 @@ export const commentsRoute = Router({});
 
 const { OK, Not_Found, No_Content, Forbidden } = HTTPS_ANSWERS;
 
-commentsRoute.get(
-  "/:id",
-  async (
+class CommentsController {
+  async getCommentsById(
     req: RequestWithParams<URIParamsModel>,
     res: Response<CommentsOutputModel>
-  ) => {
+  ) {
     const comments = await commentsService.getCommentsById(req.params.id);
     if (!comments) return res.sendStatus(Not_Found);
     return res.status(OK).send(comments);
   }
-);
 
-commentsRoute.put(
-  "/:id",
-  authMiddleware,
-  createCommentsValidationMiddleware,
-  async (
+  async updateComment(
     req: RequestWithParamsAndBody<URIParamsModel, { content: string }>,
     res: Response<CommentsOutputModel>
-  ) => {
+  ) {
     const { content } = req.body;
     const comments = await commentsService.getCommentsById(req.params.id);
     const result = await commentsService.updateComment(req.params.id, content);
@@ -42,13 +36,8 @@ commentsRoute.put(
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(Forbidden);
   }
-);
 
-commentsRoute.delete(
-  "/:id",
-  authMiddleware,
-  inputValidationMiddleware,
-  async (req: RequestWithParams<URIParamsModel>, res: Response) => {
+  async deleteComment(req: RequestWithParams<URIParamsModel>, res: Response) {
     const comments = await commentsService.getCommentsById(req.params.id);
     const result = await commentsService.deleteComment(req.params.id);
     if (req.userId === comments?.commentatorInfo.userId) {
@@ -57,4 +46,22 @@ commentsRoute.delete(
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(Forbidden);
   }
+}
+
+const commentsControllerInstance = new CommentsController();
+
+commentsRoute.get("/:id", commentsControllerInstance.getCommentsById);
+
+commentsRoute.put(
+  "/:id",
+  authMiddleware,
+  createCommentsValidationMiddleware,
+  commentsControllerInstance.updateComment
+);
+
+commentsRoute.delete(
+  "/:id",
+  authMiddleware,
+  inputValidationMiddleware,
+  commentsControllerInstance.deleteComment
 );
