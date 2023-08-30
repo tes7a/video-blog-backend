@@ -1,5 +1,5 @@
 import { add } from "date-fns";
-import { UsersDbModel } from "../models/users/UsersDbModel";
+import { UserDBModel, UsersDbModel } from "../models/users/UsersDbModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
@@ -14,43 +14,43 @@ import { RequestWithBody } from "../types/types";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { Request } from "express";
 
-export const authService = {
+class AuthService {
   async createUser(payload: UsersCreateModel): Promise<boolean | Error> {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
     const confirmationCode = uuidv4();
-    const newUser: UsersDbModel = {
-      id: new Date().getMilliseconds().toString(),
-      token: "",
-      accountData: {
+    const user = new UserDBModel(
+      new Date().getMilliseconds().toString(),
+      "",
+      {
         email,
         passwordHash,
         passwordSalt,
         login,
         createdAt: new Date().toISOString(),
       },
-      emailConfirmation: {
+      {
         confirmationCode,
         expirationDate: add(new Date(), {
           hours: 2,
         }),
         isConfirmed: false,
-      },
-    };
+      }
+    );
 
     try {
-      await usersRepository.createUser(newUser);
+      await usersRepository.createUser(user);
       await emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
       return true;
     } catch (e) {
       return false;
     }
-  },
+  }
 
   async checkUser(value: string) {
     return usersRepository.findByLoginOrEmail(value);
-  },
+  }
 
   async confirmCode(code: string): Promise<boolean> {
     const user = await usersRepository.findUserByConfirmCode(code);
@@ -58,7 +58,7 @@ export const authService = {
       return await usersRepository.updateConfirmation(user.id);
     }
     return false;
-  },
+  }
 
   async resendingMail(email: string): Promise<boolean> {
     try {
@@ -72,7 +72,8 @@ export const authService = {
     } catch (e) {
       return false;
     }
-  },
+  }
+
   async checkConfirmationCode(code: string): Promise<boolean | undefined> {
     const user = await usersRepository.findUserByConfirmCode(code);
 
@@ -80,11 +81,11 @@ export const authService = {
     if (user.emailConfirmation?.isConfirmed) return true;
     if (user.emailConfirmation!.expirationDate! < new Date()) return true;
     return false;
-  },
+  }
 
   async findByToken(token: string): Promise<UsersDbModel | null> {
     return await usersRepository.findByToken(token);
-  },
+  }
 
   async login(
     req: RequestWithBody<AuthLoginModel>
@@ -112,7 +113,7 @@ export const authService = {
       user,
       refreshToken,
     };
-  },
+  }
 
   async logout(token: string): Promise<boolean> {
     const result = await jwtService.getUserIdByToken(token);
@@ -123,7 +124,7 @@ export const authService = {
     );
     if (!deleted) return false;
     return true;
-  },
+  }
 
   async refreshToken(req: Request) {
     const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
@@ -146,7 +147,7 @@ export const authService = {
     });
 
     return { user, isDevice };
-  },
+  }
 
   async passwordRecovery(email: string): Promise<boolean> {
     try {
@@ -163,7 +164,7 @@ export const authService = {
     } catch (e) {
       return false;
     }
-  },
+  }
 
   async changePassword(
     newPassword: string,
@@ -183,9 +184,11 @@ export const authService = {
     );
     if (!update) return false;
     return true;
-  },
+  }
 
   async _generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
-  },
-};
+  }
+}
+
+export const authService = new AuthService();

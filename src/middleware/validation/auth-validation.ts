@@ -51,7 +51,17 @@ const loginRegMiddleware = body("login")
     return true;
   });
 
-const passwordRegMiddleware = body("newPassword")
+const passwordRegMiddleware = body("password")
+  .notEmpty({ ignore_whitespace: true })
+  .withMessage("Should not be empty")
+  .isString()
+  .withMessage("Should be a string")
+  .isLength({ min: 6 })
+  .withMessage("Min length 6 charters")
+  .isLength({ max: 20 })
+  .withMessage("Max length 20 charters");
+
+const newPasswordRegMiddleware = body("newPassword")
   .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
@@ -195,7 +205,7 @@ export const checkCookieMiddleware = [
 ];
 
 export const checkRecoveryPassword = [
-  passwordRegMiddleware,
+  newPasswordRegMiddleware,
   recoveryCodeMiddleware,
   inputValidationMiddleware,
 ];
