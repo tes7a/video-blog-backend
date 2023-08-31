@@ -1,13 +1,13 @@
 import { UserModelClass } from "../db/db";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
-import { UsersDbModel } from "../models/users/UsersDbModel";
+import { UserDBModel } from "../models/users/UsersDbModel";
 
 export const usersRepository = {
-  async createUser(newUser: UsersDbModel) {
+  async createUser(newUser: UserDBModel) {
     await UserModelClass.insertMany([newUser]);
     return await this._mapUser(newUser);
   },
-  async findByLoginOrEmail(loginOrEmail: string): Promise<UsersDbModel | null> {
+  async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBModel | null> {
     return await UserModelClass.findOne({
       $or: [
         { "accountData.email": loginOrEmail },
@@ -15,10 +15,10 @@ export const usersRepository = {
       ],
     });
   },
-  async findUserById(id: string): Promise<UsersDbModel | null> {
+  async findUserById(id: string): Promise<UserDBModel | null> {
     return await UserModelClass.findOne({ id: id });
   },
-  async findByToken(token: string): Promise<UsersDbModel | null> {
+  async findByToken(token: string): Promise<UserDBModel | null> {
     return await UserModelClass.findOne({ token });
   },
 
@@ -27,7 +27,7 @@ export const usersRepository = {
 
     return deletedCount === 1;
   },
-  async findUserByConfirmCode(code: string): Promise<UsersDbModel | null> {
+  async findUserByConfirmCode(code: string): Promise<UserDBModel | null> {
     return UserModelClass.findOne({
       "emailConfirmation.confirmationCode": code,
     });
@@ -69,7 +69,7 @@ export const usersRepository = {
   async findRecoveryCode(
     recoveryCode: string
   ): Promise<UsersCreateOutputModel | undefined> {
-    const user: UsersDbModel | null = await UserModelClass.findOne({
+    const user: UserDBModel | null = await UserModelClass.findOne({
       "accountData.recoveryCode": recoveryCode,
     });
 
@@ -90,7 +90,7 @@ export const usersRepository = {
     return true;
   },
 
-  async _mapUser(user: UsersDbModel): Promise<UsersCreateOutputModel> {
+  async _mapUser(user: UserDBModel): Promise<UsersCreateOutputModel> {
     return {
       id: user.id,
       email: user.accountData.email,

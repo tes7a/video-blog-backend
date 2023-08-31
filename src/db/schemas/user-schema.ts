@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { UsersDbModel } from "../../models/users/UsersDbModel";
+import { UserDBModel } from "../../models/users/UsersDbModel";
 
-export const userSchema = new mongoose.Schema<UsersDbModel>({
+export const userSchema = new mongoose.Schema<UserDBModel>({
   id: String,
   token: String,
   accountData: {

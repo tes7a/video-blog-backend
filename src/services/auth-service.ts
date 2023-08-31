@@ -1,5 +1,5 @@
 import { add } from "date-fns";
-import { UserDBModel, UsersDbModel } from "../models/users/UsersDbModel";
+import { UserDBModel } from "../models/users/UsersDbModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
@@ -83,13 +83,13 @@ class AuthService {
     return false;
   }
 
-  async findByToken(token: string): Promise<UsersDbModel | null> {
+  async findByToken(token: string): Promise<UserDBModel | null> {
     return await usersRepository.findByToken(token);
   }
 
   async login(
     req: RequestWithBody<AuthLoginModel>
-  ): Promise<{ user: UsersDbModel; refreshToken: string } | undefined> {
+  ): Promise<{ user: UserDBModel; refreshToken: string } | undefined> {
     const { loginOrEmail, password } = req.body;
     const user = await userService.checkUserCredentials({
       loginOrEmail,

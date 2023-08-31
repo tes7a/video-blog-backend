@@ -2,13 +2,15 @@ import { BlogCreateModel } from "../models/blogs/BlogCreateModel";
 import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
 import { blogsRepository } from "../repositories/blogs-repository";
 
-export const blogsServices = {
+class BlogsService {
   async getBlogById(id: string): Promise<BlogsOutputMode | undefined> {
     return await blogsRepository.getBlogById(id);
-  },
+  }
+
   async deleteById(id: string): Promise<boolean> {
     return await blogsRepository.deleteById(id);
-  },
+  }
+
   async createdBlog(payload: BlogCreateModel): Promise<BlogsOutputMode> {
     const newBlog = {
       id: new Date().getMilliseconds().toString(),
@@ -19,7 +21,8 @@ export const blogsServices = {
       isMembership: false,
     };
     return await blogsRepository.createdBlog(newBlog);
-  },
+  }
+
   async updateBlog(
     id: string,
     description: string,
@@ -27,5 +30,6 @@ export const blogsServices = {
     websiteUrl: string
   ): Promise<boolean> {
     return await blogsRepository.updateBlog(id, description, name, websiteUrl);
-  },
-};
+  }
+}
+export const blogsServices = new BlogsService();

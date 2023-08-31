@@ -1,21 +1,21 @@
 import bcrypt from "bcrypt";
 import { usersRepository } from "../repositories/users-repository";
-import { UsersDbModel } from "../models/users/UsersDbModel";
+import { UserDBModel } from "../models/users/UsersDbModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
 
-export const userService = {
+class UserService {
   async createUser(payload: UsersCreateModel): Promise<UsersCreateOutputModel> {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
 
-    const newUser: UsersDbModel = {
-      id: new Date().getMilliseconds().toString(),
-      token: "",
-      accountData: {
+    const user = new UserDBModel(
+      new Date().getMilliseconds().toString(),
+      "",
+      {
         email,
         passwordHash,
         passwordSalt,
@@ -23,18 +23,20 @@ export const userService = {
         login,
         createdAt: new Date().toISOString(),
       },
-      emailConfirmation: {
+      {
         confirmationCode: "",
         expirationDate: new Date(),
         isConfirmed: true,
-      },
-    };
+      }
+    );
 
-    return usersRepository.createUser(newUser);
-  },
-  async findUserById(id: string): Promise<UsersDbModel | null> {
+    return usersRepository.createUser(user);
+  }
+
+  async findUserById(id: string): Promise<UserDBModel | null> {
     return usersRepository.findUserById(id);
-  },
+  }
+
   async findLoggedUser(id: string): Promise<AuthOutputUserModel | undefined> {
     const result = await usersRepository.findUserById(id);
     if (result) {
@@ -47,13 +49,15 @@ export const userService = {
         userId: id,
       };
     }
-  },
+  }
+
   async updateToken(id: string, token: string): Promise<boolean> {
     return usersRepository.updateToken(id, token);
-  },
+  }
+
   async checkUserCredentials(
     payload: AuthLoginModel
-  ): Promise<undefined | UsersDbModel> {
+  ): Promise<undefined | UserDBModel> {
     const user = await usersRepository.findByLoginOrEmail(payload.loginOrEmail);
     if (!user) return undefined;
     if (!user.emailConfirmation?.isConfirmed) return undefined;
@@ -63,11 +67,15 @@ export const userService = {
     );
     if (user.accountData.passwordHash !== passwordHash) return undefined;
     return user;
-  },
+  }
+
   async deleteUser(id: string): Promise<boolean> {
     return await usersRepository.deleteUser(id);
-  },
+  }
+
   async _generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
-  },
-};
+  }
+}
+
+export const userService = new UserService();
