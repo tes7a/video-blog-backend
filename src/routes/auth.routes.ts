@@ -20,6 +20,7 @@ import { authService, jwtService, userService } from "../services";
 export const authRoute = Router({});
 const { No_Content, Unauthorized, OK, Bad_Request } = HTTPS_ANSWERS;
 
+//test
 class AuthController {
   async me(req: Request, res: Response<AuthOutputUserModel>) {
     const result = await userService.findLoggedUser(req.userId);
