@@ -1,15 +1,15 @@
 import { DeviceModelClass } from "../db/db";
 import { DeviceDbModel } from "../models/devices/DeviceDbModel";
 import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
-
-export const deviceRepository = {
+class DeviceRepository {
   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
     const devices = await DeviceModelClass.find({
       userId: { $regex: id },
     }).lean();
 
     return await this._mapDevices(devices);
-  },
+  }
+
   async createDevice(device: DeviceDbModel) {
     const createdDevice = new DeviceModelClass({
       ip: device.ip,
@@ -19,12 +19,13 @@ export const deviceRepository = {
       userId: device.userId,
     });
     await createdDevice.save();
-  },
+  }
+
   async deleteAllDevices(userId: string, deviceId: string) {
     return await DeviceModelClass.deleteMany({
       $and: [{ userId: userId }, { deviceId: { $ne: deviceId } }],
     });
-  },
+  }
 
   async deleteDevice(deviceId: string, userId: string): Promise<boolean> {
     const { deletedCount } = await DeviceModelClass.deleteOne({
@@ -33,14 +34,14 @@ export const deviceRepository = {
     });
 
     return deletedCount === 1;
-  },
+  }
 
   async checkDeviceId(id: string): Promise<boolean> {
     const result = await DeviceModelClass.findOne({ deviceId: id });
     if (result) return true;
 
     return false;
-  },
+  }
 
   async getDevice(deviceId: string, date: Date): Promise<DeviceDbModel | null> {
     const result = await DeviceModelClass.findOne({
@@ -50,7 +51,7 @@ export const deviceRepository = {
     if (result) return result;
 
     return null;
-  },
+  }
 
   async updateDevice(device: DeviceDbModel): Promise<boolean> {
     const { matchedCount } = await DeviceModelClass.updateOne(
@@ -65,7 +66,7 @@ export const deviceRepository = {
       }
     );
     return matchedCount === 1;
-  },
+  }
 
   async _mapDevices(items: DeviceDbModel[]): Promise<DeviceOutputModel[]> {
     return items.map((i) => ({
@@ -74,5 +75,7 @@ export const deviceRepository = {
       lastActiveDate: i.lastActiveDate,
       deviceId: i.deviceId,
     }));
-  },
-};
+  }
+}
+
+export const deviceRepository = new DeviceRepository();

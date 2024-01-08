@@ -4,7 +4,7 @@ import { PostOutputModel } from "../../models/posts/PostOutputModel";
 import { PostWIthQueryModel } from "../../models/posts/PostWIthQueryModel";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 
-export const postQueryRepository = {
+class PostQueryRepository {
   async getPosts(
     payload: PostWIthQueryModel
   ): Promise<WithQueryModel<PostOutputModel[]>> {
@@ -35,7 +35,8 @@ export const postQueryRepository = {
       totalCount: postsCount,
       items: await this._mapPosts(filteredArray),
     };
-  },
+  }
+
   async getPostByBlogID(
     blogId: string,
     payload: PostWIthQueryModel
@@ -68,7 +69,8 @@ export const postQueryRepository = {
       totalCount: postsCount,
       items: await this._mapPosts(filteredArray),
     };
-  },
+  }
+
   async getFilteredPosts(
     filterCondition: object,
     sortBy: string,
@@ -81,7 +83,8 @@ export const postQueryRepository = {
       .skip(startIndex)
       .limit(pageSize)
       .lean();
-  },
+  }
+
   async _mapPosts(items: PostDbModel[]): Promise<PostOutputModel[]> {
     return items.map((p) => {
       return {
@@ -94,5 +97,7 @@ export const postQueryRepository = {
         createdAt: p.createdAt,
       };
     });
-  },
-};
+  }
+}
+
+export const postQueryRepository = new PostQueryRepository();
