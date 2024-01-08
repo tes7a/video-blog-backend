@@ -1,8 +1,7 @@
 import { BlogModelClass } from "../db/db";
 import { BlogDbModel } from "../models/blogs/BlogDbModel";
 import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
-
-export const blogsRepository = {
+class BlogsRepository {
   async getBlogById(id: string): Promise<BlogsOutputMode | undefined> {
     const res = (await BlogModelClass.find({ id: { $regex: id } }).lean())[0];
     if (!res) return undefined;
@@ -14,12 +13,14 @@ export const blogsRepository = {
       isMembership: res.isMembership,
       websiteUrl: res.websiteUrl,
     };
-  },
+  }
+
   async deleteById(id: string): Promise<boolean> {
     const { deletedCount } = await BlogModelClass.deleteOne({ id: id });
 
     return deletedCount === 1;
-  },
+  }
+
   async createdBlog(newBlog: BlogDbModel): Promise<BlogsOutputMode> {
     const blog = new BlogModelClass({
       id: newBlog.id,
@@ -33,7 +34,8 @@ export const blogsRepository = {
     await blog.save();
 
     return newBlog;
-  },
+  }
+
   async updateBlog(
     id: string,
     description: string,
@@ -50,5 +52,7 @@ export const blogsRepository = {
     await blog.save();
 
     return true;
-  },
-};
+  }
+}
+
+export const blogsRepository = new BlogsRepository();

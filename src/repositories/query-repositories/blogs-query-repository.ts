@@ -4,7 +4,7 @@ import { BlogWithQueryModel } from "../../models/blogs/BlogWithQueryModel";
 import { BlogsOutputMode } from "../../models/blogs/BlogsOutputModel";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 
-export const blogsQueryRepository = {
+class BlogsQueryRepository {
   async getBlogs(
     payload: BlogWithQueryModel
   ): Promise<WithQueryModel<BlogsOutputMode[]>> {
@@ -49,5 +49,7 @@ export const blogsQueryRepository = {
         };
       }),
     };
-  },
-};
+  }
+}
+
+export const blogsQueryRepository = new BlogsQueryRepository();

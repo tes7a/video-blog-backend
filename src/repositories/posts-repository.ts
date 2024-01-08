@@ -3,7 +3,7 @@ import { PostDbModel } from "../models/posts/PostDbModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 
-export const postsRepository = {
+class PostsRepository {
   async getPostById(id: string): Promise<PostDbModel | undefined> {
     const res = (await PostModelClass.find({ id: { $regex: id } }).lean())[0];
     if (!res) return undefined;
@@ -16,12 +16,12 @@ export const postsRepository = {
       shortDescription: res.shortDescription,
       title: res.title,
     };
-  },
+  }
 
   async deleteById(id: string): Promise<boolean> {
     const { deletedCount } = await PostModelClass.deleteOne({ id: id });
     return deletedCount === 1;
-  },
+  }
 
   async createPost(newPost: PostDbModel): Promise<PostOutputModel> {
     await PostModelClass.insertMany([newPost]);
@@ -34,7 +34,7 @@ export const postsRepository = {
       blogName: newPost.blogName,
       createdAt: newPost.createdAt,
     };
-  },
+  }
 
   async updatePost(id: string, payload: PostUpdateModel): Promise<boolean> {
     const { blogId, content, shortDescription, title } = payload;
@@ -43,5 +43,7 @@ export const postsRepository = {
       { $set: { title, shortDescription, content, blogId } }
     );
     return matchedCount === 1;
-  },
-};
+  }
+}
+
+export const postsRepository = new PostsRepository();

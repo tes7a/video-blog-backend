@@ -2,11 +2,12 @@ import { UserModelClass } from "../db/db";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UserDBModel } from "../models/users/UsersDbModel";
 
-export const usersRepository = {
+class UsersRepository {
   async createUser(newUser: UserDBModel) {
     await UserModelClass.insertMany([newUser]);
     return await this._mapUser(newUser);
-  },
+  }
+
   async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBModel | null> {
     return await UserModelClass.findOne({
       $or: [
@@ -14,24 +15,27 @@ export const usersRepository = {
         { "accountData.login": loginOrEmail },
       ],
     });
-  },
+  }
+
   async findUserById(id: string): Promise<UserDBModel | null> {
     return await UserModelClass.findOne({ id: id });
-  },
+  }
+
   async findByToken(token: string): Promise<UserDBModel | null> {
     return await UserModelClass.findOne({ token });
-  },
+  }
 
   async deleteUser(id: string) {
     const { deletedCount } = await UserModelClass.deleteOne({ id: id });
 
     return deletedCount === 1;
-  },
+  }
+
   async findUserByConfirmCode(code: string): Promise<UserDBModel | null> {
     return UserModelClass.findOne({
       "emailConfirmation.confirmationCode": code,
     });
-  },
+  }
 
   async updateConfirmation(id: string): Promise<boolean> {
     const { matchedCount } = await UserModelClass.updateOne(
@@ -40,7 +44,8 @@ export const usersRepository = {
     );
 
     return matchedCount === 1;
-  },
+  }
+
   async updateToken(id: string, token: string): Promise<boolean> {
     const { matchedCount } = await UserModelClass.updateOne(
       { id: id },
@@ -48,7 +53,8 @@ export const usersRepository = {
     );
 
     return matchedCount === 1;
-  },
+  }
+
   async refreshConfirmCode(id: string, code: string): Promise<boolean> {
     const { matchedCount } = await UserModelClass.updateOne(
       { id: id },
@@ -56,7 +62,7 @@ export const usersRepository = {
     );
 
     return matchedCount === 1;
-  },
+  }
 
   async setRecoveryCode(id: string, recoveryCode: string): Promise<boolean> {
     const user = await UserModelClass.findOne({ id });
@@ -64,7 +70,7 @@ export const usersRepository = {
     user.accountData.recoveryCode = recoveryCode;
     await user.save();
     return true;
-  },
+  }
 
   async findRecoveryCode(
     recoveryCode: string
@@ -75,7 +81,7 @@ export const usersRepository = {
 
     if (!user) return undefined;
     return await this._mapUser(user);
-  },
+  }
 
   async setNewPassword(
     id: string,
@@ -88,7 +94,7 @@ export const usersRepository = {
     user.accountData.passwordHash = hash;
     await user.save();
     return true;
-  },
+  }
 
   async _mapUser(user: UserDBModel): Promise<UsersCreateOutputModel> {
     return {
@@ -97,5 +103,7 @@ export const usersRepository = {
       login: user.accountData.login,
       createdAt: user.accountData.createdAt,
     };
-  },
-};
+  }
+}
+
+export const usersRepository = new UsersRepository();

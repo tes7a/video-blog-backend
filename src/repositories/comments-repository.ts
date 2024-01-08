@@ -1,8 +1,7 @@
 import { CommentModelClass } from "../db/db";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { CommentsDbModel } from "../models/comments/CommentsDbModel";
-
-export const commentsRepository = {
+class CommentsRepository {
   async getCommentsById(
     idComment: string
   ): Promise<CommentsOutputModel | undefined> {
@@ -25,7 +24,8 @@ export const commentsRepository = {
       },
       createdAt,
     };
-  },
+  }
+
   async createComment(
     newComment: CommentsDbModel
   ): Promise<CommentsOutputModel> {
@@ -40,7 +40,8 @@ export const commentsRepository = {
     });
     await comment.save();
     return newComment;
-  },
+  }
+
   async updateComment(id: string, content: string): Promise<boolean> {
     const comment = await CommentModelClass.findOne({ id });
     if (!comment) return false;
@@ -49,10 +50,13 @@ export const commentsRepository = {
 
     await comment.save();
     return true;
-  },
+  }
+
   async deleteComment(id: string): Promise<boolean> {
     const { deletedCount } = await CommentModelClass.deleteOne({ id: id });
 
     return deletedCount === 1;
-  },
-};
+  }
+}
+
+export const commentsRepository = new CommentsRepository();

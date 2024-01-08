@@ -4,7 +4,7 @@ import { WithQueryModel } from "../../models/universal/WithQueryModel";
 import { UsersOutputModel } from "../../models/users/UsersOutputModel";
 import { UsersQueryModel } from "../../models/users/UsersQueryModel";
 
-export const usersQueryRepository = {
+class UsersQueryRepository {
   async getUsers(
     payload: UsersQueryModel
   ): Promise<WithQueryModel<UsersOutputModel[]>> {
@@ -56,5 +56,7 @@ export const usersQueryRepository = {
         createdAt: user.accountData.createdAt,
       })),
     };
-  },
-};
+  }
+}
+
+export const usersQueryRepository = new UsersQueryRepository();
