@@ -15,27 +15,41 @@ import { inputValidationMiddleware } from "../middleware/input-validation.middle
 import { WithQueryModel } from "../models/universal/WithQueryModel";
 import { PostWIthQueryModel } from "../models/posts/PostWIthQueryModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
-import { postQueryRepository } from "../repositories/query-repositories/post-query-repository";
 import { createCommentsValidationMiddleware } from "../middleware/validation/comments-validation";
 import { CommentsQueryModel } from "../models/comments/CommentsQueryModel";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
-import { postCommentsQueryRepository } from "../repositories/query-repositories/post-comments-query-repository";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 import { authMiddleware } from "../middleware/validation/auth-validation";
-import { commentsService, postsServices, userService } from "../services";
+import { CommentsService, PostService, UserService } from "../services";
+import { PostCommentsQueryRepository } from "../repositories/query-repositories/post-comments-query-repository";
+import { PostQueryRepository } from "../repositories/query-repositories/post-query-repository";
 
 export const postsRoute = Router({});
 
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
 class PostsController {
+  postCommentsQueryRepository: PostCommentsQueryRepository;
+  postQueryRepository: PostQueryRepository;
+  commentsService: CommentsService;
+  postsServices: PostService;
+  userService: UserService;
+
+  constructor() {
+    this.postCommentsQueryRepository = new PostCommentsQueryRepository();
+    this.postQueryRepository = new PostQueryRepository();
+    this.commentsService = new CommentsService();
+    this.postsServices = new PostService();
+    this.userService = new UserService();
+  }
+
   async getAllPosts(
     req: RequestWithQuery<PostWIthQueryModel>,
     res: Response<WithQueryModel<PostOutputModel[]>>
   ) {
     const { sortBy, sortDirection, pageNumber, pageSize } = req.query;
     return res.status(OK).send(
-      await postQueryRepository.getPosts({
+      await this.postQueryRepository.getPosts({
         sortBy: sortBy?.toString(),
         sortDirection: sortDirection?.toString(),
         pageNumber: pageNumber?.toString(),
@@ -48,9 +62,9 @@ class PostsController {
     req: RequestWIthWithURIQueryParams<URIParamsModel, CommentsQueryModel>,
     res: Response<WithQueryModel<CommentsOutputModel[]>>
   ) {
-    const post = await postsServices.getPostById(req.params.id);
+    const post = await this.postsServices.getPostById(req.params.id);
     if (post) {
-      const result = await postCommentsQueryRepository.getComments(
+      const result = await this.postCommentsQueryRepository.getComments(
         req.params.id,
         {
           pageNumber: req.query.pageNumber,
@@ -68,7 +82,7 @@ class PostsController {
     req: RequestWithParams<URIParamsModel>,
     res: Response<PostOutputModel>
   ) {
-    const post = await postsServices.getPostById(req.params.id);
+    const post = await this.postsServices.getPostById(req.params.id);
     if (!post) res.sendStatus(Not_Found);
     return res.status(OK).send(post);
   }
@@ -79,7 +93,7 @@ class PostsController {
   ) {
     const { title, shortDescription, content, blogId } = req.body;
     return res.status(Created).send(
-      await postsServices.createPost({
+      await this.postsServices.createPost({
         title,
         shortDescription,
         content,
@@ -93,12 +107,12 @@ class PostsController {
     res: Response
   ) {
     const { content } = req.body;
-    const post = await postsServices.getPostById(req.params.id);
-    const user = await userService.findLoggedUser(req.userId);
+    const post = await this.postsServices.getPostById(req.params.id);
+    const user = await this.userService.findLoggedUser(req.userId);
     if (post && user) {
       const { login, userId } = user;
       return res.status(Created).send(
-        await commentsService.createdComment({
+        await this.commentsService.createdComment({
           postId: post.id,
           content,
           userId,
@@ -114,7 +128,7 @@ class PostsController {
     res: Response
   ) {
     const { title, shortDescription, content, blogId } = req.body;
-    const result = await postsServices.updatePost(req.params.id, {
+    const result = await this.postsServices.updatePost(req.params.id, {
       title,
       shortDescription,
       content,
@@ -125,7 +139,7 @@ class PostsController {
   }
 
   async deletePost(req: RequestWithParams<URIParamsModel>, res: Response) {
-    const result = await postsServices.deleteById(req.params.id);
+    const result = await this.postsServices.deleteById(req.params.id);
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(No_Content);
   }
@@ -133,36 +147,45 @@ class PostsController {
 
 const postsControllerInstance = new PostsController();
 
-postsRoute.get("/", postsControllerInstance.getAllPosts);
+postsRoute.get(
+  "/",
+  postsControllerInstance.getAllPosts.bind(postsControllerInstance)
+);
 
-postsRoute.get("/:id/comments", postsControllerInstance.getCommentsPost);
+postsRoute.get(
+  "/:id/comments",
+  postsControllerInstance.getCommentsPost.bind(postsControllerInstance)
+);
 
-postsRoute.get("/:id", postsControllerInstance.getPostById);
+postsRoute.get(
+  "/:id",
+  postsControllerInstance.getPostById.bind(postsControllerInstance)
+);
 
 postsRoute.post(
   "/",
   authMiddlewareCustomVariant,
   createPostsValidationMiddleware,
-  postsControllerInstance.createPost
+  postsControllerInstance.createPost.bind(postsControllerInstance)
 );
 
 postsRoute.post(
   "/:id/comments",
   authMiddleware,
   createCommentsValidationMiddleware,
-  postsControllerInstance.createComment
+  postsControllerInstance.createComment.bind(postsControllerInstance)
 );
 
 postsRoute.put(
   "/:id",
   authMiddlewareCustomVariant,
   createPostsValidationMiddleware,
-  postsControllerInstance.updatePost
+  postsControllerInstance.updatePost.bind(postsControllerInstance)
 );
 
 postsRoute.delete(
   "/:id",
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
-  postsControllerInstance.deletePost
+  postsControllerInstance.deletePost.bind(postsControllerInstance)
 );

@@ -3,15 +3,20 @@ import { PostCreateModel } from "../models/posts/PostCreateModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { PostUpdateModel } from "../models/posts/PostUpdateModel";
-import { postsRepository } from "../repositories/posts-repository";
+import { PostsRepository } from "../repositories/posts-repository";
 
-class PostService {
+export class PostService {
+  postsRepository: PostsRepository;
+
+  constructor() {
+    this.postsRepository = new PostsRepository();
+  }
   async getPostById(id: string): Promise<PostDbModel | undefined> {
-    return await postsRepository.getPostById(id);
+    return await this.postsRepository.getPostById(id);
   }
 
   async deleteById(id: string): Promise<boolean> {
-    return await postsRepository.deleteById(id);
+    return await this.postsRepository.deleteById(id);
   }
 
   async createPost(payload: PostCreateModel): Promise<PostOutputModel> {
@@ -24,7 +29,7 @@ class PostService {
       blogName: `Blog Name #`,
       createdAt: new Date().toISOString(),
     };
-    return postsRepository.createPost(newPost);
+    return this.postsRepository.createPost(newPost);
   }
 
   async createPostForCurrentBlog(
@@ -40,12 +45,12 @@ class PostService {
       blogName: `Blog Name #`,
       createdAt: new Date().toISOString(),
     };
-    return postsRepository.createPost(newPost);
+    return this.postsRepository.createPost(newPost);
   }
 
   async updatePost(id: string, payload: PostUpdateModel): Promise<boolean> {
     const { blogId, content, shortDescription, title } = payload;
-    return await postsRepository.updatePost(id, {
+    return await this.postsRepository.updatePost(id, {
       title,
       shortDescription,
       content,
@@ -53,5 +58,3 @@ class PostService {
     });
   }
 }
-
-export const postsServices = new PostService();

@@ -4,17 +4,31 @@ import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { emailsManager } from "../managers/emails-manager";
-import { usersRepository } from "../repositories/users-repository";
-import { jwtService } from "./jwt-service";
-import { deviceRepository } from "../repositories/device-repository";
+import { UsersRepository } from "../repositories/users-repository";
+import { JwtService } from "./jwt-service";
 import { randomUUID } from "crypto";
-import { userService } from "./users-service";
-import { deviceService } from "./device-service";
+import { UserService } from "./users-service";
 import { RequestWithBody } from "../types/types";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { Request } from "express";
+import { DeviceRepository } from "../repositories/device-repository";
+import { DeviceService } from "./device-service";
 
-class AuthService {
+export class AuthService {
+  deviceService: DeviceService;
+  deviceRepository: DeviceRepository;
+  usersRepository: UsersRepository;
+  userService: UserService;
+  jwtService: JwtService;
+
+  constructor() {
+    this.deviceService = new DeviceService();
+    this.deviceRepository = new DeviceRepository();
+    this.usersRepository = new UsersRepository();
+    this.userService = new UserService();
+    this.jwtService = new JwtService();
+  }
+
   async createUser(payload: UsersCreateModel): Promise<boolean | Error> {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);
@@ -40,7 +54,7 @@ class AuthService {
     );
 
     try {
-      await usersRepository.createUser(user);
+      await this.usersRepository.createUser(user);
       await emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
       return true;
     } catch (e) {
@@ -49,24 +63,24 @@ class AuthService {
   }
 
   async checkUser(value: string) {
-    return usersRepository.findByLoginOrEmail(value);
+    return this.usersRepository.findByLoginOrEmail(value);
   }
 
   async confirmCode(code: string): Promise<boolean> {
-    const user = await usersRepository.findUserByConfirmCode(code);
+    const user = await this.usersRepository.findUserByConfirmCode(code);
     if (user) {
-      return await usersRepository.updateConfirmation(user.id);
+      return await this.usersRepository.updateConfirmation(user.id);
     }
     return false;
   }
 
   async resendingMail(email: string): Promise<boolean> {
     try {
-      const user = await usersRepository.findByLoginOrEmail(email);
+      const user = await this.usersRepository.findByLoginOrEmail(email);
       if (!user) return false;
       if (user.emailConfirmation?.isConfirmed) return false;
       const confirmationCode = uuidv4();
-      await usersRepository.refreshConfirmCode(user.id, confirmationCode);
+      await this.usersRepository.refreshConfirmCode(user.id, confirmationCode);
       await emailsManager.sendEmailConfirmationMessage(email, confirmationCode);
       return true;
     } catch (e) {
@@ -75,7 +89,7 @@ class AuthService {
   }
 
   async checkConfirmationCode(code: string): Promise<boolean | undefined> {
-    const user = await usersRepository.findUserByConfirmCode(code);
+    const user = await this.usersRepository.findUserByConfirmCode(code);
 
     if (!user) return true;
     if (user.emailConfirmation?.isConfirmed) return true;
@@ -84,24 +98,24 @@ class AuthService {
   }
 
   async findByToken(token: string): Promise<UserDBModel | null> {
-    return await usersRepository.findByToken(token);
+    return await this.usersRepository.findByToken(token);
   }
 
   async login(
     req: RequestWithBody<AuthLoginModel>
   ): Promise<{ user: UserDBModel; refreshToken: string } | undefined> {
     const { loginOrEmail, password } = req.body;
-    const user = await userService.checkUserCredentials({
+    const user = await this.userService.checkUserCredentials({
       loginOrEmail,
       password,
     });
     if (!user) return undefined;
     const deviceId = randomUUID();
-    const refreshToken = await jwtService.createRefreshJWT(user, deviceId);
-    const result = await userService.updateToken(user.id, refreshToken);
+    const refreshToken = await this.jwtService.createRefreshJWT(user, deviceId);
+    const result = await this.userService.updateToken(user.id, refreshToken);
     if (!result) return undefined;
-    const date = await jwtService.getJwtDate(refreshToken);
-    await deviceService.createDevice({
+    const date = await this.jwtService.getJwtDate(refreshToken);
+    await this.deviceService.createDevice({
       userId: user.id,
       lastActiveDate: date!.toISOString(),
       ip: req.ip,
@@ -116,9 +130,9 @@ class AuthService {
   }
 
   async logout(token: string): Promise<boolean> {
-    const result = await jwtService.getUserIdByToken(token);
+    const result = await this.jwtService.getUserIdByToken(token);
     if (!result) return false;
-    const deleted = await deviceRepository.deleteDevice(
+    const deleted = await this.deviceRepository.deleteDevice(
       result.deviceId,
       result.userId
     );
@@ -127,18 +141,25 @@ class AuthService {
   }
 
   async refreshToken(req: Request) {
-    const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
+    const result = await this.jwtService.getUserIdByToken(
+      req.cookies.refreshToken
+    );
     if (!result) return undefined;
-    const user = await userService.findUserById(result.userId);
+    const user = await this.userService.findUserById(result.userId);
     if (!user) return undefined;
-    const tokenDate = await jwtService.getJwtDate(req.cookies.refreshToken);
-    const isDevice = await deviceService.getDevice(req.params.id, tokenDate!);
-    const refreshToken = await jwtService.createRefreshJWT(
+    const tokenDate = await this.jwtService.getJwtDate(
+      req.cookies.refreshToken
+    );
+    const isDevice = await this.deviceService.getDevice(
+      req.params.id,
+      tokenDate!
+    );
+    const refreshToken = await this.jwtService.createRefreshJWT(
       user,
       result.deviceId
     );
-    const date = await jwtService.getJwtDate(refreshToken);
-    await deviceService.updateDevice({
+    const date = await this.jwtService.getJwtDate(refreshToken);
+    await this.deviceService.updateDevice({
       userId: user.id,
       lastActiveDate: date!.toISOString(),
       ip: req.ip,
@@ -151,10 +172,10 @@ class AuthService {
 
   async passwordRecovery(email: string): Promise<boolean> {
     try {
-      const user = await usersRepository.findByLoginOrEmail(email);
+      const user = await this.usersRepository.findByLoginOrEmail(email);
       if (!user) return false;
       const recoveryCode = uuidv4();
-      const update = await usersRepository.setRecoveryCode(
+      const update = await this.usersRepository.setRecoveryCode(
         user.id,
         recoveryCode
       );
@@ -170,14 +191,14 @@ class AuthService {
     newPassword: string,
     recoveryCode: string
   ): Promise<boolean> {
-    const user = await usersRepository.findRecoveryCode(recoveryCode);
+    const user = await this.usersRepository.findRecoveryCode(recoveryCode);
     if (!user) return false;
     const passwordNewSalt = await bcrypt.genSalt(10);
     const passwordNewHash = await this._generateHash(
       newPassword,
       passwordNewSalt
     );
-    const update = await usersRepository.setNewPassword(
+    const update = await this.usersRepository.setNewPassword(
       user.id,
       passwordNewSalt,
       passwordNewHash
@@ -190,5 +211,3 @@ class AuthService {
     return await bcrypt.hash(password, salt);
   }
 }
-
-export const authService = new AuthService();

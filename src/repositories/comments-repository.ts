@@ -1,7 +1,7 @@
 import { CommentModelClass } from "../db/db";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { CommentsDbModel } from "../models/comments/CommentsDbModel";
-class CommentsRepository {
+export class CommentsRepository {
   async getCommentsById(
     idComment: string
   ): Promise<CommentsOutputModel | undefined> {
@@ -58,5 +58,3 @@ class CommentsRepository {
     return deletedCount === 1;
   }
 }
-
-export const commentsRepository = new CommentsRepository();

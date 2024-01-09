@@ -17,18 +17,30 @@ import { PostBlogIdCreateModel } from "../models/posts/PostBlogIdCreateModel";
 import { PostDbModel } from "../models/posts/PostDbModel";
 import { createPostForBlogIdValidationMiddleware } from "../middleware/validation/posts-validation";
 import { PostWIthQueryModel } from "../models/posts/PostWIthQueryModel";
-import { blogsQueryRepository } from "../repositories/query-repositories/blogs-query-repository";
+import { BlogsQueryRepository } from "../repositories/query-repositories/blogs-query-repository";
 import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
-import { postQueryRepository } from "../repositories/query-repositories/post-query-repository";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
-import { blogsServices, postsServices } from "../services";
+import { BlogsService, PostService } from "../services";
+import { PostQueryRepository } from "../repositories/query-repositories/post-query-repository";
 
 export const blogsRoute = Router({});
 
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
 class BlogsController {
+  blogsServices: BlogsService;
+  blogsQueryRepository: BlogsQueryRepository;
+  postQueryRepository: PostQueryRepository;
+  postsServices: PostService;
+
+  constructor() {
+    this.blogsServices = new BlogsService();
+    this.blogsQueryRepository = new BlogsQueryRepository();
+    this.postQueryRepository = new PostQueryRepository();
+    this.postsServices = new PostService();
+  }
+
   async getAllBlogs(
     req: RequestWithQuery<BlogWithQueryModel>,
     res: Response<WithQueryModel<BlogsOutputMode[]>>
@@ -36,7 +48,7 @@ class BlogsController {
     const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize } =
       req.query;
     return res.status(OK).send(
-      await blogsQueryRepository.getBlogs({
+      await this.blogsQueryRepository.getBlogs({
         searchNameTerm: searchNameTerm?.toString(),
         sortBy: sortBy?.toString(),
         sortDirection: sortDirection?.toString(),
@@ -50,7 +62,7 @@ class BlogsController {
     req: RequestWithParams<URIParamsModel>,
     res: Response<BlogsOutputMode>
   ) {
-    const blog = await blogsServices.getBlogById(req.params.id);
+    const blog = await this.blogsServices.getBlogById(req.params.id);
     if (!blog) return res.sendStatus(Not_Found);
     return res.status(OK).send(blog);
   }
@@ -60,10 +72,10 @@ class BlogsController {
     res: Response<WithQueryModel<PostOutputModel[]>>
   ) {
     const { pageNumber, pageSize, sortBy, sortDirection } = req.query;
-    const blog = await blogsServices.getBlogById(req.params.id);
+    const blog = await this.blogsServices.getBlogById(req.params.id);
     if (blog) {
       return res.status(OK).send(
-        await postQueryRepository.getPostByBlogID(req.params.id, {
+        await this.postQueryRepository.getPostByBlogID(req.params.id, {
           sortBy: sortBy?.toString(),
           sortDirection: sortDirection?.toString(),
           pageNumber: pageNumber?.toString(),
@@ -81,20 +93,25 @@ class BlogsController {
     const { name, description, websiteUrl } = req.body;
     return res
       .status(Created)
-      .send(await blogsServices.createdBlog({ name, description, websiteUrl }));
+      .send(
+        await this.blogsServices.createdBlog({ name, description, websiteUrl })
+      );
   }
 
   async createPostForCurrentBlog(
     req: RequestWithParamsAndBody<URIParamsModel, PostBlogIdCreateModel>,
     res: Response<PostDbModel>
   ) {
-    const blog = await blogsServices.getBlogById(req.params.id);
+    const blog = await this.blogsServices.getBlogById(req.params.id);
     if (blog) {
-      const post = await postsServices.createPostForCurrentBlog(req.params.id, {
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-      });
+      const post = await this.postsServices.createPostForCurrentBlog(
+        req.params.id,
+        {
+          title: req.body.title,
+          shortDescription: req.body.shortDescription,
+          content: req.body.content,
+        }
+      );
       return res.status(Created).send(post);
     }
     return res.sendStatus(Not_Found);
@@ -105,7 +122,7 @@ class BlogsController {
     res: Response
   ) {
     const { description, name, websiteUrl } = req.body;
-    const result = await blogsServices.updateBlog(
+    const result = await this.blogsServices.updateBlog(
       req.params.id,
       description,
       name,
@@ -116,43 +133,52 @@ class BlogsController {
   }
 
   async deleteById(req: Request, res: Response) {
-    const result = await blogsServices.deleteById(req.params.id);
+    const result = await this.blogsServices.deleteById(req.params.id);
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(No_Content);
   }
 }
 const blogsControllerInstance = new BlogsController();
 
-blogsRoute.get("/", blogsControllerInstance.getAllBlogs);
+blogsRoute.get(
+  "/",
+  blogsControllerInstance.getAllBlogs.bind(blogsControllerInstance)
+);
 
-blogsRoute.get("/:id", blogsControllerInstance.getById);
+blogsRoute.get(
+  "/:id",
+  blogsControllerInstance.getById.bind(blogsControllerInstance)
+);
 
-blogsRoute.get("/:id/posts", blogsControllerInstance.getPostsByIdBlog);
+blogsRoute.get(
+  "/:id/posts",
+  blogsControllerInstance.getPostsByIdBlog.bind(blogsControllerInstance)
+);
 
 blogsRoute.post(
   "/",
   authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
-  blogsControllerInstance.createBlog
+  blogsControllerInstance.createBlog.bind(blogsControllerInstance)
 );
 
 blogsRoute.post(
   "/:id/posts",
   authMiddlewareCustomVariant,
   createPostForBlogIdValidationMiddleware,
-  blogsControllerInstance.createPostForCurrentBlog
+  blogsControllerInstance.createPostForCurrentBlog.bind(blogsControllerInstance)
 );
 
 blogsRoute.put(
   "/:id",
   authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
-  blogsControllerInstance.updateBlog
+  blogsControllerInstance.updateBlog.bind(blogsControllerInstance)
 );
 
 blogsRoute.delete(
   "/:id",
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
-  blogsControllerInstance.deleteById
+  blogsControllerInstance.deleteById.bind(blogsControllerInstance)
 );

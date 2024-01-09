@@ -1,12 +1,17 @@
 import bcrypt from "bcrypt";
-import { usersRepository } from "../repositories/users-repository";
+import { UsersRepository } from "../repositories/users-repository";
 import { UserDBModel } from "../models/users/UsersDbModel";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
 
-class UserService {
+export class UserService {
+  usersRepository: UsersRepository;
+
+  constructor() {
+    this.usersRepository = new UsersRepository();
+  }
   async createUser(payload: UsersCreateModel): Promise<UsersCreateOutputModel> {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);
@@ -30,15 +35,15 @@ class UserService {
       }
     );
 
-    return usersRepository.createUser(user);
+    return this.usersRepository.createUser(user);
   }
 
   async findUserById(id: string): Promise<UserDBModel | null> {
-    return usersRepository.findUserById(id);
+    return this.usersRepository.findUserById(id);
   }
 
   async findLoggedUser(id: string): Promise<AuthOutputUserModel | undefined> {
-    const result = await usersRepository.findUserById(id);
+    const result = await this.usersRepository.findUserById(id);
     if (result) {
       const {
         accountData: { email, login },
@@ -52,13 +57,15 @@ class UserService {
   }
 
   async updateToken(id: string, token: string): Promise<boolean> {
-    return usersRepository.updateToken(id, token);
+    return this.usersRepository.updateToken(id, token);
   }
 
   async checkUserCredentials(
     payload: AuthLoginModel
   ): Promise<undefined | UserDBModel> {
-    const user = await usersRepository.findByLoginOrEmail(payload.loginOrEmail);
+    const user = await this.usersRepository.findByLoginOrEmail(
+      payload.loginOrEmail
+    );
     if (!user) return undefined;
     if (!user.emailConfirmation?.isConfirmed) return undefined;
     const passwordHash = await this._generateHash(
@@ -70,12 +77,10 @@ class UserService {
   }
 
   async deleteUser(id: string): Promise<boolean> {
-    return await usersRepository.deleteUser(id);
+    return await this.usersRepository.deleteUser(id);
   }
 
   async _generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
   }
 }
-
-export const userService = new UserService();

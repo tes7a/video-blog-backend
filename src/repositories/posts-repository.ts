@@ -3,7 +3,7 @@ import { PostDbModel } from "../models/posts/PostDbModel";
 import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 
-class PostsRepository {
+export class PostsRepository {
   async getPostById(id: string): Promise<PostDbModel | undefined> {
     const res = (await PostModelClass.find({ id: { $regex: id } }).lean())[0];
     if (!res) return undefined;
@@ -45,5 +45,3 @@ class PostsRepository {
     return matchedCount === 1;
   }
 }
-
-export const postsRepository = new PostsRepository();

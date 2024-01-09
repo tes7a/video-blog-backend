@@ -2,8 +2,8 @@ import { body, cookie, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../input-validation.middleware";
 import { NextFunction, Request, Response } from "express";
 import { HTTPS_ANSWERS } from "../../utils/https-answers";
-import { usersRepository } from "../../repositories/users-repository";
-import { authService, jwtService, userService } from "../../services";
+import { UsersRepository } from "../../repositories/users-repository";
+import { AuthService, JwtService, UserService } from "../../services";
 
 export const authMiddleware = async (
   req: Request,
@@ -14,10 +14,10 @@ export const authMiddleware = async (
     return res.send(401);
   }
   const token = req.headers.authorization.split(" ")[1];
-  const result = await jwtService.getUserIdByToken(token);
-  if (!result) return res.sendStatus(401);
-  const user = await userService.findUserById(result.userId);
-  req.userId = user!.id;
+  // const result = await jwtService.getUserIdByToken(token);
+  // if (!result) return res.sendStatus(401);
+  // const user = await userService.findUserById(result.userId);
+  // req.userId = user!.id;
   next();
 };
 
@@ -43,13 +43,13 @@ const loginRegMiddleware = body("login")
   .isLength({ max: 10 })
   .withMessage("Max length 10 charters")
   .matches(/^[a-zA-Z0-9_-]*$/)
-  .withMessage("Must be valid")
-  .custom(async (value) => {
-    const user = await authService.checkUser(value);
-    if (user) throw new Error("This login is already being used");
+  .withMessage("Must be valid");
+// .custom(async (value) => {
+//   const user = await authService.checkUser(value);
+//   if (user) throw new Error("This login is already being used");
 
-    return true;
-  });
+//   return true;
+// });
 
 const passwordRegMiddleware = body("password")
   .notEmpty({ ignore_whitespace: true })
@@ -75,13 +75,13 @@ const recoveryCodeMiddleware = body("recoveryCode")
   .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
-  .withMessage("Should be a string")
-  .custom(async (value) => {
-    const code = await usersRepository.findRecoveryCode(value);
-    if (!code) throw new Error("Bad recovery code");
+  .withMessage("Should be a string");
+// .custom(async (value) => {
+//   const code = await usersRepository.findRecoveryCode(value);
+//   if (!code) throw new Error("Bad recovery code");
 
-    return true;
-  });
+//   return true;
+// });
 
 const emailRegMiddleware = body("email")
   .notEmpty({ ignore_whitespace: true })
@@ -89,25 +89,25 @@ const emailRegMiddleware = body("email")
   .isString()
   .withMessage("Should be a string")
   .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  .withMessage("Must be valid")
-  .custom(async (value) => {
-    const user = await authService.checkUser(value);
-    if (user) throw new Error("This email is already being used");
+  .withMessage("Must be valid");
+// .custom(async (value) => {
+//   const user = await authService.checkUser(value);
+//   if (user) throw new Error("This email is already being used");
 
-    return true;
-  });
+//   return true;
+// });
 
 const confirmationCodeMiddleware = body("code")
   .notEmpty({ ignore_whitespace: true })
   .withMessage("Should not be empty")
   .isString()
-  .withMessage("Should be a string")
-  .custom(async (value) => {
-    const result = await authService.checkConfirmationCode(value);
-    if (result) throw new Error("The code is invalid or has already been used");
+  .withMessage("Should be a string");
+// .custom(async (value) => {
+//   const result = await authService.checkConfirmationCode(value);
+//   if (result) throw new Error("The code is invalid or has already been used");
 
-    return true;
-  });
+//   return true;
+// });
 
 const emailResendMiddleware = body("email")
   .notEmpty({ ignore_whitespace: true })
@@ -115,15 +115,15 @@ const emailResendMiddleware = body("email")
   .isString()
   .withMessage("Should be a string")
   .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  .withMessage("Must be valid")
-  .custom(async (value) => {
-    const user = await authService.checkUser(value);
-    if (!user) throw new Error("User email doesnt exist");
-    if (user?.emailConfirmation?.isConfirmed)
-      throw new Error("Email already confirmed");
+  .withMessage("Must be valid");
+// .custom(async (value) => {
+//   const user = await authService.checkUser(value);
+//   if (!user) throw new Error("User email doesnt exist");
+//   if (user?.emailConfirmation?.isConfirmed)
+//     throw new Error("Email already confirmed");
 
-    return true;
-  });
+//   return true;
+// });
 
 const emailRecoveryMiddleware = body("email")
   .notEmpty({ ignore_whitespace: true })
@@ -152,12 +152,12 @@ export const inputValidationForRegistrationMiddleware = (
 
 const cookieValidation = cookie("refreshToken")
   .notEmpty()
-  .withMessage("No Cookie")
-  .custom(async (value) => {
-    const result = await jwtService.getUserIdByToken(value);
-    if (!result) throw new Error("Token Expired");
-    return true;
-  });
+  .withMessage("No Cookie");
+// .custom(async (value) => {
+//   const result = await jwtService.getUserIdByToken(value);
+//   if (!result) throw new Error("Token Expired");
+//   return true;
+// });
 
 export const inputValidationForCookieMiddleware = (
   req: Request,

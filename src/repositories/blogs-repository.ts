@@ -1,7 +1,7 @@
 import { BlogModelClass } from "../db/db";
 import { BlogDbModel } from "../models/blogs/BlogDbModel";
 import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
-class BlogsRepository {
+export class BlogsRepository {
   async getBlogById(id: string): Promise<BlogsOutputMode | undefined> {
     const res = (await BlogModelClass.find({ id: { $regex: id } }).lean())[0];
     if (!res) return undefined;
@@ -54,5 +54,3 @@ class BlogsRepository {
     return true;
   }
 }
-
-export const blogsRepository = new BlogsRepository();

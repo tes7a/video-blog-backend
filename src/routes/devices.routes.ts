@@ -3,23 +3,37 @@ import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { RequestWithParams } from "../types/types";
 import { checkCookieMiddleware } from "../middleware/validation/auth-validation";
 import { apiConnectMiddleware } from "../middleware/api-connects-middleware";
-import { deviceService, jwtService } from "../services";
+import { DeviceService, JwtService } from "../services";
 
 export const devicesRoute = Router({});
 
 const { No_Content, OK, Not_Found, Forbidden } = HTTPS_ANSWERS;
 
 class DevicesController {
+  deviceService: DeviceService;
+  jwtService: JwtService;
+
+  constructor() {
+    this.deviceService = new DeviceService();
+    this.jwtService = new JwtService();
+  }
+
   async getAllDevices(req: Request, res: Response) {
-    const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
+    const result = await this.jwtService.getUserIdByToken(
+      req.cookies.refreshToken
+    );
     if (result)
-      res.status(OK).send(await deviceService.getAllDevices(result.userId));
+      res
+        .status(OK)
+        .send(await this.deviceService.getAllDevices(result.userId));
   }
 
   async deleteAllDevices(req: Request, res: Response) {
-    const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
+    const result = await this.jwtService.getUserIdByToken(
+      req.cookies.refreshToken
+    );
     if (result)
-      await deviceService.deleteAllDevices(result.userId, result.deviceId);
+      await this.deviceService.deleteAllDevices(result.userId, result.deviceId);
     res.sendStatus(No_Content);
   }
 
@@ -27,10 +41,12 @@ class DevicesController {
     req: RequestWithParams<{ id: string }>,
     res: Response
   ) {
-    const result = await jwtService.getUserIdByToken(req.cookies.refreshToken);
-    const deviceId = await deviceService.checkDeviceId(req.params.id);
+    const result = await this.jwtService.getUserIdByToken(
+      req.cookies.refreshToken
+    );
+    const deviceId = await this.deviceService.checkDeviceId(req.params.id);
     if (result && deviceId) {
-      const response = await deviceService.deleteDevice(
+      const response = await this.deviceService.deleteDevice(
         req.params.id,
         result.userId
       );
@@ -46,18 +62,18 @@ const devicesControllerInstance = new DevicesController();
 devicesRoute.get(
   "/devices",
   checkCookieMiddleware,
-  devicesControllerInstance.getAllDevices
+  devicesControllerInstance.getAllDevices.bind(devicesControllerInstance)
 );
 
 devicesRoute.delete(
   "/devices",
   checkCookieMiddleware,
-  devicesControllerInstance.deleteAllDevices
+  devicesControllerInstance.deleteAllDevices.bind(devicesControllerInstance)
 );
 
 devicesRoute.delete(
   "/devices/:id",
   apiConnectMiddleware,
   checkCookieMiddleware,
-  devicesControllerInstance.deleteCurrentDevice
+  devicesControllerInstance.deleteCurrentDevice.bind(devicesControllerInstance)
 );

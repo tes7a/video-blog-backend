@@ -1,7 +1,7 @@
 import { DeviceModelClass } from "../db/db";
 import { DeviceDbModel } from "../models/devices/DeviceDbModel";
 import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
-class DeviceRepository {
+export class DeviceRepository {
   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
     const devices = await DeviceModelClass.find({
       userId: { $regex: id },
@@ -77,5 +77,3 @@ class DeviceRepository {
     }));
   }
 }
-
-export const deviceRepository = new DeviceRepository();

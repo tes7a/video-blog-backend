@@ -1,68 +1,41 @@
 import { DeviceDbModel } from "../models/devices/DeviceDbModel";
 import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
-import { deviceRepository } from "../repositories/device-repository";
+import { DeviceRepository } from "../repositories/device-repository";
 
-class DeviceService {
+export class DeviceService {
+  deviceRepository: DeviceRepository;
+
+  constructor() {
+    this.deviceRepository = new DeviceRepository();
+  }
+
   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
-    return await deviceRepository.getAllDevices(id);
+    return await this.deviceRepository.getAllDevices(id);
   }
 
   async createDevice(device: DeviceDbModel) {
-    await deviceRepository.createDevice(device);
+    await this.deviceRepository.createDevice(device);
   }
 
   async checkDeviceId(id: string): Promise<boolean> {
-    return await deviceRepository.checkDeviceId(id);
+    return await this.deviceRepository.checkDeviceId(id);
   }
 
   async updateDevice(device: DeviceDbModel): Promise<boolean> {
-    return await deviceRepository.updateDevice(device);
+    return await this.deviceRepository.updateDevice(device);
   }
 
   async getDevice(deviceId: string, date: Date): Promise<boolean> {
-    const result = await deviceRepository.getDevice(deviceId, date);
+    const result = await this.deviceRepository.getDevice(deviceId, date);
     if (!result) return false;
     return true;
   }
 
   async deleteAllDevices(userId: string, deviceId: string) {
-    return await deviceRepository.deleteAllDevices(userId, deviceId);
+    return await this.deviceRepository.deleteAllDevices(userId, deviceId);
   }
 
   async deleteDevice(deviceId: string, userId: string): Promise<boolean> {
-    return await deviceRepository.deleteDevice(deviceId, userId);
+    return await this.deviceRepository.deleteDevice(deviceId, userId);
   }
 }
-
-export const deviceService = new DeviceService();
-
-//   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
-//     return await deviceRepository.getAllDevices(id);
-//   },
-
-//   async createDevice(device: DeviceDbModel) {
-//     await deviceRepository.createDevice(device);
-//   },
-
-//   async checkDeviceId(id: string): Promise<boolean> {
-//     return await deviceRepository.checkDeviceId(id);
-//   },
-
-//   async updateDevice(device: DeviceDbModel): Promise<boolean> {
-//     return await deviceRepository.updateDevice(device);
-//   },
-
-//   async getDevice(deviceId: string, date: Date): Promise<boolean> {
-//     const result = await deviceRepository.getDevice(deviceId, date);
-//     if (!result) return false;
-//     return true;
-//   },
-
-//   async deleteAllDevices(userId: string, deviceId: string) {
-//     return await deviceRepository.deleteAllDevices(userId, deviceId);
-//   },
-
-//   async deleteDevice(deviceId: string, userId: string): Promise<boolean> {
-//     return await deviceRepository.deleteDevice(deviceId, userId);
-//   },
-// };

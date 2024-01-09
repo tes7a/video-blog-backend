@@ -4,7 +4,7 @@ import { PostOutputModel } from "../../models/posts/PostOutputModel";
 import { PostWIthQueryModel } from "../../models/posts/PostWIthQueryModel";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 
-class PostQueryRepository {
+export class PostQueryRepository {
   async getPosts(
     payload: PostWIthQueryModel
   ): Promise<WithQueryModel<PostOutputModel[]>> {
@@ -99,5 +99,3 @@ class PostQueryRepository {
     });
   }
 }
-
-export const postQueryRepository = new PostQueryRepository();

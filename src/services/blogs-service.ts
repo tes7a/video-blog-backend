@@ -1,14 +1,20 @@
 import { BlogCreateModel } from "../models/blogs/BlogCreateModel";
 import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
-import { blogsRepository } from "../repositories/blogs-repository";
+import { BlogsRepository } from "../repositories/blogs-repository";
 
-class BlogsService {
+export class BlogsService {
+  blogsRepository: BlogsRepository;
+
+  constructor() {
+    this.blogsRepository = new BlogsRepository();
+  }
+
   async getBlogById(id: string): Promise<BlogsOutputMode | undefined> {
-    return await blogsRepository.getBlogById(id);
+    return await this.blogsRepository.getBlogById(id);
   }
 
   async deleteById(id: string): Promise<boolean> {
-    return await blogsRepository.deleteById(id);
+    return await this.blogsRepository.deleteById(id);
   }
 
   async createdBlog(payload: BlogCreateModel): Promise<BlogsOutputMode> {
@@ -20,7 +26,7 @@ class BlogsService {
       createdAt: new Date().toISOString(),
       isMembership: false,
     };
-    return await blogsRepository.createdBlog(newBlog);
+    return await this.blogsRepository.createdBlog(newBlog);
   }
 
   async updateBlog(
@@ -29,7 +35,11 @@ class BlogsService {
     name: string,
     websiteUrl: string
   ): Promise<boolean> {
-    return await blogsRepository.updateBlog(id, description, name, websiteUrl);
+    return await this.blogsRepository.updateBlog(
+      id,
+      description,
+      name,
+      websiteUrl
+    );
   }
 }
-export const blogsServices = new BlogsService();

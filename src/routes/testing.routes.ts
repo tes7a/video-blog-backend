@@ -26,4 +26,7 @@ class TestingController {
 const testingControllerInstance = new TestingController();
 
 // Reset the database for testing
-testingRoute.delete("/all-data", testingControllerInstance.deleteAll);
+testingRoute.delete(
+  "/all-data",
+  testingControllerInstance.deleteAll.bind(testingControllerInstance)
+);

@@ -2,7 +2,6 @@ import { Response, Router } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { WithQueryModel } from "../models/universal/WithQueryModel";
 import { UsersOutputModel } from "../models/users/UsersOutputModel";
-import { usersQueryRepository } from "../repositories/query-repositories/users-query-repository";
 import {
   RequestWithBody,
   RequestWithParams,
@@ -15,13 +14,22 @@ import { createUserValidationMiddleware } from "../middleware/validation/users-v
 import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
 import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
-import { userService } from "../services";
+import { UserService } from "../services";
+import { UsersQueryRepository } from "../repositories/query-repositories/users-query-repository";
 
 export const usersRoute = Router({});
 
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 
 class UsersController {
+  usersQueryRepository: UsersQueryRepository;
+  userService: UserService;
+
+  constructor() {
+    this.usersQueryRepository = new UsersQueryRepository();
+    this.userService = new UserService();
+  }
+
   async getAllUsers(
     req: RequestWithQuery<UsersQueryModel>,
     res: Response<WithQueryModel<UsersOutputModel[]>>
@@ -36,7 +44,7 @@ class UsersController {
     } = req.query;
 
     return res.status(OK).send(
-      await usersQueryRepository.getUsers({
+      await this.usersQueryRepository.getUsers({
         pageNumber,
         pageSize,
         searchEmailTerm,
@@ -54,11 +62,11 @@ class UsersController {
     const { email, login, password } = req.body;
     return res
       .status(Created)
-      .send(await userService.createUser({ email, login, password }));
+      .send(await this.userService.createUser({ email, login, password }));
   }
 
   async deleteUser(req: RequestWithParams<URIParamsModel>, res: Response) {
-    const result = await userService.deleteUser(req.params.id);
+    const result = await this.userService.deleteUser(req.params.id);
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(No_Content);
   }
@@ -66,18 +74,21 @@ class UsersController {
 
 const usersControllerInstance = new UsersController();
 
-usersRoute.get("/", usersControllerInstance.getAllUsers);
+usersRoute.get(
+  "/",
+  usersControllerInstance.getAllUsers.bind(usersControllerInstance)
+);
 
 usersRoute.post(
   "/",
   authMiddlewareCustomVariant,
   createUserValidationMiddleware,
-  usersControllerInstance.createUser
+  usersControllerInstance.createUser.bind(usersControllerInstance)
 );
 
 usersRoute.delete(
   "/:id",
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
-  usersControllerInstance.deleteUser
+  usersControllerInstance.deleteUser.bind(usersControllerInstance)
 );

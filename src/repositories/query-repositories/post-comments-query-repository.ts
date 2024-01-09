@@ -3,7 +3,7 @@ import { CommentsOutputModel } from "../../models/comments/CommentsOutputModel";
 import { CommentsQueryModel } from "../../models/comments/CommentsQueryModel";
 import { WithQueryModel } from "../../models/universal/WithQueryModel";
 
-class PostCommentsQueryRepository {
+export class PostCommentsQueryRepository {
   async getComments(
     postId: string,
     payload: CommentsQueryModel
@@ -47,9 +47,6 @@ class PostCommentsQueryRepository {
     };
   }
 }
-
-export const postCommentsQueryRepository = new PostCommentsQueryRepository();
-//   async getComments(
 //     postId: string,
 //     payload: CommentsQueryModel
 //   ): Promise<WithQueryModel<CommentsOutputModel[]>> {

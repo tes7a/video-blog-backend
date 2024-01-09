@@ -2,7 +2,7 @@ import { UserModelClass } from "../db/db";
 import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
 import { UserDBModel } from "../models/users/UsersDbModel";
 
-class UsersRepository {
+export class UsersRepository {
   async createUser(newUser: UserDBModel) {
     await UserModelClass.insertMany([newUser]);
     return await this._mapUser(newUser);
@@ -105,5 +105,3 @@ class UsersRepository {
     };
   }
 }
-
-export const usersRepository = new UsersRepository();

@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { settings } from "../settings/settings";
 import { log } from "console";
 
-class JwtService {
+export class JwtService {
   async createJWT(user: UserDBModel): Promise<{ accessToken: string }> {
     const token = jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
       expiresIn: "10s",
@@ -48,5 +48,3 @@ class JwtService {
     }
   }
 }
-
-export const jwtService = new JwtService();

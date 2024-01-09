@@ -1,17 +1,17 @@
-import { authService } from "./auth-service";
-import { blogsServices } from "./blogs-service";
-import { commentsService } from "./comments-service";
-import { deviceService } from "./device-service";
-import { jwtService } from "./jwt-service";
-import { postsServices } from "./posts-service";
-import { userService } from "./users-service";
+import { AuthService } from "./auth-service";
+import { BlogsService } from "./blogs-service";
+import { CommentsService } from "./comments-service";
+import { DeviceService } from "./device-service";
+import { JwtService } from "./jwt-service";
+import { PostService } from "./posts-service";
+import { UserService } from "./users-service";
 
 export {
-  authService,
-  blogsServices,
-  commentsService,
-  deviceService,
-  jwtService,
-  postsServices,
-  userService,
+  AuthService,
+  BlogsService,
+  CommentsService,
+  DeviceService,
+  JwtService,
+  PostService,
+  UserService,
 };
