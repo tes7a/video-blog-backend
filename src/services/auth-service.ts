@@ -15,19 +15,13 @@ import { DeviceRepository } from "../repositories/device-repository";
 import { DeviceService } from "./device-service";
 
 export class AuthService {
-  deviceService: DeviceService;
-  deviceRepository: DeviceRepository;
-  usersRepository: UsersRepository;
-  userService: UserService;
-  jwtService: JwtService;
-
-  constructor() {
-    this.deviceService = new DeviceService();
-    this.deviceRepository = new DeviceRepository();
-    this.usersRepository = new UsersRepository();
-    this.userService = new UserService();
-    this.jwtService = new JwtService();
-  }
+  constructor(
+    protected deviceService: DeviceService,
+    protected deviceRepository: DeviceRepository,
+    protected usersRepository: UsersRepository,
+    protected userService: UserService,
+    protected jwtService: JwtService
+  ) {}
 
   async createUser(payload: UsersCreateModel): Promise<boolean | Error> {
     const { email, login, password } = payload;

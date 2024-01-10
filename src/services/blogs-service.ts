@@ -3,11 +3,7 @@ import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
 import { BlogsRepository } from "../repositories/blogs-repository";
 
 export class BlogsService {
-  blogsRepository: BlogsRepository;
-
-  constructor() {
-    this.blogsRepository = new BlogsRepository();
-  }
+  constructor(protected blogsRepository: BlogsRepository) {}
 
   async getBlogById(id: string): Promise<BlogsOutputMode | undefined> {
     return await this.blogsRepository.getBlogById(id);

@@ -7,11 +7,7 @@ import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
 
 export class UserService {
-  usersRepository: UsersRepository;
-
-  constructor() {
-    this.usersRepository = new UsersRepository();
-  }
+  constructor(protected usersRepository: UsersRepository) {}
   async createUser(payload: UsersCreateModel): Promise<UsersCreateOutputModel> {
     const { email, login, password } = payload;
     const passwordSalt = await bcrypt.genSalt(10);

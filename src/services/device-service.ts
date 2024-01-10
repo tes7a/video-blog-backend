@@ -3,11 +3,7 @@ import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
 import { DeviceRepository } from "../repositories/device-repository";
 
 export class DeviceService {
-  deviceRepository: DeviceRepository;
-
-  constructor() {
-    this.deviceRepository = new DeviceRepository();
-  }
+  constructor(protected deviceRepository: DeviceRepository) {}
 
   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
     return await this.deviceRepository.getAllDevices(id);

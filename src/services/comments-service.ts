@@ -3,11 +3,7 @@ import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { CommentsRepository } from "../repositories/comments-repository";
 
 export class CommentsService {
-  commentsRepository: CommentsRepository;
-
-  constructor() {
-    this.commentsRepository = new CommentsRepository();
-  }
+  constructor(protected commentsRepository: CommentsRepository) {}
 
   async getCommentsById(id: string): Promise<CommentsOutputModel | undefined> {
     return await this.commentsRepository.getCommentsById(id);

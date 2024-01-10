@@ -6,11 +6,7 @@ import { PostUpdateModel } from "../models/posts/PostUpdateModel";
 import { PostsRepository } from "../repositories/posts-repository";
 
 export class PostService {
-  postsRepository: PostsRepository;
-
-  constructor() {
-    this.postsRepository = new PostsRepository();
-  }
+  constructor(protected postsRepository: PostsRepository) {}
   async getPostById(id: string): Promise<PostDbModel | undefined> {
     return await this.postsRepository.getPostById(id);
   }
