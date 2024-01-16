@@ -1,8 +1,10 @@
-import { PostModelClass } from "../../db/db";
-import { PostDbModel } from "../../models/posts/PostDbModel";
-import { PostOutputModel } from "../../models/posts/PostOutputModel";
-import { PostWIthQueryModel } from "../../models/posts/PostWIthQueryModel";
-import { WithQueryModel } from "../../models/universal/WithQueryModel";
+import { PostModelClass } from "../../db";
+import {
+  PostDbModel,
+  PostOutputModel,
+  PostWIthQueryModel,
+  WithQueryModel,
+} from "../../models";
 
 export class PostQueryRepository {
   async getPosts(

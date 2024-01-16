@@ -1,9 +1,11 @@
-import { PostBlogIdCreateModel } from "../models/posts/PostBlogIdCreateModel";
-import { PostCreateModel } from "../models/posts/PostCreateModel";
-import { PostDbModel } from "../models/posts/PostDbModel";
-import { PostOutputModel } from "../models/posts/PostOutputModel";
-import { PostUpdateModel } from "../models/posts/PostUpdateModel";
-import { PostsRepository } from "../repositories/posts-repository";
+import {
+  PostBlogIdCreateModel,
+  PostCreateModel,
+  PostDbModel,
+  PostOutputModel,
+  PostUpdateModel,
+} from "../models";
+import { PostsRepository } from "../repositories";
 
 export class PostService {
   constructor(protected postsRepository: PostsRepository) {}

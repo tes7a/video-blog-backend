@@ -1,7 +1,9 @@
-import { CommentModelClass } from "../../db/db";
-import { CommentsOutputModel } from "../../models/comments/CommentsOutputModel";
-import { CommentsQueryModel } from "../../models/comments/CommentsQueryModel";
-import { WithQueryModel } from "../../models/universal/WithQueryModel";
+import { CommentModelClass } from "../../db";
+import {
+  CommentsOutputModel,
+  CommentsQueryModel,
+  WithQueryModel,
+} from "../../models";
 
 export class PostCommentsQueryRepository {
   async getComments(

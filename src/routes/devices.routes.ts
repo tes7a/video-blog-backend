@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { checkCookieMiddleware } from "../middleware/validation/auth-validation";
-import { apiConnectMiddleware } from "../middleware/api-connects-middleware";
 import { devicesController } from "../compositions";
+import { apiConnectMiddleware, checkCookieMiddleware } from "../middleware";
 
 export const devicesRoute = Router({});
 

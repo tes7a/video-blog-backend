@@ -7,18 +7,19 @@ import {
   RequestWithParamsAndBody,
   RequestWithQuery,
 } from "../types/types";
-import { URIParamsModel } from "../models/universal/URIParamsModel";
-import { BlogCreateModel } from "../models/blogs/BlogCreateModel";
-import { WithQueryModel } from "../models/universal/WithQueryModel";
-import { BlogWithQueryModel } from "../models/blogs/BlogWithQueryModel";
-import { PostBlogIdCreateModel } from "../models/posts/PostBlogIdCreateModel";
-import { PostDbModel } from "../models/posts/PostDbModel";
-import { PostWIthQueryModel } from "../models/posts/PostWIthQueryModel";
-import { BlogsQueryRepository } from "../repositories/query-repositories/blogs-query-repository";
-import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
-import { PostOutputModel } from "../models/posts/PostOutputModel";
 import { BlogsService, PostService } from "../services";
-import { PostQueryRepository } from "../repositories/query-repositories/post-query-repository";
+import { BlogsQueryRepository, PostQueryRepository } from "../repositories";
+import {
+  BlogCreateModel,
+  BlogWithQueryModel,
+  BlogsOutputMode,
+  PostBlogIdCreateModel,
+  PostDbModel,
+  PostOutputModel,
+  PostWIthQueryModel,
+  URIParamsModel,
+  WithQueryModel,
+} from "../models";
 
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 

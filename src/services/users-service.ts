@@ -1,10 +1,13 @@
 import bcrypt from "bcrypt";
-import { UsersRepository } from "../repositories/users-repository";
-import { UserDBModel } from "../models/users/UsersDbModel";
-import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
-import { UsersCreateModel } from "../models/users/UsersCreateModel";
-import { AuthLoginModel } from "../models/auth/AuthLoginModel";
-import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
+
+import { UsersRepository } from "../repositories";
+import {
+  AuthLoginModel,
+  AuthOutputUserModel,
+  UserDBModel,
+  UsersCreateModel,
+  UsersCreateOutputModel,
+} from "../models";
 
 export class UserService {
   constructor(protected usersRepository: UsersRepository) {}

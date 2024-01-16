@@ -1,6 +1,5 @@
-import { DeviceDbModel } from "../models/devices/DeviceDbModel";
-import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
-import { DeviceRepository } from "../repositories/device-repository";
+import { DeviceDbModel, DeviceOutputModel } from "../models";
+import { DeviceRepository } from "../repositories";
 
 export class DeviceService {
   constructor(protected deviceRepository: DeviceRepository) {}

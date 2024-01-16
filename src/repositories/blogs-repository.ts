@@ -1,6 +1,6 @@
-import { BlogModelClass } from "../db/db";
-import { BlogDbModel } from "../models/blogs/BlogDbModel";
-import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
+import { BlogModelClass } from "../db";
+import { BlogDbModel, BlogsOutputMode } from "../models";
+
 export class BlogsRepository {
   async getBlogById(id: string): Promise<BlogsOutputMode | undefined> {
     const res = (await BlogModelClass.find({ id: { $regex: id } }).lean())[0];

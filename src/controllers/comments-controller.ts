@@ -1,10 +1,8 @@
 import { Response } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
-import { RequestWithParams } from "../types/types";
-import { URIParamsModel } from "../models/universal/URIParamsModel";
-import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
-import { RequestWithParamsAndBody } from "../types/types";
+import { RequestWithParams, RequestWithParamsAndBody } from "../types/types";
 import { CommentsService } from "../services";
+import { CommentsOutputModel, URIParamsModel } from "../models";
 
 const { OK, Not_Found, No_Content, Forbidden } = HTTPS_ANSWERS;
 
@@ -46,4 +44,6 @@ export class CommentsController {
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(Forbidden);
   }
+
+  async likeStatus(req: RequestWithParams<URIParamsModel>, res: Response) {}
 }

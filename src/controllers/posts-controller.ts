@@ -7,17 +7,21 @@ import {
   RequestWithQuery,
   RequestWIthWithURIQueryParams,
 } from "../types/types";
-import { URIParamsModel } from "../models/universal/URIParamsModel";
-import { PostCreateModel } from "../models/posts/PostCreateModel";
-import { PostUpdateModel } from "../models/posts/PostUpdateModel";
-import { WithQueryModel } from "../models/universal/WithQueryModel";
-import { PostWIthQueryModel } from "../models/posts/PostWIthQueryModel";
-import { PostOutputModel } from "../models/posts/PostOutputModel";
-import { CommentsQueryModel } from "../models/comments/CommentsQueryModel";
-import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
+import {
+  PostCommentsQueryRepository,
+  PostQueryRepository,
+} from "../repositories";
 import { CommentsService, PostService, UserService } from "../services";
-import { PostCommentsQueryRepository } from "../repositories/query-repositories/post-comments-query-repository";
-import { PostQueryRepository } from "../repositories/query-repositories/post-query-repository";
+import {
+  CommentsOutputModel,
+  CommentsQueryModel,
+  PostCreateModel,
+  PostOutputModel,
+  PostUpdateModel,
+  PostWIthQueryModel,
+  URIParamsModel,
+  WithQueryModel,
+} from "../models";
 
 const { OK, Not_Found, No_Content, Created } = HTTPS_ANSWERS;
 

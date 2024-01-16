@@ -1,6 +1,5 @@
-import { UserModelClass } from "../db/db";
-import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
-import { UserDBModel } from "../models/users/UsersDbModel";
+import { UserModelClass } from "../db";
+import { UserDBModel, UsersCreateOutputModel } from "../models";
 
 export class UsersRepository {
   async createUser(newUser: UserDBModel) {

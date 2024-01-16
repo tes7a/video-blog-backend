@@ -1,6 +1,6 @@
-import { DeviceModelClass } from "../db/db";
-import { DeviceDbModel } from "../models/devices/DeviceDbModel";
-import { DeviceOutputModel } from "../models/devices/DeviceOutputModel";
+import { DeviceModelClass } from "../db";
+import { DeviceDbModel, DeviceOutputModel } from "../models";
+
 export class DeviceRepository {
   async getAllDevices(id: string): Promise<DeviceOutputModel[] | null> {
     const devices = await DeviceModelClass.find({

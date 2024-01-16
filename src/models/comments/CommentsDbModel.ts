@@ -7,4 +7,9 @@ export type CommentsDbModel = {
     userLogin: string;
   };
   createdAt: string;
+  likesInfo: {
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: null;
+  };
 };

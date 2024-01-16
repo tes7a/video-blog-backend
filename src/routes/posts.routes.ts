@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { createPostsValidationMiddleware } from "../middleware/validation/posts-validation";
-import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
-import { createCommentsValidationMiddleware } from "../middleware/validation/comments-validation";
-import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
-import { authMiddleware } from "../middleware/validation/auth-validation";
 import { postsController } from "../compositions";
+import {
+  authMiddleware,
+  authMiddlewareCustomVariant,
+  createCommentsValidationMiddleware,
+  createPostsValidationMiddleware,
+  inputValidationMiddleware,
+} from "../middleware";
 
 export const postsRoute = Router({});
 

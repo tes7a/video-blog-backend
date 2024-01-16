@@ -1,4 +1,5 @@
 import { CommentCreateModel } from "../models/comments/CommentCreateModel";
+import { CommentsDbModel } from "../models/comments/CommentsDbModel";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { CommentsRepository } from "../repositories/comments-repository";
 
@@ -21,7 +22,7 @@ export class CommentsService {
     payload: CommentCreateModel
   ): Promise<CommentsOutputModel> {
     const { postId, content, userId, userLogin } = payload;
-    const newComment = {
+    const newComment: CommentsDbModel = {
       id: new Date().getMilliseconds().toString(),
       content,
       postId: postId,
@@ -30,6 +31,11 @@ export class CommentsService {
         userLogin,
       },
       createdAt: new Date().toISOString(),
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: null,
+      },
     };
 
     return this.commentsRepository.createComment(newComment);

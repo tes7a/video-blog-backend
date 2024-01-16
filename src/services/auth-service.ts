@@ -1,18 +1,17 @@
+import { Request } from "express";
+
 import { add } from "date-fns";
-import { UserDBModel } from "../models/users/UsersDbModel";
-import { UsersCreateModel } from "../models/users/UsersCreateModel";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { emailsManager } from "../managers/emails-manager";
-import { UsersRepository } from "../repositories/users-repository";
-import { JwtService } from "./jwt-service";
 import { randomUUID } from "crypto";
+
+import { JwtService } from "./jwt-service";
 import { UserService } from "./users-service";
 import { RequestWithBody } from "../types/types";
-import { AuthLoginModel } from "../models/auth/AuthLoginModel";
-import { Request } from "express";
-import { DeviceRepository } from "../repositories/device-repository";
 import { DeviceService } from "./device-service";
+import { DeviceRepository, UsersRepository } from "../repositories";
+import { AuthLoginModel, UserDBModel, UsersCreateModel } from "../models";
 
 export class AuthService {
   constructor(

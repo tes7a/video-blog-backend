@@ -1,5 +1,8 @@
 import { Router } from "express";
+import { authController } from "../compositions";
 import {
+  apiConnectMiddleware,
+  authMiddleware,
   checkConfirmationCodeMiddleware,
   checkCookieMiddleware,
   checkEmailMiddleware,
@@ -7,10 +10,7 @@ import {
   checkRecoveryPassword,
   createAuthValidationMiddleware,
   registrationAuthValidationMiddleware,
-} from "../middleware/validation/auth-validation";
-import { authMiddleware } from "../middleware/validation/auth-validation";
-import { apiConnectMiddleware } from "../middleware/api-connects-middleware";
-import { authController } from "../compositions";
+} from "../middleware";
 
 export const authRoute = Router({});
 

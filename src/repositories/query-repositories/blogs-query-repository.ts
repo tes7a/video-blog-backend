@@ -1,8 +1,10 @@
-import { BlogModelClass } from "../../db/db";
-import { BlogDbModel } from "../../models/blogs/BlogDbModel";
-import { BlogWithQueryModel } from "../../models/blogs/BlogWithQueryModel";
-import { BlogsOutputMode } from "../../models/blogs/BlogsOutputModel";
-import { WithQueryModel } from "../../models/universal/WithQueryModel";
+import { BlogModelClass } from "../../db";
+import {
+  BlogDbModel,
+  BlogWithQueryModel,
+  BlogsOutputMode,
+  WithQueryModel,
+} from "../../models";
 
 export class BlogsQueryRepository {
   async getBlogs(
@@ -51,4 +53,3 @@ export class BlogsQueryRepository {
     };
   }
 }
-

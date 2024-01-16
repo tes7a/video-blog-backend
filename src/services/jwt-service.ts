@@ -1,13 +1,13 @@
-import { UserDBModel } from "../models/users/UsersDbModel";
 import jwt, { JwtPayload } from "jsonwebtoken";
+
 import { settings } from "../settings/settings";
-import { log } from "console";
+import { UserDBModel } from "../models";
 
 export class JwtService {
   async createJWT(user: UserDBModel): Promise<{ accessToken: string }> {
     const token = jwt.sign({ userId: user.id }, settings.JWT_SECRET, {
-      expiresIn: "10s",
-      // expiresIn: "1h",
+      // expiresIn: "10s",
+      expiresIn: "1h",
     });
 
     return { accessToken: token };
@@ -15,8 +15,8 @@ export class JwtService {
 
   async createRefreshJWT(user: UserDBModel, deviceId: string): Promise<string> {
     return jwt.sign({ userId: user.id, deviceId }, settings.JWT_SECRET, {
-      expiresIn: "20s",
-      // expiresIn: "1h",
+      // expiresIn: "20s",
+      expiresIn: "1h",
     });
   }
 
@@ -29,8 +29,8 @@ export class JwtService {
         deviceId: string;
       };
       return result;
-    } catch (e) {
-      log(e);
+    } catch (error) {
+      console.log(error);
       return null;
     }
   }

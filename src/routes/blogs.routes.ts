@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { createBlogValidationMiddleware } from "../middleware/validation/blogs-validation";
-import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
-import { createPostForBlogIdValidationMiddleware } from "../middleware/validation/posts-validation";
-import { authMiddlewareCustomVariant } from "../middleware/auth/basic-auth.middleware";
 import { blogsController } from "../compositions";
+import {
+  authMiddlewareCustomVariant,
+  createBlogValidationMiddleware,
+  createPostForBlogIdValidationMiddleware,
+  inputValidationMiddleware,
+} from "../middleware";
 
 export const blogsRoute = Router({});
 

@@ -1,8 +1,9 @@
-import { log } from "console";
-import { UserModelClass } from "../../db/db";
-import { WithQueryModel } from "../../models/universal/WithQueryModel";
-import { UsersOutputModel } from "../../models/users/UsersOutputModel";
-import { UsersQueryModel } from "../../models/users/UsersQueryModel";
+import { UserModelClass } from "../../db";
+import {
+  UsersOutputModel,
+  UsersQueryModel,
+  WithQueryModel,
+} from "../../models";
 
 export class UsersQueryRepository {
   async getUsers(
@@ -32,8 +33,6 @@ export class UsersQueryRepository {
 
     const usersCount = await UserModelClass.countDocuments(searchConditions);
 
-    log(sortDirection);
-    log([`accountData[${sortBy}]`]);
     const sortedUsers = await UserModelClass.find(searchConditions, {
       projection: { _id: 0 },
     })

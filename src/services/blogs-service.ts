@@ -1,6 +1,5 @@
-import { BlogCreateModel } from "../models/blogs/BlogCreateModel";
-import { BlogsOutputMode } from "../models/blogs/BlogsOutputModel";
-import { BlogsRepository } from "../repositories/blogs-repository";
+import { BlogCreateModel, BlogsOutputMode } from "../models";
+import { BlogsRepository } from "../repositories";
 
 export class BlogsService {
   constructor(protected blogsRepository: BlogsRepository) {}

@@ -1,7 +1,5 @@
-import { PostModelClass } from "../db/db";
-import { PostDbModel } from "../models/posts/PostDbModel";
-import { PostOutputModel } from "../models/posts/PostOutputModel";
-import { PostUpdateModel } from "../models/posts/PostUpdateModel";
+import { PostModelClass } from "../db";
+import { PostDbModel, PostOutputModel, PostUpdateModel } from "../models";
 
 export class PostsRepository {
   async getPostById(id: string): Promise<PostDbModel | undefined> {

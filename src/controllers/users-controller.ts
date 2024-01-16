@@ -1,18 +1,20 @@
 import { Response, Router } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
-import { WithQueryModel } from "../models/universal/WithQueryModel";
-import { UsersOutputModel } from "../models/users/UsersOutputModel";
 import {
   RequestWithBody,
   RequestWithParams,
   RequestWithQuery,
 } from "../types/types";
-import { UsersQueryModel } from "../models/users/UsersQueryModel";
-import { UsersCreateModel } from "../models/users/UsersCreateModel";
-import { UsersCreateOutputModel } from "../models/users/UsersCreatedOutputModel";
-import { URIParamsModel } from "../models/universal/URIParamsModel";
 import { UserService } from "../services";
-import { UsersQueryRepository } from "../repositories/query-repositories/users-query-repository";
+import {
+  URIParamsModel,
+  UsersCreateModel,
+  UsersCreateOutputModel,
+  UsersOutputModel,
+  UsersQueryModel,
+  WithQueryModel,
+} from "../models";
+import { UsersQueryRepository } from "../repositories";
 
 export const usersRoute = Router({});
 

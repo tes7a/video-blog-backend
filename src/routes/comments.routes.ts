@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { createCommentsValidationMiddleware } from "../middleware/validation/comments-validation";
-import { authMiddleware } from "../middleware/validation/auth-validation";
-import { inputValidationMiddleware } from "../middleware/input-validation.middleware";
 import { commentsController } from "../compositions";
+import {
+  authMiddleware,
+  createCommentsValidationMiddleware,
+  inputValidationMiddleware,
+  likeStatusValidationMiddleware,
+} from "../middleware";
 
 export const commentsRoute = Router({});
 
@@ -23,4 +26,11 @@ commentsRoute.delete(
   authMiddleware,
   inputValidationMiddleware,
   commentsController.deleteComment.bind(commentsController)
+);
+
+commentsRoute.put(
+  "/:id/like-status",
+  authMiddleware,
+  likeStatusValidationMiddleware,
+  commentsController.likeStatus.bind(commentsController)
 );

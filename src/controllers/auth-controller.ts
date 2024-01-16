@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
-import { AuthLoginModel } from "../models/auth/AuthLoginModel";
 import { RequestWithBody } from "../types/types";
-import { AuthOutputUserModel } from "../models/auth/AuthOutputUserModel";
-import { AuthRegistrationModel } from "../models/auth/AuthRegistrationModel";
 import { AuthService, JwtService, UserService } from "../services";
+import {
+  AuthLoginModel,
+  AuthOutputUserModel,
+  AuthRegistrationModel,
+} from "../models";
 
 const { No_Content, Unauthorized, OK, Bad_Request } = HTTPS_ANSWERS;
 
