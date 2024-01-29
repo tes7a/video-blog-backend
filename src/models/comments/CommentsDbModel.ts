@@ -10,6 +10,6 @@ export type CommentsDbModel = {
   likesInfo: {
     likesCount: number;
     dislikesCount: number;
-    myStatus: null;
+    myStatus: null | string;
   };
 };

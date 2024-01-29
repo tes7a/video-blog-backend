@@ -9,14 +9,13 @@ import {
   inputValidationForCookieMiddleware,
   inputValidationForRegistrationMiddleware,
   registrationAuthValidationMiddleware,
-  // authBasicMiddleware,
-  authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
   createCommentsValidationMiddleware,
   likeStatusValidationMiddleware,
   createPostForBlogIdValidationMiddleware,
   createPostsValidationMiddleware,
   createUserValidationMiddleware,
+  authMiddlewareCustomVariant,
 } from "./validation";
 import { apiConnectMiddleware } from "./api-connects-middleware";
 import { inputValidationMiddleware } from "./input-validation.middleware";
@@ -32,8 +31,6 @@ export {
   inputValidationForCookieMiddleware,
   inputValidationForRegistrationMiddleware,
   registrationAuthValidationMiddleware,
-  // authBasicMiddleware,
-  authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
   createCommentsValidationMiddleware,
   likeStatusValidationMiddleware,
@@ -42,4 +39,5 @@ export {
   createUserValidationMiddleware,
   apiConnectMiddleware,
   inputValidationMiddleware,
+  authMiddlewareCustomVariant,
 };

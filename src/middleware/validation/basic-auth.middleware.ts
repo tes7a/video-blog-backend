@@ -1,9 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { header } from "express-validator";
 import { HTTPS_ANSWERS } from "../../utils/https-answers";
-
-// export const authMiddleware = () =>
-//   header("authorization").equals("Basic YWRtaW46cXdlcnR5");
 
 export const authMiddlewareCustomVariant = (
   req: Request,

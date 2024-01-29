@@ -32,5 +32,5 @@ commentsRoute.put(
   "/:id/like-status",
   authMiddleware,
   likeStatusValidationMiddleware,
-  commentsController.likeStatus.bind(commentsController)
+  commentsController.updateLike.bind(commentsController)
 );

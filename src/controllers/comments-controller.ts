@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, response } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { RequestWithParams, RequestWithParamsAndBody } from "../types/types";
 import { CommentsService } from "../services";
@@ -45,5 +45,20 @@ export class CommentsController {
     return res.sendStatus(Forbidden);
   }
 
-  async likeStatus(req: RequestWithParams<URIParamsModel>, res: Response) {}
+  async updateLike(
+    req: RequestWithParamsAndBody<
+      URIParamsModel,
+      { likeStatus: "None" | "Like" | "Dislike" }
+    >,
+    res: Response
+  ) {
+    const comment = await this.commentsService.getCommentsById(req.params.id);
+    const result = await this.commentsService.updateLike(
+      req.params.id,
+      req.body.likeStatus
+    );
+    if (!comment || !result) return res.sendStatus(No_Content);
+
+    return res.sendStatus(No_Content);
+  }
 }

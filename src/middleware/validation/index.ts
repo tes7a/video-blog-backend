@@ -10,10 +10,6 @@ import {
   inputValidationForRegistrationMiddleware,
   registrationAuthValidationMiddleware,
 } from "./auth-validation";
-import {
-  // authMiddleware as authBasicMiddleware,
-  authMiddlewareCustomVariant,
-} from "./basic-auth.middleware";
 import { createBlogValidationMiddleware } from "./blogs-validation";
 import {
   createCommentsValidationMiddleware,
@@ -24,6 +20,7 @@ import {
   createPostsValidationMiddleware,
 } from "./posts-validation";
 import { createUserValidationMiddleware } from "./users-validation";
+import { authMiddlewareCustomVariant } from "./basic-auth.middleware";
 
 export {
   authMiddleware,
@@ -36,12 +33,11 @@ export {
   inputValidationForCookieMiddleware,
   inputValidationForRegistrationMiddleware,
   registrationAuthValidationMiddleware,
-  // authBasicMiddleware,
-  authMiddlewareCustomVariant,
   createBlogValidationMiddleware,
   createCommentsValidationMiddleware,
   likeStatusValidationMiddleware,
   createPostForBlogIdValidationMiddleware,
   createPostsValidationMiddleware,
   createUserValidationMiddleware,
+  authMiddlewareCustomVariant,
 };

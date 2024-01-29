@@ -12,7 +12,6 @@ import {
 dotenv.config();
 
 const mongoUri = process.env.MONGO_URL || `mongodb://0.0.0.0:27017`;
-console.log(mongoUri, "");
 if (!mongoUri) throw new Error("something wrong");
 
 export const BlogModelClass = mongoose.model("blogs", blogSchema);

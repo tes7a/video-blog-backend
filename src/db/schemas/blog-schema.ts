@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 import { BlogDbModel } from "../../models/blogs/BlogDbModel";
 
 export const blogSchema = new mongoose.Schema<BlogDbModel>({
-  id: String,
-  name: String,
+  id: { type: String, required: true },
+  name: { type: String, required: true },
   description: String,
-  websiteUrl: String,
-  createdAt: String,
-  isMembership: Boolean,
+  websiteUrl: { type: String, required: true },
+  createdAt: { type: String, required: true },
+  isMembership: { type: Boolean, required: true },
 });

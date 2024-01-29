@@ -40,4 +40,11 @@ export class CommentsService {
 
     return this.commentsRepository.createComment(newComment);
   }
+
+  async updateLike(
+    id: string,
+    likeStatus: "None" | "Like" | "Dislike"
+  ): Promise<boolean> {
+    return await this.commentsRepository.updateLike(id, likeStatus);
+  }
 }

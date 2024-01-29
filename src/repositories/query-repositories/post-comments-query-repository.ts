@@ -16,6 +16,7 @@ export class PostCommentsQueryRepository {
       sortBy = "createdAt",
       sortDirection = "desc",
     } = payload;
+    debugger
     const startIndex: number = (Number(pageNumber) - 1) * Number(pageSize);
     const commentsCount = await CommentModelClass.countDocuments({
       postId,
