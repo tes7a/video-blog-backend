@@ -13,7 +13,11 @@ export class CommentsController {
     req: RequestWithParams<URIParamsModel>,
     res: Response<CommentsOutputModel>
   ) {
-    const comments = await this.commentsService.getCommentsById(req.params.id);
+    const token = await req.headers.authorization;
+    const comments = await this.commentsService.getCommentsById(
+      req.params.id,
+      !!token
+    );
     if (!comments) return res.sendStatus(Not_Found);
     return res.status(OK).send(comments);
   }

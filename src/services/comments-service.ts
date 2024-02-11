@@ -6,8 +6,11 @@ import { CommentsRepository } from "../repositories/comments-repository";
 export class CommentsService {
   constructor(protected commentsRepository: CommentsRepository) {}
 
-  async getCommentsById(id: string): Promise<CommentsOutputModel | undefined> {
-    return await this.commentsRepository.getCommentsById(id);
+  async getCommentsById(
+    id: string,
+    token?: boolean
+  ): Promise<CommentsOutputModel | undefined> {
+    return await this.commentsRepository.getCommentsById(id, token);
   }
 
   async updateComment(id: string, content: string): Promise<boolean> {

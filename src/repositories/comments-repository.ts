@@ -3,7 +3,8 @@ import { CommentsDbModel, CommentsOutputModel } from "../models";
 
 export class CommentsRepository {
   async getCommentsById(
-    idComment: string
+    idComment: string,
+    token?: boolean
   ): Promise<CommentsOutputModel | undefined> {
     const res = (
       await CommentModelClass.find({ id: { $regex: idComment } }).lean()
@@ -24,7 +25,11 @@ export class CommentsRepository {
         userLogin,
       },
       createdAt,
-      likesInfo: { dislikesCount, likesCount, myStatus },
+      likesInfo: {
+        dislikesCount,
+        likesCount,
+        myStatus: token ? myStatus : "None",
+      },
     };
   }
 
