@@ -25,6 +25,6 @@ const likeStatusMiddleware = body("likeStatus")
   .withMessage("Should be a None, Like, Dislike");
 
 export const likeStatusValidationMiddleware = [
-  contentMiddleware,
   likeStatusMiddleware,
+  inputValidationMiddleware,
 ];
