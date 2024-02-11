@@ -47,7 +47,20 @@ export class CommentsRepository {
       },
     });
     await comment.save();
-    return newComment;
+    return {
+      id: newComment.id,
+      content: newComment.content,
+      commentatorInfo: {
+        userId: newComment.commentatorInfo.userId,
+        userLogin: newComment.commentatorInfo.userLogin,
+      },
+      createdAt: newComment.createdAt,
+      likesInfo: {
+        dislikesCount: 0,
+        likesCount: 0,
+        myStatus: "None",
+      },
+    };
   }
 
   async updateComment(id: string, content: string): Promise<boolean> {
