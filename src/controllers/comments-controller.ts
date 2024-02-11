@@ -53,11 +53,12 @@ export class CommentsController {
     res: Response
   ) {
     const comment = await this.commentsService.getCommentsById(req.params.id);
+    if (!comment) return res.sendStatus(Not_Found);
     const result = await this.commentsService.updateLike(
       req.params.id,
       req.body.likeStatus
     );
-    if (!comment || !result) return res.sendStatus(No_Content);
+    if (!result) return res.sendStatus(No_Content);
 
     return res.sendStatus(No_Content);
   }

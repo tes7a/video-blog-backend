@@ -16,7 +16,6 @@ export class PostCommentsQueryRepository {
       sortBy = "createdAt",
       sortDirection = "desc",
     } = payload;
-    debugger
     const startIndex: number = (Number(pageNumber) - 1) * Number(pageSize);
     const commentsCount = await CommentModelClass.countDocuments({
       postId,
@@ -36,17 +35,30 @@ export class PostCommentsQueryRepository {
       page: Number(pageNumber),
       pageSize: Number(pageSize),
       totalCount: commentsCount,
-      items: filteredArray.map((item) => {
-        return {
-          id: item.id,
-          content: item.content,
-          commentatorInfo: {
-            userId: item.commentatorInfo.userId,
-            userLogin: item.commentatorInfo.userLogin,
-          },
-          createdAt: item.createdAt,
-        };
-      }),
+      items: filteredArray.map(
+        ({
+          commentatorInfo,
+          content,
+          createdAt,
+          id,
+          likesInfo: { dislikesCount, likesCount, myStatus },
+        }) => {
+          return {
+            id: id,
+            content: content,
+            commentatorInfo: {
+              userId: commentatorInfo.userId,
+              userLogin: commentatorInfo.userLogin,
+            },
+            createdAt: createdAt,
+            likesInfo: {
+              dislikesCount,
+              likesCount,
+              myStatus,
+            },
+          };
+        }
+      ),
     };
   }
 }

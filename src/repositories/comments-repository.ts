@@ -14,6 +14,7 @@ export class CommentsRepository {
       content,
       createdAt,
       commentatorInfo: { userId, userLogin },
+      likesInfo: { dislikesCount, likesCount, myStatus },
     } = res;
     return {
       id,
@@ -23,6 +24,7 @@ export class CommentsRepository {
         userLogin,
       },
       createdAt,
+      likesInfo: { dislikesCount, likesCount, myStatus },
     };
   }
 
