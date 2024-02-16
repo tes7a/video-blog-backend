@@ -14,5 +14,11 @@ export const commentsSchema = new mongoose.Schema<CommentsDbModel>({
     likesCount: Number,
     dislikesCount: Number,
     myStatus: String,
+    userRatings: [
+      {
+        userId: String,
+        userRating: String,
+      },
+    ],
   },
 });

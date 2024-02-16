@@ -86,10 +86,30 @@ export class CommentsRepository {
 
   async updateLike(
     id: string,
-    likeStatus: "None" | "Like" | "Dislike"
+    likeStatus: "None" | "Like" | "Dislike",
+    userId: string
   ): Promise<boolean> {
     const comment = await CommentModelClass.findOne({ id });
     if (!comment) return false;
+
+    const currentUser = comment.likesInfo.userRatings?.find(
+      (user) => user.userId === userId
+    );
+
+    if (currentUser?.userRating === "Like") {
+      return true;
+    } else if (currentUser?.userRating === "Dislike") {
+      return true;
+    }
+
+    if (currentUser) {
+      currentUser.userRating = likeStatus;
+    } else {
+      comment.likesInfo.userRatings?.push({
+        userId,
+        userRating: likeStatus,
+      });
+    }
 
     if (likeStatus === "Like") {
       comment.likesInfo.myStatus = likeStatus;

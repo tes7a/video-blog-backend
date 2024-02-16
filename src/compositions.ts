@@ -52,7 +52,10 @@ export const authService = new AuthService(
   jwtService
 );
 export const blogsService = new BlogsService(blogsRepository);
-export const commentsService = new CommentsService(commentsRepository);
+export const commentsService = new CommentsService(
+  commentsRepository,
+  jwtService
+);
 export const postService = new PostService(postsRepository);
 
 //controllers

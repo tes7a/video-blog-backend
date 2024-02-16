@@ -2,9 +2,13 @@ import { CommentCreateModel } from "../models/comments/CommentCreateModel";
 import { CommentsDbModel } from "../models/comments/CommentsDbModel";
 import { CommentsOutputModel } from "../models/comments/CommentsOutputModel";
 import { CommentsRepository } from "../repositories/comments-repository";
+import { JwtService } from "./jwt-service";
 
 export class CommentsService {
-  constructor(protected commentsRepository: CommentsRepository) {}
+  constructor(
+    protected commentsRepository: CommentsRepository,
+    protected jwtService: JwtService
+  ) {}
 
   async getCommentsById(
     id: string,
@@ -46,8 +50,9 @@ export class CommentsService {
 
   async updateLike(
     id: string,
-    likeStatus: "None" | "Like" | "Dislike"
+    likeStatus: "None" | "Like" | "Dislike",
+    userId: string
   ): Promise<boolean> {
-    return await this.commentsRepository.updateLike(id, likeStatus);
+    return await this.commentsRepository.updateLike(id, likeStatus, userId);
   }
 }

@@ -60,7 +60,8 @@ export class CommentsController {
     if (!comment) return res.sendStatus(Not_Found);
     const result = await this.commentsService.updateLike(
       req.params.id,
-      req.body.likeStatus
+      req.body.likeStatus,
+      req.userId
     );
     if (!result) return res.sendStatus(No_Content);
 

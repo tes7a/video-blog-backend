@@ -11,5 +11,9 @@ export type CommentsDbModel = {
     likesCount: number;
     dislikesCount: number;
     myStatus: null | string;
+    userRatings?: {
+      userId: string;
+      userRating: string;
+    }[];
   };
 };
