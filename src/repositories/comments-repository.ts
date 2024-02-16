@@ -117,6 +117,10 @@ export class CommentsRepository {
     } else if (likeStatus === "Dislike") {
       comment.likesInfo.myStatus = likeStatus;
       comment.likesInfo.dislikesCount += 1;
+    } else if (likeStatus === "None" && currentUser?.userRating === "Like") {
+      comment.likesInfo.likesCount -= 0;
+    } else if (likeStatus === "None" && currentUser?.userRating === "Dislike") {
+      comment.likesInfo.dislikesCount -= 0;
     }
 
     comment.save();
