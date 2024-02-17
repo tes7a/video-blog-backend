@@ -15,9 +15,9 @@ export class CommentsController {
   ) {
     const token = await req.headers.authorization;
     const comments = await this.commentsService.getCommentsById(
-      req.userId,
       req.params.id,
-      !!token
+      !!token,
+      req.userId
     );
     if (!comments) return res.sendStatus(Not_Found);
     return res.status(OK).send(comments);

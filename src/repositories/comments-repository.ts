@@ -3,9 +3,9 @@ import { CommentsDbModel, CommentsOutputModel } from "../models";
 
 export class CommentsRepository {
   async getCommentsById(
-    currentUserId: string,
     idComment: string,
-    token?: boolean
+    token?: boolean,
+    currentUserId?: string
   ): Promise<CommentsOutputModel | undefined> {
     const res = (
       await CommentModelClass.find({ id: { $regex: idComment } }).lean()
