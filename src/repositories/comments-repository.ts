@@ -10,6 +10,7 @@ export class CommentsRepository {
       await CommentModelClass.find({ id: { $regex: idComment } }).lean()
     )[0];
     if (!res) return undefined;
+
     const {
       id,
       content,
@@ -17,7 +18,6 @@ export class CommentsRepository {
       commentatorInfo: { userId, userLogin },
       likesInfo: { dislikesCount, likesCount, userRatings },
     } = res;
-
     const currentUser = userRatings?.find(
       (rating) => rating.userId === currentUserId
     );
@@ -54,6 +54,7 @@ export class CommentsRepository {
         dislikesCount: 0,
         likesCount: 0,
         myStatus: "None",
+        userRatings: [],
       },
     });
     await comment.save();
@@ -101,51 +102,66 @@ export class CommentsRepository {
       (user) => user.userId === userId
     );
 
-    if (likeStatus === "Like" && currentUser?.userRating === "Like") {
-      return true;
-    } else if (
-      likeStatus === "Dislike" &&
-      currentUser?.userRating === "Dislike"
-    ) {
-      return true;
+    switch (likeStatus) {
+      case "Like":
+        if (currentUser) {
+          if (currentUser.userRating === "Like") return true;
+          if (currentUser.userRating === "Dislike") {
+            comment.likesInfo.dislikesCount = Math.max(
+              0,
+              comment.likesInfo.dislikesCount - 1
+            );
+          }
+          currentUser.userRating = "Like";
+        } else {
+          comment.likesInfo.userRatings!.push({
+            userId,
+            userRating: likeStatus,
+          });
+        }
+        comment.likesInfo.myStatus = likeStatus;
+        comment.likesInfo.likesCount++;
+        break;
+      case "Dislike":
+        if (currentUser) {
+          if (currentUser.userRating === "Dislike") return true;
+          if (currentUser.userRating === "Like") {
+            comment.likesInfo.likesCount = Math.max(
+              0,
+              comment.likesInfo.likesCount - 1
+            );
+          }
+          currentUser.userRating = "Dislike";
+        } else {
+          comment.likesInfo.userRatings!.push({
+            userId,
+            userRating: likeStatus,
+          });
+        }
+        comment.likesInfo.myStatus = likeStatus;
+        comment.likesInfo.dislikesCount++;
+        break;
+      case "None":
+        if (!currentUser) return true;
+        if (currentUser.userRating === "Like") {
+          comment.likesInfo.likesCount = Math.max(
+            0,
+            comment.likesInfo.likesCount - 1
+          );
+        } else if (currentUser.userRating === "Dislike") {
+          comment.likesInfo.dislikesCount = Math.max(
+            0,
+            comment.likesInfo.dislikesCount - 1
+          );
+        }
+        currentUser.userRating = likeStatus;
+        comment.likesInfo.myStatus = likeStatus;
+        break;
+      default:
+        return false;
     }
 
-    if (currentUser) {
-      currentUser.userRating = likeStatus;
-    } else {
-      comment.likesInfo.userRatings?.push({
-        userId,
-        userRating: likeStatus,
-      });
-    }
-
-    if (likeStatus === "Like") {
-      if (currentUser?.userRating === "Dislike") {
-        comment.likesInfo.myStatus = likeStatus;
-        comment.likesInfo.likesCount -= 1;
-        comment.likesInfo.dislikesCount += 1;
-      } else {
-        comment.likesInfo.myStatus = likeStatus;
-        comment.likesInfo.likesCount += 1;
-      }
-    } else if (likeStatus === "Dislike") {
-      if (currentUser?.userRating === "Like") {
-        comment.likesInfo.myStatus = likeStatus;
-        comment.likesInfo.dislikesCount -= 1;
-        comment.likesInfo.likesCount += 1;
-      } else {
-        comment.likesInfo.myStatus = likeStatus;
-        comment.likesInfo.dislikesCount += 1;
-      }
-    } else if (likeStatus === "None") {
-      if (currentUser?.userRating === "Like") {
-        comment.likesInfo.likesCount -= 1;
-      } else if (currentUser?.userRating === "Dislike") {
-        comment.likesInfo.dislikesCount -= 1;
-      }
-    }
-
-    comment.save();
+    await comment.save();
     return true;
   }
 }
