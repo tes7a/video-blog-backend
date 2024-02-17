@@ -15,6 +15,7 @@ export class CommentsController {
   ) {
     const token = await req.headers.authorization;
     const comments = await this.commentsService.getCommentsById(
+      req.userId,
       req.params.id,
       !!token
     );
