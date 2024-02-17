@@ -101,9 +101,12 @@ export class CommentsRepository {
       (user) => user.userId === userId
     );
 
-    if (currentUser?.userRating === "Like") {
+    if (likeStatus === "Like" && currentUser?.userRating === "Like") {
       return true;
-    } else if (currentUser?.userRating === "Dislike") {
+    } else if (
+      likeStatus === "Dislike" &&
+      currentUser?.userRating === "Dislike"
+    ) {
       return true;
     }
 
@@ -117,15 +120,29 @@ export class CommentsRepository {
     }
 
     if (likeStatus === "Like") {
-      comment.likesInfo.myStatus = likeStatus;
-      comment.likesInfo.likesCount += 1;
+      if (currentUser?.userRating === "Dislike") {
+        comment.likesInfo.myStatus = likeStatus;
+        comment.likesInfo.likesCount -= 1;
+        comment.likesInfo.dislikesCount += 1;
+      } else {
+        comment.likesInfo.myStatus = likeStatus;
+        comment.likesInfo.likesCount += 1;
+      }
     } else if (likeStatus === "Dislike") {
-      comment.likesInfo.myStatus = likeStatus;
-      comment.likesInfo.dislikesCount += 1;
-    } else if (likeStatus === "None" && currentUser?.userRating === "Like") {
-      comment.likesInfo.likesCount -= 0;
-    } else if (likeStatus === "None" && currentUser?.userRating === "Dislike") {
-      comment.likesInfo.dislikesCount -= 0;
+      if (currentUser?.userRating === "Like") {
+        comment.likesInfo.myStatus = likeStatus;
+        comment.likesInfo.dislikesCount -= 1;
+        comment.likesInfo.likesCount += 1;
+      } else {
+        comment.likesInfo.myStatus = likeStatus;
+        comment.likesInfo.dislikesCount += 1;
+      }
+    } else if (likeStatus === "None") {
+      if (currentUser?.userRating === "Like") {
+        comment.likesInfo.likesCount -= 1;
+      } else if (currentUser?.userRating === "Dislike") {
+        comment.likesInfo.dislikesCount -= 1;
+      }
     }
 
     comment.save();
