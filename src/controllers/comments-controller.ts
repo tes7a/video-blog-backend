@@ -16,11 +16,13 @@ export class CommentsController {
     req: RequestWithParams<URIParamsModel>,
     res: Response<CommentsOutputModel>
   ) {
+    const token = await req.headers.authorization;
     const result = await this.jwtService.getUserIdByToken(
       req.cookies.refreshToken
     );
     const comments = await this.commentsService.getCommentsById(
       req.params.id,
+      token!!,
       result?.userId
     );
     if (!comments) return res.sendStatus(Not_Found);

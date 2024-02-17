@@ -4,6 +4,7 @@ import { CommentsDbModel, CommentsOutputModel } from "../models";
 export class CommentsRepository {
   async getCommentsById(
     idComment: string,
+    token?: string,
     currentUserId?: string
   ): Promise<CommentsOutputModel | undefined> {
     const res = (
@@ -33,7 +34,11 @@ export class CommentsRepository {
       likesInfo: {
         dislikesCount,
         likesCount,
-        myStatus: currentUser ? currentUser?.userRating : "None",
+        myStatus: token
+          ? currentUser
+            ? currentUser?.userRating
+            : "None"
+          : "None",
       },
     };
   }
