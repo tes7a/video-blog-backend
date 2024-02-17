@@ -1,23 +1,27 @@
 import { Response, response } from "express";
 import { HTTPS_ANSWERS } from "../utils/https-answers";
 import { RequestWithParams, RequestWithParamsAndBody } from "../types/types";
-import { CommentsService } from "../services";
+import { CommentsService, JwtService } from "../services";
 import { CommentsOutputModel, URIParamsModel } from "../models";
 
 const { OK, Not_Found, No_Content, Forbidden } = HTTPS_ANSWERS;
 
 export class CommentsController {
-  constructor(protected commentsService: CommentsService) {}
+  constructor(
+    protected commentsService: CommentsService,
+    protected jwtService: JwtService
+  ) {}
 
   async getCommentsById(
     req: RequestWithParams<URIParamsModel>,
     res: Response<CommentsOutputModel>
   ) {
-    const token = await req.headers.authorization;
+    const result = await this.jwtService.getUserIdByToken(
+      req.cookies.refreshToken
+    );
     const comments = await this.commentsService.getCommentsById(
       req.params.id,
-      !!token,
-      req.userId
+      result?.userId
     );
     if (!comments) return res.sendStatus(Not_Found);
     return res.status(OK).send(comments);

@@ -70,7 +70,10 @@ export const blogsController = new BlogsController(
   postQueryRepository,
   postService
 );
-export const commentsController = new CommentsController(commentsService);
+export const commentsController = new CommentsController(
+  commentsService,
+  jwtService
+);
 export const devicesController = new DevicesController(
   deviceService,
   jwtService
