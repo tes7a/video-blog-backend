@@ -8,7 +8,8 @@ import {
 export class PostCommentsQueryRepository {
   async getComments(
     postId: string,
-    payload: CommentsQueryModel
+    payload: CommentsQueryModel,
+    userId?: string
   ): Promise<WithQueryModel<CommentsOutputModel[]>> {
     const {
       pageNumber = 1,
@@ -41,7 +42,7 @@ export class PostCommentsQueryRepository {
           content,
           createdAt,
           id,
-          likesInfo: { dislikesCount, likesCount, myStatus },
+          likesInfo: { dislikesCount, likesCount, userRatings },
         }) => {
           return {
             id: id,
@@ -54,7 +55,9 @@ export class PostCommentsQueryRepository {
             likesInfo: {
               dislikesCount,
               likesCount,
-              myStatus,
+              myStatus:
+                userRatings?.find((user) => user.userId === userId)
+                  ?.userRating ?? "None",
             },
           };
         }
@@ -62,45 +65,3 @@ export class PostCommentsQueryRepository {
     };
   }
 }
-//     postId: string,
-//     payload: CommentsQueryModel
-//   ): Promise<WithQueryModel<CommentsOutputModel[]>> {
-//     const {
-//       pageNumber = 1,
-//       pageSize = 10,
-//       sortBy = "createdAt",
-//       sortDirection = "desc",
-//     } = payload;
-//     const startIndex: number = (Number(pageNumber) - 1) * Number(pageSize);
-//     const commentsCount = await CommentModelClass.countDocuments({
-//       postId,
-//     });
-//     const filteredArray = await CommentModelClass.find(
-//       { postId },
-//       { projection: { _id: 0 } }
-//     )
-//       .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
-//       .skip(startIndex)
-//       .limit(Number(pageSize))
-//       .lean();
-//     const pagesCount = Math.ceil(commentsCount / Number(pageSize));
-
-//     return {
-//       pagesCount,
-//       page: Number(pageNumber),
-//       pageSize: Number(pageSize),
-//       totalCount: commentsCount,
-//       items: filteredArray.map((item) => {
-//         return {
-//           id: item.id,
-//           content: item.content,
-//           commentatorInfo: {
-//             userId: item.commentatorInfo.userId,
-//             userLogin: item.commentatorInfo.userLogin,
-//           },
-//           createdAt: item.createdAt,
-//         };
-//       }),
-//     };
-//   },
-// };

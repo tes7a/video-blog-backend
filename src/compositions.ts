@@ -83,7 +83,8 @@ export const postsController = new PostsController(
   postQueryRepository,
   commentsService,
   postService,
-  userService
+  userService,
+  jwtService
 );
 export const testingController = new TestingController();
 export const usersController = new UsersController(

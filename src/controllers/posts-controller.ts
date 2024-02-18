@@ -11,7 +11,12 @@ import {
   PostCommentsQueryRepository,
   PostQueryRepository,
 } from "../repositories";
-import { CommentsService, PostService, UserService } from "../services";
+import {
+  CommentsService,
+  JwtService,
+  PostService,
+  UserService,
+} from "../services";
 import {
   CommentsOutputModel,
   CommentsQueryModel,
@@ -31,7 +36,8 @@ export class PostsController {
     protected postQueryRepository: PostQueryRepository,
     protected commentsService: CommentsService,
     protected postsServices: PostService,
-    protected userService: UserService
+    protected userService: UserService,
+    protected jwtService: JwtService
   ) {}
 
   async getAllPosts(
@@ -54,7 +60,27 @@ export class PostsController {
     res: Response<WithQueryModel<CommentsOutputModel[]>>
   ) {
     const post = await this.postsServices.getPostById(req.params.id);
+    const token = req.headers.authorization ?? "";
     if (post) {
+      if (token) {
+        const user = await this.jwtService.getUserIdByToken(
+          token.split(" ")[1]
+        );
+
+        const result = await this.postCommentsQueryRepository.getComments(
+          req.params.id,
+          {
+            pageNumber: req.query.pageNumber,
+            pageSize: req.query.pageSize,
+            sortBy: req.query.sortBy,
+            sortDirection: req.query.sortDirection,
+          },
+          user?.userId
+        );
+        if (result) return res.status(OK).send(result);
+
+        return res.sendStatus(Not_Found);
+      }
       const result = await this.postCommentsQueryRepository.getComments(
         req.params.id,
         {
