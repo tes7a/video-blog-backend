@@ -12,10 +12,9 @@ export class CommentsService {
 
   async getCommentsById(
     id: string,
-    token?: string,
     currentUserId?: string
   ): Promise<CommentsOutputModel | undefined> {
-    return await this.commentsRepository.getCommentsById(id, token, currentUserId);
+    return await this.commentsRepository.getCommentsById(id, currentUserId);
   }
 
   async updateComment(id: string, content: string): Promise<boolean> {

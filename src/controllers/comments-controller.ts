@@ -16,17 +16,24 @@ export class CommentsController {
     req: RequestWithParams<URIParamsModel>,
     res: Response<CommentsOutputModel>
   ) {
-    const token = await req.headers.authorization;
-    const result = await this.jwtService.getUserIdByToken(
-      req.cookies.refreshToken
-    );
-    const comments = await this.commentsService.getCommentsById(
-      req.params.id,
-      token!!,
-      result?.userId
-    );
-    if (!comments) return res.sendStatus(Not_Found);
-    return res.status(OK).send(comments);
+    const token = req.headers.authorization ?? "";
+    if (token) {
+      const result = await this.jwtService.getUserIdByToken(
+        token.split(" ")[1]
+      );
+      const comments = await this.commentsService.getCommentsById(
+        req.params.id,
+        result?.userId
+      );
+      if (!comments) return res.sendStatus(Not_Found);
+      return res.status(OK).send(comments);
+    } else {
+      const comments = await this.commentsService.getCommentsById(
+        req.params.id
+      );
+      if (!comments) return res.sendStatus(Not_Found);
+      return res.status(OK).send(comments);
+    }
   }
 
   async updateComment(
