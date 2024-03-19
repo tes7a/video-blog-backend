@@ -9,4 +9,22 @@ export const postSchema = new mongoose.Schema<PostDbModel>({
   blogId: String,
   blogName: String,
   createdAt: String,
+  extendedLikesInfo: {
+    likesCount: Number,
+    dislikesCount: Number,
+    myStatus: String,
+    newestLikes: [
+      {
+        addedAt: String,
+        userId: String,
+        login: String,
+      },
+    ],
+    userRatings: [
+      {
+        userId: String,
+        userRating: String,
+      },
+    ],
+  },
 });

@@ -87,7 +87,7 @@ export class PostQueryRepository {
       .lean();
   }
 
-  async _mapPosts(items: PostDbModel[]): Promise<PostOutputModel[]> {
+  async _mapPosts(items: PostDbModel[]): Promise<PostDbModel[]> {
     return items.map((p) => {
       return {
         id: p.id,
@@ -97,6 +97,12 @@ export class PostQueryRepository {
         blogId: p.blogId,
         blogName: p.blogName,
         createdAt: p.createdAt,
+        extendedLikesInfo: {
+          dislikesCount: p.extendedLikesInfo.dislikesCount,
+          likesCount: p.extendedLikesInfo.likesCount,
+          myStatus: p.extendedLikesInfo.myStatus,
+          newestLikes: p.extendedLikesInfo.newestLikes,
+        },
       };
     });
   }

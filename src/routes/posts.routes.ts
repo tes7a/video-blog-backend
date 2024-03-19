@@ -6,6 +6,7 @@ import {
   createCommentsValidationMiddleware,
   createPostsValidationMiddleware,
   inputValidationMiddleware,
+  likeStatusValidationMiddleware,
 } from "../middleware";
 
 export const postsRoute = Router({});
@@ -45,4 +46,11 @@ postsRoute.delete(
   authMiddlewareCustomVariant,
   inputValidationMiddleware,
   postsController.deletePost.bind(postsController)
+);
+
+postsRoute.put(
+  "/:id/like-status",
+  authMiddleware,
+  likeStatusValidationMiddleware,
+  postsController.updateLike.bind(postsController)
 );

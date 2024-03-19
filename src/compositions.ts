@@ -56,7 +56,7 @@ export const commentsService = new CommentsService(
   commentsRepository,
   jwtService
 );
-export const postService = new PostService(postsRepository);
+export const postService = new PostService(postsRepository, userService);
 
 //controllers
 export const authController = new AuthController(

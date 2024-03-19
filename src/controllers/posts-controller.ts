@@ -160,4 +160,21 @@ export class PostsController {
     if (!result) return res.sendStatus(Not_Found);
     return res.sendStatus(No_Content);
   }
+
+  async updateLike(
+    req: RequestWithParamsAndBody<
+      URIParamsModel,
+      { likeStatus: "None" | "Like" | "Dislike" }
+    >,
+    res: Response
+  ) {
+    const result = await this.postsServices.updateLike(
+      req.params.id,
+      req.body.likeStatus,
+      req.userId
+    );
+    if (!result) return res.sendStatus(Not_Found);
+
+    return res.sendStatus(No_Content);
+  }
 }

@@ -6,9 +6,14 @@ import {
   PostUpdateModel,
 } from "../models";
 import { PostsRepository } from "../repositories";
+import { UserService } from "./users-service";
 
 export class PostService {
-  constructor(protected postsRepository: PostsRepository) {}
+  constructor(
+    protected postsRepository: PostsRepository,
+    protected userService: UserService
+  ) {}
+
   async getPostById(id: string): Promise<PostDbModel | undefined> {
     return await this.postsRepository.getPostById(id);
   }
@@ -18,7 +23,7 @@ export class PostService {
   }
 
   async createPost(payload: PostCreateModel): Promise<PostOutputModel> {
-    const newPost = {
+    const newPost: PostDbModel = {
       id: new Date().getMilliseconds().toString(),
       title: payload.title,
       shortDescription: payload.shortDescription,
@@ -26,6 +31,11 @@ export class PostService {
       blogId: payload.blogId,
       blogName: `Blog Name #`,
       createdAt: new Date().toISOString(),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: "None",
+      },
     };
     return this.postsRepository.createPost(newPost);
   }
@@ -33,8 +43,8 @@ export class PostService {
   async createPostForCurrentBlog(
     blogId: string,
     payload: PostBlogIdCreateModel
-  ): Promise<PostOutputModel> {
-    const newPost = {
+  ): Promise<PostDbModel> {
+    const newPost: PostDbModel = {
       id: new Date().getMilliseconds().toString(),
       title: payload.title,
       shortDescription: payload.shortDescription!,
@@ -42,6 +52,11 @@ export class PostService {
       blogId: blogId,
       blogName: `Blog Name #`,
       createdAt: new Date().toISOString(),
+      extendedLikesInfo: {
+        dislikesCount: 0,
+        likesCount: 0,
+        myStatus: "None",
+      },
     };
     return this.postsRepository.createPost(newPost);
   }
@@ -54,5 +69,25 @@ export class PostService {
       content,
       blogId,
     });
+  }
+
+  async updateLike(
+    id: string,
+    likeStatus: "None" | "Like" | "Dislike",
+    userId: string
+  ): Promise<boolean> {
+    const post = await this.getPostById(id);
+    if (!post) return false;
+
+    const user = await this.userService.findUserById(userId);
+
+    await this.postsRepository.updateLike(
+      id,
+      likeStatus,
+      userId,
+      user!.accountData.login
+    );
+
+    return true;
   }
 }

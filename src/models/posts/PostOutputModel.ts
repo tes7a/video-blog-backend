@@ -6,4 +6,5 @@ export type PostOutputModel = {
   blogId: string;
   blogName: string;
   createdAt: string;
+  
 };
