@@ -24,7 +24,15 @@ export class PostsRepository {
           res.extendedLikesInfo.userRatings?.find(
             (user) => user.userId === userId
           )?.userRating ?? "None",
-        newestLikes: [] || [...res.extendedLikesInfo.newestLikes!],
+        newestLikes: res.extendedLikesInfo.newestLikes?.length
+          ? [
+              {
+                addedAt: res.extendedLikesInfo.newestLikes![0].addedAt,
+                login: res.extendedLikesInfo.newestLikes![0].login,
+                userId: res.extendedLikesInfo.newestLikes![0].userId,
+              },
+            ]
+          : [],
       },
     };
   }
@@ -94,11 +102,13 @@ export class PostsRepository {
         }
         post.extendedLikesInfo.myStatus = likeStatus;
         post.extendedLikesInfo.likesCount++;
-        post.extendedLikesInfo.newestLikes?.push({
-          addedAt: new Date().toISOString(),
-          login: userLogin,
-          userId,
-        });
+        post.extendedLikesInfo.newestLikes = [
+          {
+            addedAt: new Date().toISOString(),
+            login: userLogin,
+            userId,
+          },
+        ];
         break;
       case "Dislike":
         if (currentUser) {
@@ -118,11 +128,13 @@ export class PostsRepository {
         }
         post.extendedLikesInfo.myStatus = likeStatus;
         post.extendedLikesInfo.dislikesCount++;
-        post.extendedLikesInfo.newestLikes?.push({
-          addedAt: new Date().toISOString(),
-          login: userLogin,
-          userId,
-        });
+        post.extendedLikesInfo.newestLikes = [
+          {
+            addedAt: new Date().toISOString(),
+            login: userLogin,
+            userId,
+          },
+        ];
         break;
       case "None":
         if (!currentUser) return true;
@@ -139,11 +151,13 @@ export class PostsRepository {
         }
         currentUser.userRating = likeStatus;
         post.extendedLikesInfo.myStatus = likeStatus;
-        post.extendedLikesInfo.newestLikes?.push({
-          addedAt: new Date().toISOString(),
-          login: userLogin,
-          userId,
-        });
+        post.extendedLikesInfo.newestLikes = [
+          {
+            addedAt: new Date().toISOString(),
+            login: userLogin,
+            userId,
+          },
+        ];
         break;
       default:
     }
