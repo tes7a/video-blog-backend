@@ -2,7 +2,10 @@ import { PostModelClass } from "../db";
 import { PostDbModel, PostOutputModel, PostUpdateModel } from "../models";
 
 export class PostsRepository {
-  async getPostById(id: string): Promise<PostDbModel | undefined> {
+  async getPostById(
+    id: string,
+    userId?: string
+  ): Promise<PostDbModel | undefined> {
     const res = (await PostModelClass.find({ id: { $regex: id } }).lean())[0];
     if (!res) return undefined;
 
@@ -17,7 +20,10 @@ export class PostsRepository {
       extendedLikesInfo: {
         dislikesCount: res.extendedLikesInfo.dislikesCount,
         likesCount: res.extendedLikesInfo.likesCount,
-        myStatus: res.extendedLikesInfo.myStatus,
+        myStatus:
+          res.extendedLikesInfo.userRatings?.find(
+            (user) => user.userId === userId
+          )?.userRating ?? "None",
         newestLikes: [] || [...res.extendedLikesInfo.newestLikes!],
       },
     };

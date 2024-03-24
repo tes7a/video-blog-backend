@@ -99,7 +99,20 @@ export class PostsController {
     req: RequestWithParams<URIParamsModel>,
     res: Response<PostOutputModel>
   ) {
-    const post = await this.postsServices.getPostById(req.params.id);
+    const token = req.headers.authorization ?? "";
+    let post;
+    if (token) {
+      const result = await this.jwtService.getUserIdByToken(
+        token.split(" ")[1]
+      );
+      post = await this.postsServices.getPostById(
+        req.params.id,
+        result?.userId
+      );
+    } else {
+      post = await this.postsServices.getPostById(req.params.id);
+    }
+
     if (!post) res.sendStatus(Not_Found);
     return res.status(OK).send(post);
   }

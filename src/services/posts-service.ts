@@ -14,8 +14,11 @@ export class PostService {
     protected userService: UserService
   ) {}
 
-  async getPostById(id: string): Promise<PostDbModel | undefined> {
-    return await this.postsRepository.getPostById(id);
+  async getPostById(
+    id: string,
+    userId?: string
+  ): Promise<PostDbModel | undefined> {
+    return await this.postsRepository.getPostById(id, userId);
   }
 
   async deleteById(id: string): Promise<boolean> {
