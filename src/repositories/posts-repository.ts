@@ -35,6 +35,11 @@ export class PostsRepository {
                     }
                   : []
               )
+              .map((like) => ({
+                addedAt: like.addedAt,
+                userId: like.userId,
+                login: like.login,
+              }))
               .slice(0, 3)
           : [],
       },
