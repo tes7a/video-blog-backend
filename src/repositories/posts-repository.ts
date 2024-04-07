@@ -122,13 +122,6 @@ export class PostsRepository {
         }
         post.extendedLikesInfo.myStatus = likeStatus;
         post.extendedLikesInfo.dislikesCount++;
-        post.extendedLikesInfo.newestLikes = [
-          {
-            addedAt: new Date().toISOString(),
-            login: userLogin,
-            userId,
-          },
-        ];
         break;
       case "None":
         if (!currentUser) return true;
@@ -145,13 +138,6 @@ export class PostsRepository {
         }
         currentUser.userRating = likeStatus;
         post.extendedLikesInfo.myStatus = likeStatus;
-        post.extendedLikesInfo.newestLikes = [
-          {
-            addedAt: new Date().toISOString(),
-            login: userLogin,
-            userId,
-          },
-        ];
         break;
       default:
     }
