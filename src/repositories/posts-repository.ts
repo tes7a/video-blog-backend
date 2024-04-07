@@ -25,13 +25,7 @@ export class PostsRepository {
             (user) => user.userId === userId
           )?.userRating ?? "None",
         newestLikes: res.extendedLikesInfo.newestLikes?.length
-          ? [
-              {
-                addedAt: res.extendedLikesInfo.newestLikes![0].addedAt,
-                login: res.extendedLikesInfo.newestLikes![0].login,
-                userId: res.extendedLikesInfo.newestLikes![0].userId,
-              },
-            ]
+          ? res.extendedLikesInfo.newestLikes.slice(0, 3)
           : [],
       },
     };
