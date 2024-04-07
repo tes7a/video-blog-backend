@@ -25,7 +25,11 @@ export class PostsRepository {
             (user) => user.userId === userId
           )?.userRating ?? "None",
         newestLikes: res.extendedLikesInfo.newestLikes?.length
-          ? res.extendedLikesInfo.newestLikes.slice(0, 3)
+          ? res.extendedLikesInfo.newestLikes
+              .map((like) => {
+                like.addedAt, like.login, like.userId;
+              })
+              .slice(0, 3)
           : [],
       },
     };
