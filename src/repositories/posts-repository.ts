@@ -112,12 +112,12 @@ export class PostsRepository {
         post.extendedLikesInfo.myStatus = likeStatus;
         post.extendedLikesInfo.likesCount++;
         post.extendedLikesInfo.newestLikes = [
-          ...(post.extendedLikesInfo.newestLikes ?? []),
           {
             addedAt: new Date().toISOString(),
             login: userLogin,
             userId,
           },
+          ...(post.extendedLikesInfo.newestLikes ?? []),
         ];
         break;
       case "Dislike":
