@@ -8,7 +8,8 @@ import {
 
 export class PostQueryRepository {
   async getPosts(
-    payload: PostWIthQueryModel
+    payload: PostWIthQueryModel,
+    userId?: string
   ): Promise<WithQueryModel<PostOutputModel[]>> {
     const {
       pageNumber = 1,
@@ -35,13 +36,14 @@ export class PostQueryRepository {
       page: Number(pageNumber),
       pageSize: Number(pageSize),
       totalCount: postsCount,
-      items: await this._mapPosts(filteredArray),
+      items: await this._mapPosts(filteredArray, userId!),
     };
   }
 
   async getPostByBlogID(
     blogId: string,
-    payload: PostWIthQueryModel
+    payload: PostWIthQueryModel,
+    userId?: string
   ): Promise<WithQueryModel<PostOutputModel[]>> {
     const {
       pageNumber = 1,
@@ -69,7 +71,7 @@ export class PostQueryRepository {
       page: Number(pageNumber),
       pageSize: Number(pageSize),
       totalCount: postsCount,
-      items: await this._mapPosts(filteredArray),
+      items: await this._mapPosts(filteredArray, userId),
     };
   }
 
@@ -87,7 +89,10 @@ export class PostQueryRepository {
       .lean();
   }
 
-  async _mapPosts(items: PostDbModel[]): Promise<PostDbModel[]> {
+  async _mapPosts(
+    items: PostDbModel[],
+    userId?: string
+  ): Promise<PostDbModel[]> {
     return items.map((p) => {
       return {
         id: p.id,
@@ -100,8 +105,28 @@ export class PostQueryRepository {
         extendedLikesInfo: {
           dislikesCount: p.extendedLikesInfo.dislikesCount,
           likesCount: p.extendedLikesInfo.likesCount,
-          myStatus: p.extendedLikesInfo.myStatus,
-          newestLikes: p.extendedLikesInfo.newestLikes,
+          myStatus:
+            p.extendedLikesInfo.userRatings?.find(
+              (user) => user.userId === userId
+            )?.userRating ?? "None",
+          newestLikes: p.extendedLikesInfo.newestLikes?.length
+            ? p.extendedLikesInfo.newestLikes
+                .filter((like) =>
+                  like.userId === userId
+                    ? {
+                        addedAt: like.addedAt,
+                        userId: like.userId,
+                        login: like.login,
+                      }
+                    : []
+                )
+                .map((like) => ({
+                  addedAt: like.addedAt,
+                  userId: like.userId,
+                  login: like.login,
+                }))
+                .slice(0, 3)
+            : [],
         },
       };
     });

@@ -45,14 +45,33 @@ export class PostsController {
     res: Response<WithQueryModel<PostOutputModel[]>>
   ) {
     const { sortBy, sortDirection, pageNumber, pageSize } = req.query;
-    return res.status(OK).send(
-      await this.postQueryRepository.getPosts({
-        sortBy: sortBy?.toString(),
-        sortDirection: sortDirection?.toString(),
-        pageNumber: pageNumber?.toString(),
-        pageSize: pageSize?.toString(),
-      })
-    );
+    const token = req.headers.authorization ?? "";
+    if (token) {
+      const result = await this.jwtService.getUserIdByToken(
+        token.split(" ")[1]
+      );
+
+      return res.status(OK).send(
+        await this.postQueryRepository.getPosts(
+          {
+            sortBy: sortBy?.toString(),
+            sortDirection: sortDirection?.toString(),
+            pageNumber: pageNumber?.toString(),
+            pageSize: pageSize?.toString(),
+          },
+          result?.userId
+        )
+      );
+    } else {
+      return res.status(OK).send(
+        await this.postQueryRepository.getPosts({
+          sortBy: sortBy?.toString(),
+          sortDirection: sortDirection?.toString(),
+          pageNumber: pageNumber?.toString(),
+          pageSize: pageSize?.toString(),
+        })
+      );
+    }
   }
 
   async getCommentsPost(

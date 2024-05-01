@@ -68,7 +68,8 @@ export const blogsController = new BlogsController(
   blogsService,
   blogsQueryRepository,
   postQueryRepository,
-  postService
+  postService,
+  jwtService
 );
 export const commentsController = new CommentsController(
   commentsService,

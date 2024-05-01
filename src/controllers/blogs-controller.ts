@@ -7,7 +7,7 @@ import {
   RequestWithParamsAndBody,
   RequestWithQuery,
 } from "../types/types";
-import { BlogsService, PostService } from "../services";
+import { BlogsService, JwtService, PostService } from "../services";
 import { BlogsQueryRepository, PostQueryRepository } from "../repositories";
 import {
   BlogCreateModel,
@@ -28,7 +28,8 @@ export class BlogsController {
     protected blogsServices: BlogsService,
     protected blogsQueryRepository: BlogsQueryRepository,
     protected postQueryRepository: PostQueryRepository,
-    protected postsServices: PostService
+    protected postsServices: PostService,
+    protected jwtService: JwtService
   ) {}
 
   async getAllBlogs(
@@ -63,15 +64,35 @@ export class BlogsController {
   ) {
     const { pageNumber, pageSize, sortBy, sortDirection } = req.query;
     const blog = await this.blogsServices.getBlogById(req.params.id);
+    const token = req.headers.authorization ?? "";
     if (blog) {
-      return res.status(OK).send(
-        await this.postQueryRepository.getPostByBlogID(req.params.id, {
-          sortBy: sortBy?.toString(),
-          sortDirection: sortDirection?.toString(),
-          pageNumber: pageNumber?.toString(),
-          pageSize: pageSize?.toString(),
-        })
-      );
+      if (token) {
+        const result = await this.jwtService.getUserIdByToken(
+          token.split(" ")[1]
+        );
+
+        return res.status(OK).send(
+          await this.postQueryRepository.getPostByBlogID(
+            req.params.id,
+            {
+              sortBy: sortBy?.toString(),
+              sortDirection: sortDirection?.toString(),
+              pageNumber: pageNumber?.toString(),
+              pageSize: pageSize?.toString(),
+            },
+            result?.userId
+          )
+        );
+      } else {
+        return res.status(OK).send(
+          await this.postQueryRepository.getPostByBlogID(req.params.id, {
+            sortBy: sortBy?.toString(),
+            sortDirection: sortDirection?.toString(),
+            pageNumber: pageNumber?.toString(),
+            pageSize: pageSize?.toString(),
+          })
+        );
+      }
     }
     return res.sendStatus(Not_Found);
   }
