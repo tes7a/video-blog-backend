@@ -40,7 +40,7 @@ export class PostsRepository {
                 userId: like.userId,
                 login: like.login,
               }))
-              .slice(0, 3)
+              .slice(-3)
           : [],
       },
     };
@@ -112,6 +112,7 @@ export class PostsRepository {
         post.extendedLikesInfo.myStatus = likeStatus;
         post.extendedLikesInfo.likesCount++;
         post.extendedLikesInfo.newestLikes = [
+          ...(post.extendedLikesInfo.newestLikes ?? []),
           {
             addedAt: new Date().toISOString(),
             login: userLogin,
@@ -128,6 +129,12 @@ export class PostsRepository {
               post.extendedLikesInfo.likesCount - 1
             );
           }
+
+          post.extendedLikesInfo.newestLikes =
+            post.extendedLikesInfo.newestLikes?.filter(
+              (like) => like.userId !== currentUser.userId
+            );
+
           currentUser.userRating = "Dislike";
         } else {
           post.extendedLikesInfo.userRatings!.push({
@@ -145,6 +152,11 @@ export class PostsRepository {
             0,
             post.extendedLikesInfo.likesCount - 1
           );
+
+          post.extendedLikesInfo.newestLikes =
+            post.extendedLikesInfo.newestLikes?.filter(
+              (like) => like.userId !== currentUser.userId
+            );
         } else if (currentUser.userRating === "Dislike") {
           post.extendedLikesInfo.dislikesCount = Math.max(
             0,
