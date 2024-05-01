@@ -40,7 +40,7 @@ export class PostsRepository {
                 userId: like.userId,
                 login: like.login,
               }))
-              .slice(-3)
+              .slice(0, 3)
           : [],
       },
     };
